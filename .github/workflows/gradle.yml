@@ -1,0 +1,45 @@
+name: Gradle Build
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macOS-latest, windows-latest]
+      fail-fast: false
+    name: ${{ matrix.os }}
+    steps:
+    - name: Git checkout
+      uses: actions/checkout@v2
+    - name: Set up JDK
+      uses: actions/setup-java@v2
+      with:
+        java-version: '16'
+        distribution: 'adopt'
+        cache: gradle
+    # TOOD: Make this not fail the build immediately so we can get the published results first
+    - name: Execute tests
+      run: ./gradlew --info --stacktrace test
+    - name: Execute detekt
+      uses: natiginfo/action-detekt-all@1.18.1
+      if: matrix.os == 'ubuntu-latest'
+      with:
+        args: --config detekt.yml --build-upon-default-config
+    - name: Execute build
+      run: ./gradlew --info --stacktrace build
+    - name: Execute runtime
+      run: ./gradlew --info --stacktrace runtime
+    - name: Execute jpackage
+      run: ./gradlew --info --stacktrace jpackage
+    - name: Publish test results
+      uses: EnricoMi/publish-unit-test-result-action@v1
+      if: matrix.os == 'ubuntu-latest'
+      with:
+        files: build/test-results/**/*.xml
+    - name: Upload Installation Artifact(s)
+      uses: actions/upload-artifact@v2
+      with:
+        name: fusion-of-souls-${{ matrix.os }}-installer
+        path: build/package/install/*
