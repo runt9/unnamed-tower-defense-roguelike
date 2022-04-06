@@ -3,9 +3,6 @@ package com.runt9.untdrl
 import com.badlogic.gdx.Application
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.InputMultiplexer
-import ktx.app.KtxGame
-import ktx.app.KtxScreen
-import ktx.async.onRenderingThread
 import com.runt9.untdrl.config.ApplicationInitializer
 import com.runt9.untdrl.config.Injector
 import com.runt9.untdrl.config.inject
@@ -16,8 +13,12 @@ import com.runt9.untdrl.util.ext.unTdRlLogger
 import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.util.framework.event.HandlesEvent
 import com.runt9.untdrl.util.framework.ui.core.UnTdRlScreen
+import com.runt9.untdrl.view.duringRun.DuringRunScreen
 import com.runt9.untdrl.view.loading.LoadingScreenController
 import com.runt9.untdrl.view.mainMenu.MainMenuScreenController
+import ktx.app.KtxGame
+import ktx.app.KtxScreen
+import ktx.async.onRenderingThread
 
 class UnTdRlGame : KtxGame<KtxScreen>() {
     private val logger = unTdRlLogger()
@@ -37,6 +38,7 @@ class UnTdRlGame : KtxGame<KtxScreen>() {
 
         addScreen<LoadingScreenController>()
         addScreen<MainMenuScreenController>()
+        addScreen<DuringRunScreen>()
         setScreen<LoadingScreenController>()
     }
 

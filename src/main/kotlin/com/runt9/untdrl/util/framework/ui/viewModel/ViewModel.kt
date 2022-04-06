@@ -45,7 +45,11 @@ abstract class ViewModel : Disposable {
         fun get() = currentValue
 
         fun bind(updatable: Updatable) = binds.add(updatable)
-        fun bind(updateFn: Updatable.() -> Unit) = bind(updatable(updateFn))
+        fun bind(updateFn: Updatable.() -> Unit) {
+            val updatable = updatable(updateFn)
+            bind(updatable)
+            updatable.update()
+        }
 
         fun saveCurrent() {
             savedValue = currentValue

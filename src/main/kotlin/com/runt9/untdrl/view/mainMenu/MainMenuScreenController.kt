@@ -6,13 +6,14 @@ import com.runt9.untdrl.model.event.enqueueShowDialog
 import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.util.framework.ui.controller.UiScreenController
 import com.runt9.untdrl.util.framework.ui.viewModel.emptyViewModel
+import com.runt9.untdrl.view.duringRun.DuringRunScreen
 import com.runt9.untdrl.view.settings.SettingsDialogController
 
 class MainMenuScreenController(private val eventBus: EventBus) : UiScreenController() {
     override val vm = emptyViewModel()
     override val view = MainMenuView(this, vm)
 
-    fun newRun(): Any = TODO()//eventBus.enqueueChangeScreen<HeroSelectScreenController>()
+    fun newRun(): Any = eventBus.enqueueChangeScreen<DuringRunScreen>()
     fun showSettings() = eventBus.enqueueShowDialog<SettingsDialogController>()
     fun exit() = eventBus.enqueueExitRequest()
 }
