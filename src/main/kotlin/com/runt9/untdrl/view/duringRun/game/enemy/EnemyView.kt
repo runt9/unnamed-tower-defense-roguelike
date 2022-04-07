@@ -9,13 +9,13 @@ class EnemyView(override val controller: EnemyController, override val vm: Enemy
     override fun init() {
         val vm = vm
 
-        setSize(0.75f, 0.75f)
-        setBounds(0f, 0f, 0.75f, 0.75f)
+        setSize(0.5f, 0.5f)
+        setBounds(0f, 0f, 0.5f, 0.5f)
         setOrigin(Align.center)
         bindUpdatable(vm.position) { vm.position.get().apply { setPosition(x, y) } }
 
         val image = visImage(vm.texture) {
-            setSize(0.75f, 0.75f)
+            setSize(0.5f, 0.5f)
             setOrigin(Align.center)
             bindUpdatable(vm.rotation) { vm.rotation.get().apply { rotation = this } }
         }

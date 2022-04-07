@@ -59,7 +59,7 @@ class DuringRunGameController(
     }
 
     private fun addNewTower() {
-        val tower = TowerViewModel(2, "testTower", assets[UnitTexture.BOSS.assetFile], Vector2(10f, 5f), 0f)
+        val tower = TowerViewModel(2, "testTower", assets[UnitTexture.BOSS.assetFile], Vector2(10.125f, 5.125f), 0f)
 
         towerAttackPrototype.onMove {
             tower.rotation(rotation)

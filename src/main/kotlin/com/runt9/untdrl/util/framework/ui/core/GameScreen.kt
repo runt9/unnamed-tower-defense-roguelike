@@ -10,6 +10,8 @@ abstract class GameScreen(worldWidth: Float, worldHeight: Float) : UiScreen() {
 
     override fun show() {
         input.addProcessor(gameStage)
+        // TODO: Need to implement our own version of this
+//        input.addProcessor(CameraInputController(gameStage.camera))
         gameController.load()
         gameStage.setView(gameController.view)
         super.show()

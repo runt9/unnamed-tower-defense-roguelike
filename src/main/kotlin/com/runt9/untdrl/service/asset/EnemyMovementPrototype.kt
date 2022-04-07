@@ -106,5 +106,4 @@ class EnemyMovementPrototype {
         rotation += angularVelocity.radDeg * time
         angularVelocity += steeringOutput.angular * time
     }
-
 }

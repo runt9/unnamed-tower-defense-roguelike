@@ -21,6 +21,7 @@ class DuringRunScreen(
 
     override fun show() {
         eventBus.registerHandlers(this)
+
         super.show()
     }
 
@@ -30,6 +31,7 @@ class DuringRunScreen(
             unitMovementPrototype.tick(delta)
             towerAttackPrototype.tick(delta)
         }
+
         super.render(delta)
     }
 
