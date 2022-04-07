@@ -8,5 +8,5 @@ class EnemyViewModel(val id: Int, val name: String, val texture: Texture, initia
     val position = Binding(initialPosition)
     val rotation = Binding(initialRotation)
 
-    override fun toString() = "Unit($id | $name)"
+    override fun toString() = "Enemy($id | $name)"
 }

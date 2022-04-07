@@ -6,6 +6,8 @@ import com.badlogic.gdx.ai.GdxAI
 import com.runt9.untdrl.UnTdRlGame
 import com.runt9.untdrl.service.asset.AssetLoader
 import com.runt9.untdrl.service.asset.SkinLoader
+import com.runt9.untdrl.service.asset.TowerAttackPrototype
+import com.runt9.untdrl.service.asset.EnemyMovementPrototype
 import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.util.framework.ui.DialogManager
 import com.runt9.untdrl.view.duringRun.DuringRunScreen
@@ -45,6 +47,8 @@ object Injector : Context() {
     fun initRunningDeps() = register {
         bindSingleton(InputMultiplexer())
         bindSingleton(GdxAI.getTimepiece())
+        bindSingleton<EnemyMovementPrototype>()
+        bindSingleton<TowerAttackPrototype>()
 
         bindSingleton<DialogManager>()
         bindSingleton<LoadingScreenController>()
