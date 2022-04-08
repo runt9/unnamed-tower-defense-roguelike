@@ -2,6 +2,7 @@ package com.runt9.untdrl.view.duringRun.game
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
+import com.runt9.untdrl.service.ChunkGeneratorPrototype
 import com.runt9.untdrl.util.ext.ui.rectPixmapTexture
 import com.runt9.untdrl.util.ext.ui.toDrawable
 import com.runt9.untdrl.util.ext.unTdRlLogger
@@ -16,7 +17,11 @@ import ktx.scene2d.table
 import ktx.scene2d.vis.floatingGroup
 import ktx.scene2d.vis.visTable
 
-class DuringRunGameView(override val controller: DuringRunGameController, override val vm: DuringRunGameViewModel) : TableView(controller, vm) {
+class DuringRunGameView(
+    override val controller: DuringRunGameController,
+    override val vm: DuringRunGameViewModel,
+    private val chunkGeneratorPrototype: ChunkGeneratorPrototype
+) : TableView(controller, vm) {
     private val logger = unTdRlLogger()
 
     private val path = listOf(
@@ -45,16 +50,20 @@ class DuringRunGameView(override val controller: DuringRunGameController, overri
 
         floatingGroup {
             visTable {
-                repeat(CHUNK_SIZE.toInt()) { h ->
-                    repeat(CHUNK_SIZE.toInt()) { w ->
-                        val color = if (this@DuringRunGameView.path.contains(Vector2(w.toFloat(), CHUNK_SIZE - 1f - h.toFloat()))) Color.WHITE else Color.DARK_GRAY
+                this@DuringRunGameView.chunkGeneratorPrototype.generateGrid().reversedArray().forEach { row ->
+                    row.forEach { col ->
+                        val color = when (col) {
+                            1 -> Color.WHITE
+                            2 -> Color.GREEN
+                            else -> Color.DARK_GRAY
+                        }
                         table {
                             background(rectPixmapTexture(1, 1, color).toDrawable())
                         }.cell(grow = true)
                     }
-
                     row()
                 }
+
                 setSize(CHUNK_SIZE, CHUNK_SIZE)
             }
 
@@ -79,5 +88,7 @@ class DuringRunGameView(override val controller: DuringRunGameController, overri
                 vm.projectiles.get().forEach { projectile -> projectile(projectile) { controller.addChild(this.controller) } }
             }
         }.cell(row = true, grow = true)
+
+        debugAll()
     }
 }

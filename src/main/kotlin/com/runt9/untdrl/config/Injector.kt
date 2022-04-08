@@ -4,10 +4,11 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.InputMultiplexer
 import com.badlogic.gdx.ai.GdxAI
 import com.runt9.untdrl.UnTdRlGame
+import com.runt9.untdrl.service.ChunkGeneratorPrototype
 import com.runt9.untdrl.service.asset.AssetLoader
+import com.runt9.untdrl.service.asset.EnemyMovementPrototype
 import com.runt9.untdrl.service.asset.SkinLoader
 import com.runt9.untdrl.service.asset.TowerAttackPrototype
-import com.runt9.untdrl.service.asset.EnemyMovementPrototype
 import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.util.framework.ui.DialogManager
 import com.runt9.untdrl.view.duringRun.DuringRunScreen
@@ -49,6 +50,7 @@ object Injector : Context() {
         bindSingleton(GdxAI.getTimepiece())
         bindSingleton<EnemyMovementPrototype>()
         bindSingleton<TowerAttackPrototype>()
+        bindSingleton<ChunkGeneratorPrototype>()
 
         bindSingleton<DialogManager>()
         bindSingleton<LoadingScreenController>()

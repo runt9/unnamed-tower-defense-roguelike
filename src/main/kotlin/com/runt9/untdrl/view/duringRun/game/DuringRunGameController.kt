@@ -3,6 +3,7 @@ package com.runt9.untdrl.view.duringRun.game
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Disposable
 import com.runt9.untdrl.model.UnitTexture
+import com.runt9.untdrl.service.ChunkGeneratorPrototype
 import com.runt9.untdrl.service.asset.EnemyMovementPrototype
 import com.runt9.untdrl.service.asset.TowerAttackPrototype
 import com.runt9.untdrl.util.ext.unTdRlLogger
@@ -19,17 +20,18 @@ class DuringRunGameController(
     private val eventBus: EventBus,
     private val assets: AssetStorage,
     private val unitMovementPrototype: EnemyMovementPrototype,
-    private val towerAttackPrototype: TowerAttackPrototype
+    private val towerAttackPrototype: TowerAttackPrototype,
+    private val chunkGeneratorPrototype: ChunkGeneratorPrototype
 ) : Controller {
     private val logger = unTdRlLogger()
     override val vm = DuringRunGameViewModel()
-    override val view = DuringRunGameView(this, vm)
+    override val view = DuringRunGameView(this, vm, chunkGeneratorPrototype)
     private val children = mutableListOf<Controller>()
 
     override fun load() {
         eventBus.registerHandlers(this)
-        addNewEnemy()
-        addNewTower()
+//        addNewEnemy()
+//        addNewTower()
 
         towerAttackPrototype.onProj {
             val proj = ProjectileViewModel(1, "testProjectile", assets[UnitTexture.ENEMY.assetFile], position.cpy(), rotation)

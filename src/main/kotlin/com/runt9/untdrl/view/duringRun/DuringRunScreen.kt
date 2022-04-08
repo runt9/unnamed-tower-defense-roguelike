@@ -28,8 +28,8 @@ class DuringRunScreen(
     override fun render(delta: Float) {
         if (isRunning && !isPaused) {
             aiTimepiece.update(delta)
-            unitMovementPrototype.tick(delta)
-            towerAttackPrototype.tick(delta)
+//            unitMovementPrototype.tick(delta)
+//            towerAttackPrototype.tick(delta)
         }
 
         super.render(delta)
