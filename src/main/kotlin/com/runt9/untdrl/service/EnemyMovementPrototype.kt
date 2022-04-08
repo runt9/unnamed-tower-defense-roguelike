@@ -26,36 +26,24 @@ class Enemy(val initialPosition: Vector2, val initialRotation: Float) : Steerabl
     private var tagged = true
 
     val path = gdxArrayOf(
-        Vector2(0f, 1f),
-        Vector2(1f, 1f),
-        Vector2(2f, 1f),
-        Vector2(3f, 1f),
-        Vector2(4f, 1f),
-        Vector2(4f, 2f),
-        Vector2(4f, 3f),
-        Vector2(5f, 3f),
-        Vector2(6f, 3f),
-        Vector2(7f, 3f),
-        Vector2(8f, 3f),
-        Vector2(8f, 4f),
-        Vector2(9f, 4f),
-        Vector2(10f, 4f),
-        Vector2(11f, 4f),
-        Vector2(11f, 5f),
-        Vector2(11f, 6f),
-        Vector2(11f, 7f),
-        Vector2(12f, 7f),
-        Vector2(13f, 7f),
-        Vector2(14f, 7f),
-        Vector2(15f, 7f),
+        Vector2(0.25f, 1.25f),
+        Vector2(0.25f, 2.25f),
+        Vector2(0.25f, 3.25f),
+        Vector2(1.25f, 3.25f),
+        Vector2(2.25f, 3.25f),
+        Vector2(3.25f, 3.25f),
+        Vector2(4.25f, 3.25f),
+        Vector2(4.25f, 4.25f),
+        Vector2(5.25f, 4.25f),
+        Vector2(6.25f, 4.25f),
+        Vector2(7.25f, 4.25f),
+        Vector2(7.25f, 5.25f),
+        Vector2(7.25f, 6.25f),
+        Vector2(7.25f, 7.25f),
     )
 
     val fullPath = LinePath(path, true)
-    val followPathBehavior = FollowPath(this, fullPath, 0.1f).apply {
-        timeToTarget = 0.1f
-        arrivalTolerance = 0.001f
-        decelerationRadius = 90f.degRad
-    }
+    val followPathBehavior = FollowPath(this, fullPath, 0.1f)
     val lookBehavior = LookWhereYouAreGoing(this).apply {
         timeToTarget = 0.1f
         alignTolerance = 1f.degRad
@@ -84,7 +72,7 @@ class Enemy(val initialPosition: Vector2, val initialRotation: Float) : Steerabl
 }
 
 class EnemyMovementPrototype {
-    val enemy = Enemy(Vector2(0f, 0f), 0f)
+    val enemy = Enemy(Vector2(0.25f, 0.75f), 0f)
     lateinit var onMoveCb: Enemy.() -> Unit
 
     fun onMove(callback: Enemy.() -> Unit) {

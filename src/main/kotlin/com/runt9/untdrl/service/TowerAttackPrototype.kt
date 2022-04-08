@@ -97,7 +97,7 @@ class Projectile(val initialPosition: Vector2, val initialRotation: Float, val t
 
 class TowerAttackPrototype {
     private val logger = unTdRlLogger()
-    val tower = Tower(Vector2(10f, 5f), 0f)
+    val tower = Tower(Vector2(6.125f, 5.125f), 0f)
     private lateinit var onMoveCb: Tower.() -> Unit
     private lateinit var onProjCb: Projectile.() -> Unit
     private lateinit var onProjMoveCb: Projectile.() -> Unit
