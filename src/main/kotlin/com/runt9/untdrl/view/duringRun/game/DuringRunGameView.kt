@@ -50,11 +50,12 @@ class DuringRunGameView(
 
         floatingGroup {
             visTable {
-                this@DuringRunGameView.chunkGeneratorPrototype.generateGrid().reversedArray().forEach { row ->
+                this@DuringRunGameView.chunkGeneratorPrototype.buildHomeChunk().reversedArray().forEach { row ->
                     row.forEach { col ->
                         val color = when (col) {
                             1 -> Color.WHITE
                             2 -> Color.GREEN
+                            3 -> Color.RED
                             else -> Color.DARK_GRAY
                         }
                         table {

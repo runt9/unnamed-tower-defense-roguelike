@@ -2,18 +2,33 @@ package com.runt9.untdrl.service
 
 import com.badlogic.gdx.math.Vector2
 import com.runt9.untdrl.util.ext.unTdRlLogger
+import com.runt9.untdrl.view.duringRun.CHUNK_SIZE
 
 class ChunkGeneratorPrototype {
     private val logger = unTdRlLogger()
 
+    fun buildHomeChunk(): Array<IntArray> {
+        val grid = Array(CHUNK_SIZE) { IntArray(CHUNK_SIZE) }
+
+        val midPoint = ((CHUNK_SIZE - 1) / 2)
+        grid[midPoint][midPoint] = 2
+
+        (0 until CHUNK_SIZE).filter { it != midPoint }.forEach {
+            grid[midPoint][it] = 1
+            grid[it][midPoint] = 1
+        }
+
+        return grid
+    }
+
     fun generateGrid(): Array<IntArray> {
-        val grid = Array(8) { IntArray(8) }
+        val grid = Array(CHUNK_SIZE) { IntArray(CHUNK_SIZE) }
         val visited = mutableListOf<Vector2>()
 
-        val randomRow = (2..5).random()
-        val randomCol = (2..5).random()
+        val randomRow = (2..CHUNK_SIZE - 3).random()
+        val randomCol = (2..CHUNK_SIZE - 3).random()
 
-        grid[randomRow][randomCol] = 2
+        grid[randomRow][randomCol] = 3
         visited += Vector2(randomCol.toFloat(), randomRow.toFloat())
 
         logger.info { "Spawner at ${visited[0]}" }
@@ -88,7 +103,7 @@ class ChunkGeneratorPrototype {
             Vector2(x, y + 1)
         )
 
-    val Vector2.isEdgeNode get() = x == 0f || x == 7f || y == 0f || y == 7f
+    val Vector2.isEdgeNode get() = x == 0f || x == CHUNK_SIZE - 1f || y == 0f || y == CHUNK_SIZE - 1f
 
     fun Vector2.getNextValidAdjacents(visited: List<Vector2>, firstNode: Boolean): List<Vector2> {
         val self = this
