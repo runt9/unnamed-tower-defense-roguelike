@@ -7,6 +7,7 @@ import com.badlogic.gdx.ai.steer.behaviors.FollowPath
 import com.badlogic.gdx.ai.steer.behaviors.LookWhereYouAreGoing
 import com.badlogic.gdx.ai.steer.utils.paths.LinePath
 import com.badlogic.gdx.math.Vector2
+import com.runt9.untdrl.model.path.IndexedGridGraph
 import com.runt9.untdrl.util.ext.degRad
 import com.runt9.untdrl.util.ext.radDeg
 import com.runt9.untdrl.util.ext.toAngle
@@ -93,5 +94,8 @@ class EnemyMovementPrototype {
         linearVelocity.mulAdd(steeringOutput.linear, time).limit(maxLinearSpeed)
         rotation += angularVelocity.radDeg * time
         angularVelocity += steeringOutput.angular * time
+    }
+
+    fun findPath(spawner: Vector2, grid: IndexedGridGraph) {
     }
 }

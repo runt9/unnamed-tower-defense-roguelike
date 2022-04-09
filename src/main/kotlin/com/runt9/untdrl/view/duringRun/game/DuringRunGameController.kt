@@ -4,7 +4,9 @@ import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Disposable
 import com.runt9.untdrl.model.Chunk
 import com.runt9.untdrl.model.UnitTexture
+import com.runt9.untdrl.model.event.ChunkPlacedEvent
 import com.runt9.untdrl.model.event.NewChunkEvent
+import com.runt9.untdrl.model.path.IndexedGridGraph
 import com.runt9.untdrl.service.ChunkGeneratorPrototype
 import com.runt9.untdrl.service.asset.EnemyMovementPrototype
 import com.runt9.untdrl.service.asset.TowerAttackPrototype
@@ -30,6 +32,7 @@ class DuringRunGameController(
     override val vm = DuringRunGameViewModel()
     override val view = DuringRunGameView(this, vm, chunkGeneratorPrototype)
     private val children = mutableListOf<Controller>()
+    val grid = IndexedGridGraph()
 
     override fun load() {
         eventBus.registerHandlers(this)
@@ -54,8 +57,10 @@ class DuringRunGameController(
     }
 
     private fun addHomeChunk() {
-        val chunk = ChunkViewModel(Chunk(chunkGeneratorPrototype.buildHomeChunk(), true))
-        vm.chunks += chunk
+        val chunk = Chunk(chunkGeneratorPrototype.buildHomeChunk(), true, Vector2(7f, 4f))
+        val chunkVm = ChunkViewModel(chunk)
+        grid.addChunk(chunk)
+        vm.chunks += chunkVm
     }
 
     private fun addNewEnemy() {
@@ -86,6 +91,13 @@ class DuringRunGameController(
     suspend fun handleNewChunk() = onRenderingThread {
         val chunk = chunkGeneratorPrototype.generateGrid()
         vm.chunks += ChunkViewModel(Chunk(chunk))
+    }
+
+    @HandlesEvent(ChunkPlacedEvent::class)
+    suspend fun chunkPlaced(event: ChunkPlacedEvent) = onRenderingThread {
+        val chunk = event.chunk
+        grid.addChunk(chunk)
+        grid.generateSpawnerPaths()
     }
 
     override fun dispose() {

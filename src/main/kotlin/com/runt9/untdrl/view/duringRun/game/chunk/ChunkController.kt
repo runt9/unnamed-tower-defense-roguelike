@@ -7,7 +7,8 @@ import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.Vector3
 import com.runt9.untdrl.config.lazyInject
-import com.runt9.untdrl.util.ext.unTdRlLogger
+import com.runt9.untdrl.model.Chunk
+import com.runt9.untdrl.model.event.ChunkPlacedEvent
 import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.util.framework.ui.controller.Controller
 import com.runt9.untdrl.util.framework.ui.uiComponent
@@ -25,8 +26,8 @@ fun <S> KWidget<S>.chunk(chunk: ChunkViewModel, init: ChunkView.(S) -> Unit = {}
 class ChunkController(private val eventBus: EventBus) : Controller {
     override lateinit var vm: ChunkViewModel
     override val view by lazy { ChunkView(this, vm) }
-    val input by lazyInject<InputMultiplexer>()
-    val camera by lazyInject<OrthographicCamera>()
+    private val input by lazyInject<InputMultiplexer>()
+    private val camera by lazyInject<OrthographicCamera>()
 
     override fun load() {
         eventBus.registerHandlers(this)
@@ -37,24 +38,30 @@ class ChunkController(private val eventBus: EventBus) : Controller {
         super.dispose()
     }
 
+    // TODO: Rotation breaks pathfinding. Need to rework grid after rotation
     fun initChunkMover() {
         if (!vm.isPlaced.get()) {
-            input.addProcessor(ChunkInputMover(vm, camera) { input.removeProcessor(this) })
+            input.addProcessor(ChunkInputMover(vm.chunk, camera, {
+                vm.position(position)
+                vm.rotation(rotation)
+            }) {
+                vm.isPlaced(true)
+                input.removeProcessor(this)
+                eventBus.enqueueEventSync(ChunkPlacedEvent(vm.chunk))
+            })
         }
     }
 }
 
-class ChunkInputMover(private val chunk: ChunkViewModel, private val camera: OrthographicCamera, private val onComplete: ChunkInputMover.() -> Unit) : KtxInputAdapter {
-    private val logger = unTdRlLogger()
-
+class ChunkInputMover(private val chunk: Chunk, private val camera: OrthographicCamera, private val chunkMoved: Chunk.() -> Unit, private val onComplete: ChunkInputMover.() -> Unit) : KtxInputAdapter {
     override fun mouseMoved(screenX: Int, screenY: Int): Boolean {
         val cameraVector = camera.unproject(Vector3(screenX.toFloat(), screenY.toFloat(), 0f))
         val worldX = cameraVector.x.roundToInt()
         val worldY = cameraVector.y.roundToInt()
 
-        if (worldX != chunk.position.get().x.roundToInt() || worldY != chunk.position.get().y.roundToInt()) {
-            logger.info { "Mouse moved to $worldX, $worldY" }
-            chunk.position(Vector2(worldX.toFloat(), worldY.toFloat()))
+        if (worldX != chunk.position.x.roundToInt() || worldY != chunk.position.y.roundToInt()) {
+            chunk.position = Vector2(worldX.toFloat(), worldY.toFloat())
+            chunk.chunkMoved()
             return false
         }
 
@@ -64,7 +71,6 @@ class ChunkInputMover(private val chunk: ChunkViewModel, private val camera: Ort
     override fun touchDown(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
         // TODO: Validate
         if (button == Buttons.LEFT) {
-            chunk.isPlaced(true)
             onComplete(this)
             return false
         }
@@ -74,9 +80,10 @@ class ChunkInputMover(private val chunk: ChunkViewModel, private val camera: Ort
 
     override fun keyUp(keycode: Int): Boolean {
         when (keycode) {
-            Input.Keys.Q -> chunk.rotation(chunk.rotation.get() - 90f)
-            Input.Keys.E -> chunk.rotation(chunk.rotation.get() + 90f)
+            Input.Keys.Q -> chunk.rotation -= 90f
+            Input.Keys.E -> chunk.rotation += 90f
         }
+        chunk.chunkMoved()
         return false
     }
 }
