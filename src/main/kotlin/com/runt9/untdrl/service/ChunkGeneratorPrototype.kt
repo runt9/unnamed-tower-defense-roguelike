@@ -3,13 +3,6 @@ package com.runt9.untdrl.service
 import com.badlogic.gdx.math.Vector2
 import com.runt9.untdrl.util.ext.unTdRlLogger
 
-// TODO: Thoughts:
-//   - The first node after the spawn _must_ branch
-//   - Branching chance goes down the more branches that have happened
-//   - Paths should favor going forward over curving
-//   - Paths should not be able to get "stuck" and loop back into themselves
-//   - Paths should generally seek the edges
-//   - The first two nodes after a spawner cannot be an edge node
 class ChunkGeneratorPrototype {
     private val logger = unTdRlLogger()
 
@@ -17,41 +10,100 @@ class ChunkGeneratorPrototype {
         val grid = Array(8) { IntArray(8) }
         val visited = mutableListOf<Vector2>()
 
-        val randomRow = (1..6).random()
-        val randomCol = (1..6).random()
+        val randomRow = (2..5).random()
+        val randomCol = (2..5).random()
 
         grid[randomRow][randomCol] = 2
         visited += Vector2(randomCol.toFloat(), randomRow.toFloat())
 
-        var previousNode = visited[0].cpy()
-        logger.info { "Starting at $previousNode" }
+        logger.info { "Spawner at ${visited[0]}" }
 
-        while (true) {
-            if (previousNode.x == 0f || previousNode.x == 7f || previousNode.y == 0f || previousNode.y == 7f) {
-                break
-            }
+        val firstStep = getFirstStep(visited[0])
+        grid[firstStep.y.toInt()][firstStep.x.toInt()] = 1
+        visited.add(firstStep)
 
-            val adjacentNodes = listOf(
-                Vector2(previousNode.x - 1, previousNode.y),
-                Vector2(previousNode.x + 1, previousNode.y),
-                Vector2(previousNode.x, previousNode.y - 1),
-                Vector2(previousNode.x, previousNode.y + 1)
-            ).subtract(visited.toSet())
+        logger.info { "First step $firstStep" }
 
-            if (adjacentNodes.isEmpty()) {
-                break
-            }
-
-            // TODO: Attempt to weight forward direction more than turning
-            val nextNode = adjacentNodes.random()
-            logger.info { "Next node: $nextNode" }
-            grid[nextNode.y.toInt()][nextNode.x.toInt()] = 1
-            previousNode = nextNode.cpy()
-            visited += previousNode.cpy()
-        }
+        buildBranch(firstStep, visited, grid)
+        buildBranch(firstStep, visited, grid)
+        buildBranch(firstStep, visited, grid)
 
         logger.info { "Final Path: $visited" }
 
         return grid
+    }
+
+    private fun getFirstStep(node: Vector2): Vector2 {
+        return node.adjacentNodes.filter { adjNode -> !adjNode.isEdgeNode && adjNode.adjacentNodes.none { it.isEdgeNode } }.random()
+    }
+
+    fun buildBranch(startingNode: Vector2, visited: MutableList<Vector2>, grid: Array<IntArray>) {
+        var previousNode = startingNode.cpy()
+        logger.info { "Branching from $previousNode" }
+
+        var firstNode = true
+        val validBranch: Boolean
+        val branch = mutableListOf<Vector2>()
+
+        while (true) {
+            if (previousNode.isEdgeNode) {
+                logger.info { "$previousNode is edge node, branch complete" }
+                validBranch = true
+                break
+            }
+
+            val adjacentNodes = previousNode.getNextValidAdjacents(visited + branch, firstNode)
+
+            if (adjacentNodes.isEmpty()) {
+                logger.info { "$previousNode has no valid adjacent node, branch complete" }
+                validBranch = false
+                break
+            }
+
+            val nextNode = adjacentNodes.random()
+            logger.info { "Next node: $nextNode" }
+            previousNode = nextNode.cpy()
+            branch += previousNode
+            firstNode = false
+        }
+
+        if (validBranch) {
+            logger.info { "Valid branch created: $branch" }
+            visited += branch
+            branch.forEach { node ->
+                grid[node.y.toInt()][node.x.toInt()] = 1
+
+                while ((1..10).random() >= 5 && !node.isEdgeNode && node.adjacentNodes.none { it.isEdgeNode } && node.getNextValidAdjacents(visited, true).isNotEmpty()) {
+                    buildBranch(node, visited, grid)
+                }
+            }
+        }
+    }
+
+    val Vector2.adjacentNodes
+        get() = listOf(
+            Vector2(x - 1, y),
+            Vector2(x + 1, y),
+            Vector2(x, y - 1),
+            Vector2(x, y + 1)
+        )
+
+    val Vector2.isEdgeNode get() = x == 0f || x == 7f || y == 0f || y == 7f
+
+    fun Vector2.getNextValidAdjacents(visited: List<Vector2>, firstNode: Boolean): List<Vector2> {
+        val self = this
+
+        return adjacentNodes.filter { node2 ->
+            // Next node cannot be previously visited
+            if (visited.contains(node2)) {
+                return@filter false
+            }
+
+            // Get intersection between the next node's adjacent nodes and where we've already been, excluding
+            // the node we're pathing from. We cannot go to a node that is adjacent to a previously visited node
+            val intersect = node2.adjacentNodes.intersect(visited.toSet()).filter { it != self }
+
+            return@filter intersect.isEmpty() && (!firstNode || !node2.isEdgeNode)
+        }
     }
 }
