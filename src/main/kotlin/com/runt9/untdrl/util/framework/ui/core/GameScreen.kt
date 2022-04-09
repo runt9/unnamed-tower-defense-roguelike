@@ -5,6 +5,7 @@ import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.viewport.FitViewport
+import com.runt9.untdrl.config.Injector
 import com.runt9.untdrl.util.framework.ui.controller.Controller
 import ktx.app.KtxInputAdapter
 
@@ -16,6 +17,7 @@ abstract class GameScreen(worldWidth: Float, worldHeight: Float) : UiScreen() {
     abstract val gameController: Controller
 
     override fun show() {
+        Injector.bindSingleton(camera)
         input.addProcessor(gameStage)
         input.addProcessor(cameraController)
         gameController.load()
@@ -26,6 +28,8 @@ abstract class GameScreen(worldWidth: Float, worldHeight: Float) : UiScreen() {
     override fun hide() {
         super.hide()
         input.removeProcessor(gameStage)
+        input.removeProcessor(cameraController)
+        Injector.remove<OrthographicCamera>()
         gameController.dispose()
     }
 
