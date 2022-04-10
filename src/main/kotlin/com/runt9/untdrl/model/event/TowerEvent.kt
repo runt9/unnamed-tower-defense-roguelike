@@ -6,3 +6,4 @@ import com.runt9.untdrl.util.framework.event.Event
 
 class NewTowerEvent(val towerDefinition: TowerDefinition) : Event
 class TowerPlacedEvent(val tower: Tower) : Event
+class TowerCancelledEvent(val tower: Tower) : Event

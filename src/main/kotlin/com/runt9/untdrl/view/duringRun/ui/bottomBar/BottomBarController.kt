@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Texture
 import com.runt9.untdrl.model.UnitTexture
 import com.runt9.untdrl.model.event.NewTowerEvent
 import com.runt9.untdrl.model.event.RunStateUpdated
+import com.runt9.untdrl.model.event.TowerCancelledEvent
 import com.runt9.untdrl.model.event.TowerPlacedEvent
 import com.runt9.untdrl.model.tower.definition.TowerDefinition
 import com.runt9.untdrl.service.duringRun.RunStateService
@@ -50,6 +51,11 @@ class BottomBarController(private val runStateService: RunStateService, private 
 
     @HandlesEvent(TowerPlacedEvent::class)
     suspend fun towerPlaced() = onRenderingThread {
+        vm.canInteract(true)
+    }
+
+    @HandlesEvent(TowerCancelledEvent::class)
+    suspend fun towerCancelled() = onRenderingThread {
         vm.canInteract(true)
     }
 }

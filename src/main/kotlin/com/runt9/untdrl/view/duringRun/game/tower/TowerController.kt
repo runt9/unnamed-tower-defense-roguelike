@@ -6,8 +6,9 @@ import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.Vector3
 import com.runt9.untdrl.config.lazyInject
-import com.runt9.untdrl.model.tower.Tower
+import com.runt9.untdrl.model.event.TowerCancelledEvent
 import com.runt9.untdrl.model.event.TowerPlacedEvent
+import com.runt9.untdrl.model.tower.Tower
 import com.runt9.untdrl.service.duringRun.IndexedGridGraph
 import com.runt9.untdrl.service.duringRun.TowerService
 import com.runt9.untdrl.util.framework.event.EventBus
@@ -44,7 +45,7 @@ class TowerController(private val eventBus: EventBus, private val towerPrototype
             input.addProcessor(TowerInputMover(vm.tower, camera, {
                 vm.isValidPlacement(isValidTowerPlacement(vm.tower))
                 vm.position(position.cpy())
-            }) {
+            }, {
                 if (!isValidTowerPlacement(vm.tower)) {
                     return@TowerInputMover false
                 }
@@ -53,6 +54,9 @@ class TowerController(private val eventBus: EventBus, private val towerPrototype
                 input.removeProcessor(this)
                 eventBus.enqueueEventSync(TowerPlacedEvent(vm.tower))
                 return@TowerInputMover true
+            }) {
+                input.removeProcessor(this)
+                eventBus.enqueueEventSync(TowerCancelledEvent(vm.tower))
             })
         }
     }
@@ -60,7 +64,13 @@ class TowerController(private val eventBus: EventBus, private val towerPrototype
     private fun isValidTowerPlacement(tower: Tower) = towerPrototype.isNoTowerPositionOverlap(tower) && grid.isEmptyTile(tower.position)
 }
 
-class TowerInputMover(private val tower: Tower, private val camera: OrthographicCamera, private val towerMoved: Tower.() -> Unit, private val onComplete: TowerInputMover.() -> Boolean) :
+class TowerInputMover(
+    private val tower: Tower,
+    private val camera: OrthographicCamera,
+    private val towerMoved: Tower.() -> Unit,
+    private val onClick: TowerInputMover.() -> Boolean,
+    private val onCancel: TowerInputMover.() -> Unit
+) :
     KtxInputAdapter {
     override fun mouseMoved(screenX: Int, screenY: Int): Boolean {
         val cameraVector = camera.unproject(Vector3(screenX.toFloat(), screenY.toFloat(), 0f))
@@ -76,7 +86,15 @@ class TowerInputMover(private val tower: Tower, private val camera: Orthographic
     }
 
     override fun touchDown(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
-        return if (button == Input.Buttons.LEFT) onComplete(this) else super.touchDown(screenX, screenY, pointer, button)
+        if (button == Input.Buttons.LEFT) {
+            return onClick(this)
+        }
 
+        if (button == Input.Buttons.RIGHT) {
+            onCancel()
+            return false
+        }
+
+        return super.touchDown(screenX, screenY, pointer, button)
     }
 }

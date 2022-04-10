@@ -47,7 +47,8 @@ class DuringRunUiController(private val eventBus: EventBus, private val runState
         // TODO: This is where rewards are shown? Not sure the best spot
         vm.actionsVisible(true)
 
-        if (runStateService.load().wave % 4 == 0) {
+        val wave = runStateService.load().wave
+        if (wave == 1 || wave % 4 == 0) {
             vm.chunkPlacementRequired(true)
         }
     }

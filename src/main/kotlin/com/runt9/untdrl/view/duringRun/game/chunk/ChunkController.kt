@@ -63,6 +63,7 @@ class ChunkController(private val eventBus: EventBus, private val grid: IndexedG
     }
 }
 
+// TODO: Join with tower mover
 class ChunkInputMover(
     private val chunk: Chunk,
     private val camera: OrthographicCamera,

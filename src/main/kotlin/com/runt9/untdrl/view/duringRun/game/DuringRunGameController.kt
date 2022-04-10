@@ -9,13 +9,11 @@ import com.runt9.untdrl.model.event.EnemyRemovedEvent
 import com.runt9.untdrl.model.event.EnemySpawnedEvent
 import com.runt9.untdrl.model.event.NewChunkEvent
 import com.runt9.untdrl.model.event.NewTowerEvent
-import com.runt9.untdrl.model.event.TowerPlacedEvent
+import com.runt9.untdrl.model.event.PrepareNextWaveEvent
+import com.runt9.untdrl.model.event.TowerCancelledEvent
 import com.runt9.untdrl.model.tower.Projectile
 import com.runt9.untdrl.model.tower.Tower
 import com.runt9.untdrl.service.ChunkGenerator
-import com.runt9.untdrl.service.duringRun.EnemyService
-import com.runt9.untdrl.service.duringRun.IndexedGridGraph
-import com.runt9.untdrl.service.duringRun.TowerService
 import com.runt9.untdrl.util.ext.unTdRlLogger
 import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.util.framework.event.HandlesEvent
@@ -31,20 +29,18 @@ import ktx.async.onRenderingThread
 class DuringRunGameController(
     private val eventBus: EventBus,
     private val assets: AssetStorage,
-    private val enemyService: EnemyService,
-    private val towerService: TowerService,
-    private val chunkGenerator: ChunkGenerator,
-    private val grid: IndexedGridGraph
+    private val chunkGenerator: ChunkGenerator
 ) : Controller {
     private val logger = unTdRlLogger()
     override val vm = DuringRunGameViewModel()
-    override val view = DuringRunGameView(this, vm, chunkGenerator)
+    override val view = DuringRunGameView(this, vm)
     private val children = mutableListOf<Controller>()
     private var nextChunk: Chunk? = null
 
     override fun load() {
         eventBus.registerHandlers(this)
         addHomeChunk()
+        eventBus.enqueueEventSync(PrepareNextWaveEvent())
     }
 
     private fun addHomeChunk() {
@@ -52,8 +48,8 @@ class DuringRunGameController(
         val chunkVm = ChunkViewModel(chunk)
         chunkVm.isPlaced(true)
         chunkVm.isValidPlacement(true)
-        grid.addChunk(chunk)
         vm.chunks += chunkVm
+        eventBus.enqueueEventSync(ChunkPlacedEvent(chunk))
     }
 
     @HandlesEvent(NewChunkEvent::class)
@@ -71,9 +67,14 @@ class DuringRunGameController(
         val tower = Tower(texture = assets[towerDef.texture.assetFile], projTexture = assets[towerDef.projectileTexture.assetFile])
 
         val towerVm = TowerViewModel(tower)
-        tower.onRotate { towerVm.rotation(rotation) }
+        tower.onMove { towerVm.rotation(rotation) }
         tower.onProj { spawnProjectile(this) }
         vm.towers += towerVm
+    }
+
+    @HandlesEvent
+    suspend fun towerCancelled(event: TowerCancelledEvent) = onRenderingThread {
+        vm.towers.removeIf { it.tower == event.tower }
     }
 
     @HandlesEvent
@@ -92,11 +93,6 @@ class DuringRunGameController(
     @HandlesEvent
     suspend fun handleEnemyRemoved(event: EnemyRemovedEvent) = onRenderingThread {
         vm.enemies.removeIf { it.enemy == event.enemy }
-    }
-
-    @HandlesEvent
-    suspend fun towerPlaced(event: TowerPlacedEvent) = onRenderingThread {
-        towerService.add(event.tower)
     }
 
     private fun spawnProjectile(projectile: Projectile) {
@@ -121,8 +117,6 @@ class DuringRunGameController(
 
     @HandlesEvent
     suspend fun chunkPlaced(event: ChunkPlacedEvent) = onRenderingThread {
-        val chunk = event.chunk
-        grid.addChunk(chunk)
         nextChunk = null
     }
 

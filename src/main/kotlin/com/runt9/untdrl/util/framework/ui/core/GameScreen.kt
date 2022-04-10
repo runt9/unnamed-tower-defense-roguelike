@@ -55,15 +55,15 @@ class GameCameraController(private val camera: OrthographicCamera) : KtxInputAda
     var startX = 0f
     var startY = 0f
 
-    var translateUnits = 5f
+    var translateUnits = 8f
     var scrollFactor = 0.1f
 
     fun update(delta: Float) {
         if (leftPressed || rightPressed || forwardPressed || backwardPressed) {
-            if (forwardPressed) camera.translate(Vector2(0f, 1f).scl(delta * translateUnits))
-            if (backwardPressed) camera.translate(Vector2(0f, -1f).scl(delta * translateUnits))
-            if (leftPressed) camera.translate(Vector2(-1f, 0f).scl(delta * translateUnits))
-            if (rightPressed) camera.translate(Vector2(1f, 0f).scl(delta * translateUnits))
+            if (forwardPressed) camera.translate(Vector2(0f, 1f).scl(delta * translateUnits * camera.zoom))
+            if (backwardPressed) camera.translate(Vector2(0f, -1f).scl(delta * translateUnits * camera.zoom))
+            if (leftPressed) camera.translate(Vector2(-1f, 0f).scl(delta * translateUnits * camera.zoom))
+            if (rightPressed) camera.translate(Vector2(1f, 0f).scl(delta * translateUnits * camera.zoom))
             camera.update()
         }
     }
@@ -96,7 +96,7 @@ class GameCameraController(private val camera: OrthographicCamera) : KtxInputAda
 
     private fun process(deltaX: Float, deltaY: Float, button: Int): Boolean {
         if (button == translateButton) {
-            camera.translate(Vector2(-deltaX, -deltaY).scl(translateUnits))
+            camera.translate(Vector2(-deltaX, -deltaY).scl(translateUnits * camera.zoom))
             camera.update()
         }
         return true

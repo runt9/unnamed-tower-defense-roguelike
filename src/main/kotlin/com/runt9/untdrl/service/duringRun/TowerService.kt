@@ -2,16 +2,19 @@ package com.runt9.untdrl.service.duringRun
 
 import com.badlogic.gdx.ai.steer.SteeringAcceleration
 import com.badlogic.gdx.math.Vector2
+import com.runt9.untdrl.model.event.TowerPlacedEvent
 import com.runt9.untdrl.model.tower.Tower
 import com.runt9.untdrl.util.ext.unTdRlLogger
 import com.runt9.untdrl.util.framework.event.EventBus
+import com.runt9.untdrl.util.framework.event.HandlesEvent
 
 class TowerService(private val enemyService: EnemyService, private val projectileService: ProjectileService, eventBus: EventBus, registry: RunServiceRegistry) : RunService(eventBus, registry) {
     private val logger = unTdRlLogger()
     private val towers = mutableListOf<Tower>()
 
-    fun add(tower: Tower) {
-        towers += tower
+    @HandlesEvent
+    fun add(event: TowerPlacedEvent) = runOnServiceThread {
+        towers += event.tower
     }
 
     fun remove(tower: Tower) {

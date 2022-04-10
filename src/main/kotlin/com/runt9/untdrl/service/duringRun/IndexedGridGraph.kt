@@ -8,11 +8,13 @@ import com.badlogic.gdx.ai.pfa.indexed.IndexedGraph
 import com.badlogic.gdx.math.Vector2
 import com.runt9.untdrl.model.Chunk
 import com.runt9.untdrl.model.enemy.Spawner
+import com.runt9.untdrl.model.event.ChunkPlacedEvent
 import com.runt9.untdrl.model.event.SpawnerPlacedEvent
 import com.runt9.untdrl.model.path.GridNode
 import com.runt9.untdrl.model.path.GridNodeType
 import com.runt9.untdrl.util.ext.unTdRlLogger
 import com.runt9.untdrl.util.framework.event.EventBus
+import com.runt9.untdrl.util.framework.event.HandlesEvent
 import ktx.collections.GdxArray
 import ktx.collections.isNotEmpty
 import ktx.collections.toGdxArray
@@ -34,7 +36,9 @@ class IndexedGridGraph(private val eventBus: EventBus, registry: RunServiceRegis
 
     operator fun MutableMap<Vector2, GridNode>.get(x: Number, y: Number): GridNode? = get(Vector2(x.toFloat(), y.toFloat()))
 
-    fun addChunk(chunk: Chunk) {
+    @HandlesEvent
+    fun addChunk(event: ChunkPlacedEvent) {
+        val chunk = event.chunk
         val xOffset = chunk.position.x - 4
         val yOffset = chunk.position.y - 4
 
