@@ -1,8 +1,10 @@
 package com.runt9.untdrl.view.duringRun.ui
 
 import com.badlogic.gdx.utils.Disposable
+import com.runt9.untdrl.model.event.ChunkPlacedEvent
 import com.runt9.untdrl.model.event.NewChunkEvent
 import com.runt9.untdrl.util.framework.event.EventBus
+import com.runt9.untdrl.util.framework.event.HandlesEvent
 import com.runt9.untdrl.util.framework.ui.controller.Controller
 
 class DuringRunUiController(private val eventBus: EventBus) : Controller {
@@ -21,6 +23,12 @@ class DuringRunUiController(private val eventBus: EventBus) : Controller {
     }
 
     fun addChunk() {
+        vm.placingChunk(true)
         eventBus.enqueueEventSync(NewChunkEvent())
+    }
+
+    @HandlesEvent(ChunkPlacedEvent::class)
+    fun chunkPlaced() {
+        vm.placingChunk(false)
     }
 }

@@ -14,7 +14,6 @@ import com.runt9.untdrl.util.ext.unTdRlLogger
 import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.util.framework.event.HandlesEvent
 import com.runt9.untdrl.util.framework.ui.controller.Controller
-import com.runt9.untdrl.util.framework.ui.viewModel.plusAssign
 import com.runt9.untdrl.view.duringRun.game.chunk.ChunkViewModel
 import com.runt9.untdrl.view.duringRun.game.enemy.EnemyViewModel
 import com.runt9.untdrl.view.duringRun.game.tower.TowerViewModel

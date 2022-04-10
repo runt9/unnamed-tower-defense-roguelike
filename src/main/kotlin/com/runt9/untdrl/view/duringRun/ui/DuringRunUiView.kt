@@ -13,10 +13,14 @@ class DuringRunUiView(override val controller: DuringRunUiController, override v
         val vm = vm
 
         visTable {
-            textButton("Add Chunk") {
-                onChange {
-                    controller.addChunk()
-                    remove()
+            vm.placingChunk.bind {
+                clear()
+                if (!vm.placingChunk.get()) {
+                    textButton("Add Chunk") {
+                        onChange {
+                            controller.addChunk()
+                        }
+                    }
                 }
             }
         }.cell(grow = true, row = true)

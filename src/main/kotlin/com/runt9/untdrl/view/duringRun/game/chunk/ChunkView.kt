@@ -1,16 +1,21 @@
 package com.runt9.untdrl.view.duringRun.game.chunk
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.actions.Actions.rotateTo
 import com.badlogic.gdx.utils.Align
 import com.runt9.untdrl.util.ext.ui.bindUpdatable
 import com.runt9.untdrl.util.ext.ui.rectPixmapTexture
 import com.runt9.untdrl.util.ext.ui.toDrawable
+import com.runt9.untdrl.util.ext.unTdRlLogger
 import com.runt9.untdrl.util.framework.ui.view.GroupView
 import com.runt9.untdrl.view.duringRun.CHUNK_SIZE
+import ktx.actors.plusAssign
 import ktx.scene2d.table
 import ktx.scene2d.vis.visTable
 
 class ChunkView(override val controller: ChunkController, override val vm: ChunkViewModel) : GroupView(controller, vm) {
+    private val logger = unTdRlLogger()
+
     override fun init() {
         val vm = vm
 
@@ -41,7 +46,14 @@ class ChunkView(override val controller: ChunkController, override val vm: Chunk
         }
 
         bindUpdatable(vm.position) { vm.position.get().apply { setPosition(x, y, Align.center) } }
-        bindUpdatable(vm.rotation) { vm.rotation.get().apply { rotation = this } }
+        bindUpdatable(vm.rotation) {
+            vm.rotation.get().apply {
+                logger.info { "Rotating chunk from $rotation to $this" }
+                val rotateAction = rotateTo(this, 0.25f)
+                rotateAction.isUseShortestDirection = true
+                this@bindUpdatable += rotateAction
+            }
+        }
 
         debugAll()
     }

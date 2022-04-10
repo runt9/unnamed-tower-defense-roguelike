@@ -25,12 +25,13 @@ class DuringRunGameView(
         setSize(GAME_WIDTH, GAME_HEIGHT)
 
         floatingGroup {
-            vm.chunks.bind {
-                this@DuringRunGameView.logger.info { "Updating all chunks" }
-//                clear()
-//                controller.clearChildren()
-                vm.chunks.get().forEach { chunk -> chunk(chunk) { controller.addChild(this.controller) } }
+            vm.chunks.get().forEach { chunk -> chunk(chunk) { controller.addChild(this.controller) } }
+            vm.chunks.bindAdd { chunk ->
+                this@DuringRunGameView.logger.info { "Adding chunk" }
+                chunk(chunk) { controller.addChild(this.controller) }
             }
+            // TODO: Handle remove
+//            vm.chunks.bindRemove { chunk ->  }
 
             vm.enemies.bind {
                 this@DuringRunGameView.logger.info { "Updating all enemies" }

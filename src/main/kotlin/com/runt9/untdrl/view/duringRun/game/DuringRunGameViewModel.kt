@@ -7,8 +7,8 @@ import com.runt9.untdrl.view.duringRun.game.projectile.ProjectileViewModel
 import com.runt9.untdrl.view.duringRun.game.tower.TowerViewModel
 
 class DuringRunGameViewModel : ViewModel() {
-    val chunks = Binding(listOf<ChunkViewModel>())
-    val enemies = Binding(listOf<EnemyViewModel>())
-    val towers = Binding(listOf<TowerViewModel>())
-    val projectiles = Binding(listOf<ProjectileViewModel>())
+    val chunks = ListBinding<ChunkViewModel>()
+    val enemies = ListBinding<EnemyViewModel>()
+    val towers = ListBinding<TowerViewModel>()
+    val projectiles = ListBinding<ProjectileViewModel>()
 }

@@ -38,7 +38,6 @@ class ChunkController(private val eventBus: EventBus) : Controller {
         super.dispose()
     }
 
-    // TODO: Rotation breaks pathfinding. Need to rework grid after rotation
     fun initChunkMover() {
         if (!vm.isPlaced.get()) {
             input.addProcessor(ChunkInputMover(vm.chunk, camera, {
@@ -80,8 +79,8 @@ class ChunkInputMover(private val chunk: Chunk, private val camera: Orthographic
 
     override fun keyUp(keycode: Int): Boolean {
         when (keycode) {
-            Input.Keys.Q -> chunk.rotation -= 90f
-            Input.Keys.E -> chunk.rotation += 90f
+            Input.Keys.Q -> chunk.rotate(false)
+            Input.Keys.E -> chunk.rotate(true)
         }
         chunk.chunkMoved()
         return false
