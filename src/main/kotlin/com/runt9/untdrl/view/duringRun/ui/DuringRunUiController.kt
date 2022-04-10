@@ -1,16 +1,17 @@
 package com.runt9.untdrl.view.duringRun.ui
 
 import com.badlogic.gdx.utils.Disposable
+import com.runt9.untdrl.model.event.ChunkCancelledEvent
 import com.runt9.untdrl.model.event.ChunkPlacedEvent
 import com.runt9.untdrl.model.event.NewChunkEvent
-import com.runt9.untdrl.model.event.NewTowerEvent
-import com.runt9.untdrl.model.event.SpawnEnemiesEvent
-import com.runt9.untdrl.model.event.TowerPlacedEvent
+import com.runt9.untdrl.model.event.PrepareNextWaveEvent
+import com.runt9.untdrl.model.event.WaveStartedEvent
+import com.runt9.untdrl.service.duringRun.RunStateService
 import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.util.framework.event.HandlesEvent
 import com.runt9.untdrl.util.framework.ui.controller.Controller
 
-class DuringRunUiController(private val eventBus: EventBus) : Controller {
+class DuringRunUiController(private val eventBus: EventBus, private val runStateService: RunStateService) : Controller {
     override val vm = DuringRunUiViewModel()
     override val view = DuringRunUiView(this, vm)
     private val children = mutableListOf<Controller>()
@@ -26,28 +27,35 @@ class DuringRunUiController(private val eventBus: EventBus) : Controller {
     }
 
     fun addChunk() {
-        vm.placingChunk(true)
+        vm.actionsVisible(false)
         eventBus.enqueueEventSync(NewChunkEvent())
     }
 
     @HandlesEvent(ChunkPlacedEvent::class)
     fun chunkPlaced() {
-        vm.placingChunk(false)
+        vm.actionsVisible(true)
+        vm.chunkPlacementRequired(false)
     }
 
-    fun addTower() {
-        vm.placingTower(true)
-        eventBus.enqueueEventSync(NewTowerEvent())
+    @HandlesEvent(ChunkCancelledEvent::class)
+    fun chunkCancelled() {
+        vm.actionsVisible(true)
     }
 
-    @HandlesEvent(TowerPlacedEvent::class)
-    fun towerPlaced() {
-        vm.placingTower(false)
-    }
+    @HandlesEvent(PrepareNextWaveEvent::class)
+    fun waveComplete() {
+        // TODO: This is where rewards are shown? Not sure the best spot
+        vm.actionsVisible(true)
 
-    fun spawnEnemies() {
-        eventBus.enqueueEventSync(SpawnEnemiesEvent())
+        if (runStateService.load().wave % 4 == 0) {
+            vm.chunkPlacementRequired(true)
+        }
     }
 
     fun addChild(controller: Controller) = children.add(controller)
+
+    fun startWave() {
+        vm.actionsVisible(false)
+        eventBus.enqueueEventSync(WaveStartedEvent())
+    }
 }

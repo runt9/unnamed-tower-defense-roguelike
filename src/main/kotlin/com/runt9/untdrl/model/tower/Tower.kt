@@ -1,4 +1,4 @@
-package com.runt9.untdrl.model
+package com.runt9.untdrl.model.tower
 
 import com.badlogic.gdx.ai.steer.Steerable
 import com.badlogic.gdx.ai.steer.SteerableAdapter
@@ -6,6 +6,7 @@ import com.badlogic.gdx.ai.steer.SteeringAcceleration
 import com.badlogic.gdx.ai.steer.behaviors.Face
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.math.Vector2
+import com.runt9.untdrl.model.enemy.Enemy
 import com.runt9.untdrl.util.ext.Timer
 import com.runt9.untdrl.util.ext.degRad
 import com.runt9.untdrl.util.ext.radDeg

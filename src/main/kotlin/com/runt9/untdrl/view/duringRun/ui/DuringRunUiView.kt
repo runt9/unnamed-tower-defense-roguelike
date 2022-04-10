@@ -1,9 +1,12 @@
 package com.runt9.untdrl.view.duringRun.ui
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.utils.Align
+import com.runt9.untdrl.util.ext.ui.bindVisible
 import com.runt9.untdrl.util.ext.ui.rectPixmapTexture
 import com.runt9.untdrl.util.ext.ui.toDrawable
 import com.runt9.untdrl.util.framework.ui.view.ScreenView
+import com.runt9.untdrl.view.duringRun.ui.bottomBar.bottomBar
 import com.runt9.untdrl.view.duringRun.ui.topBar.topBar
 import ktx.actors.onChange
 import ktx.scene2d.textButton
@@ -22,32 +25,28 @@ class DuringRunUiView(override val controller: DuringRunUiController, override v
         }.cell(growX = true, height = 40f, row = true)
 
         visTable {
-            vm.placingChunk.bind {
-                if (!vm.placingChunk.get()) {
-                    textButton("Add Chunk") {
-                        onChange {
-                            controller.addChunk()
-                            remove()
-                        }
-                    }.cell(row = true)
-                }
-            }
-            vm.placingTower.bind {
-                if (!vm.placingTower.get()) {
-                    textButton("Add Tower") {
-                        onChange {
-                            controller.addTower()
-                            remove()
-                        }
-                    }.cell(row = true)
-                }
-            }
+            bindVisible(vm.actionsVisible, true)
 
-            textButton("Spawn Enemies") {
+            textButton("Add Chunk") {
+                bindVisible(vm.chunkPlacementRequired, true)
+
                 onChange {
-                    controller.spawnEnemies()
+                    controller.addChunk()
                 }
             }.cell(row = true)
-        }.cell(grow = true, row = true)
+
+            textButton("Start Wave") {
+                bindVisible(vm.chunkPlacementRequired, false)
+
+                onChange {
+                    controller.startWave()
+                }
+            }.cell(row = true)
+        }.cell(expand = true, row = true, align = Align.bottomRight)
+
+        bottomBar {
+            controller.addChild(this.controller)
+            background(rectPixmapTexture(1, 60, Color.SLATE).toDrawable())
+        }.cell(growX = true, height = 60f)
     }
 }

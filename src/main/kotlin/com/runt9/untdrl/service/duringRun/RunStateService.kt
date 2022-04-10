@@ -1,9 +1,12 @@
 package com.runt9.untdrl.service.duringRun
 
 import com.runt9.untdrl.model.RunState
+import com.runt9.untdrl.model.event.PrepareNextWaveEvent
 import com.runt9.untdrl.model.event.RunStateUpdated
+import com.runt9.untdrl.model.event.WaveCompleteEvent
 import com.runt9.untdrl.util.ext.unTdRlLogger
 import com.runt9.untdrl.util.framework.event.EventBus
+import com.runt9.untdrl.util.framework.event.HandlesEvent
 
 class RunStateService(private val eventBus: EventBus, registry: RunServiceRegistry) : RunService(eventBus, registry) {
     private val logger = unTdRlLogger()
@@ -28,5 +31,16 @@ class RunStateService(private val eventBus: EventBus, registry: RunServiceRegist
 
     override fun stopInternal() {
         runState = null
+    }
+
+    @HandlesEvent(WaveCompleteEvent::class)
+    fun waveComplete() = runOnServiceThread {
+        load().apply {
+            wave++
+            save(this)
+        }
+
+        // TODO: Maybe not the right way to handle this, will figure out later
+        eventBus.enqueueEvent(PrepareNextWaveEvent())
     }
 }

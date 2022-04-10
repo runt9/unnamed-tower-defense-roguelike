@@ -4,15 +4,16 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.InputMultiplexer
 import com.badlogic.gdx.ai.GdxAI
 import com.runt9.untdrl.UnTdRlGame
-import com.runt9.untdrl.model.path.IndexedGridGraph
 import com.runt9.untdrl.service.ChunkGenerator
 import com.runt9.untdrl.service.asset.AssetLoader
 import com.runt9.untdrl.service.asset.SkinLoader
 import com.runt9.untdrl.service.duringRun.EnemyService
+import com.runt9.untdrl.service.duringRun.IndexedGridGraph
 import com.runt9.untdrl.service.duringRun.ProjectileService
 import com.runt9.untdrl.service.duringRun.RunInitializer
 import com.runt9.untdrl.service.duringRun.RunServiceRegistry
 import com.runt9.untdrl.service.duringRun.RunStateService
+import com.runt9.untdrl.service.duringRun.SpawnerService
 import com.runt9.untdrl.service.duringRun.TowerService
 import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.util.framework.ui.DialogManager
@@ -59,11 +60,12 @@ object Injector : Context() {
         bindSingleton<RunServiceRegistry>()
         bindSingleton<RunStateService>()
 
+        bindSingleton<IndexedGridGraph>()
         bindSingleton<ChunkGenerator>()
         bindSingleton<EnemyService>()
         bindSingleton<ProjectileService>()
         bindSingleton<TowerService>()
-        bindSingleton<IndexedGridGraph>()
+        bindSingleton<SpawnerService>()
 
         bindSingleton<RunInitializer>()
 

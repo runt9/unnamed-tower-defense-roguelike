@@ -1,6 +1,6 @@
 package com.runt9.untdrl.view.duringRun.game.tower
 
-import com.runt9.untdrl.model.Tower
+import com.runt9.untdrl.model.tower.Tower
 import com.runt9.untdrl.util.framework.ui.viewModel.ViewModel
 
 class TowerViewModel(val tower: Tower) : ViewModel() {

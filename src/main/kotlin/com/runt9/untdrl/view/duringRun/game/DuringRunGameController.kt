@@ -3,17 +3,18 @@ package com.runt9.untdrl.view.duringRun.game
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Disposable
 import com.runt9.untdrl.model.Chunk
-import com.runt9.untdrl.model.Projectile
-import com.runt9.untdrl.model.Tower
-import com.runt9.untdrl.model.UnitTexture
+import com.runt9.untdrl.model.event.ChunkCancelledEvent
 import com.runt9.untdrl.model.event.ChunkPlacedEvent
+import com.runt9.untdrl.model.event.EnemyRemovedEvent
+import com.runt9.untdrl.model.event.EnemySpawnedEvent
 import com.runt9.untdrl.model.event.NewChunkEvent
 import com.runt9.untdrl.model.event.NewTowerEvent
-import com.runt9.untdrl.model.event.SpawnEnemiesEvent
 import com.runt9.untdrl.model.event.TowerPlacedEvent
-import com.runt9.untdrl.model.path.IndexedGridGraph
+import com.runt9.untdrl.model.tower.Projectile
+import com.runt9.untdrl.model.tower.Tower
 import com.runt9.untdrl.service.ChunkGenerator
 import com.runt9.untdrl.service.duringRun.EnemyService
+import com.runt9.untdrl.service.duringRun.IndexedGridGraph
 import com.runt9.untdrl.service.duringRun.TowerService
 import com.runt9.untdrl.util.ext.unTdRlLogger
 import com.runt9.untdrl.util.framework.event.EventBus
@@ -25,7 +26,6 @@ import com.runt9.untdrl.view.duringRun.game.projectile.ProjectileViewModel
 import com.runt9.untdrl.view.duringRun.game.tower.TowerViewModel
 import ktx.assets.async.AssetStorage
 import ktx.async.onRenderingThread
-import kotlin.math.roundToInt
 
 // TODO: Can probably break this into multiple controllers: enemies, towers, projectiles, all floating groups
 class DuringRunGameController(
@@ -40,6 +40,7 @@ class DuringRunGameController(
     override val vm = DuringRunGameViewModel()
     override val view = DuringRunGameView(this, vm, chunkGenerator)
     private val children = mutableListOf<Controller>()
+    private var nextChunk: Chunk? = null
 
     override fun load() {
         eventBus.registerHandlers(this)
@@ -57,18 +58,40 @@ class DuringRunGameController(
 
     @HandlesEvent(NewChunkEvent::class)
     suspend fun handleNewChunk() = onRenderingThread {
-        val chunk = chunkGenerator.generateGrid()
-        vm.chunks += ChunkViewModel(Chunk(chunk))
+        if (nextChunk == null) {
+            nextChunk = Chunk(chunkGenerator.generateGrid())
+        }
+
+        vm.chunks += ChunkViewModel(nextChunk!!)
     }
 
-    @HandlesEvent(NewTowerEvent::class)
-    suspend fun handleNewTower() = onRenderingThread {
-        val tower = Tower(texture = assets[UnitTexture.BOSS.assetFile], projTexture = assets[UnitTexture.HERO.assetFile])
+    @HandlesEvent
+    suspend fun handleNewTower(event: NewTowerEvent) = onRenderingThread {
+        val towerDef = event.towerDefinition
+        val tower = Tower(texture = assets[towerDef.texture.assetFile], projTexture = assets[towerDef.projectileTexture.assetFile])
 
         val towerVm = TowerViewModel(tower)
         tower.onRotate { towerVm.rotation(rotation) }
         tower.onProj { spawnProjectile(this) }
         vm.towers += towerVm
+    }
+
+    @HandlesEvent
+    suspend fun handleEnemySpawn(event: EnemySpawnedEvent) = onRenderingThread {
+        val enemy = event.enemy
+        val enemyVm = EnemyViewModel(enemy)
+
+        enemy.onMove {
+            enemyVm.position(position.cpy())
+            enemyVm.rotation(rotation)
+        }
+
+        vm.enemies += enemyVm
+    }
+
+    @HandlesEvent
+    suspend fun handleEnemyRemoved(event: EnemyRemovedEvent) = onRenderingThread {
+        vm.enemies.removeIf { it.enemy == event.enemy }
     }
 
     @HandlesEvent
@@ -92,31 +115,15 @@ class DuringRunGameController(
     }
 
     @HandlesEvent
+    suspend fun chunkCancelled(event: ChunkCancelledEvent) = onRenderingThread {
+        vm.chunks.removeIf { it.chunk == event.chunk }
+    }
+
+    @HandlesEvent
     suspend fun chunkPlaced(event: ChunkPlacedEvent) = onRenderingThread {
         val chunk = event.chunk
         grid.addChunk(chunk)
-        grid.recalculateSpawnerPaths()
-    }
-
-    @HandlesEvent(SpawnEnemiesEvent::class)
-    suspend fun spawnEnemies() = onRenderingThread {
-        grid.spawners.forEach {
-            val enemy = it.spawnEnemy(assets[UnitTexture.ENEMY.assetFile])
-            enemyService.add(enemy)
-            val enemyVm = EnemyViewModel(enemy)
-
-            enemy.onMove {
-                if (position.dst(grid.home.point).roundToInt() == 0) {
-                    vm.enemies -= enemyVm
-                    enemyService.remove(enemy)
-                }
-
-                enemyVm.position(position.cpy())
-                enemyVm.rotation(rotation)
-            }
-
-            vm.enemies += enemyVm
-        }
+        nextChunk = null
     }
 
     override fun dispose() {

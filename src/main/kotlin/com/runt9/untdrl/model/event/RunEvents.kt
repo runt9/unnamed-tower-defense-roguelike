@@ -10,3 +10,6 @@ class GamePauseChanged(val isPaused: Boolean) : Event
 fun EventBus.pauseGame() = enqueueEventSync(GamePauseChanged(true))
 fun EventBus.resumeGame() = enqueueEventSync(GamePauseChanged(false))
 
+class WaveStartedEvent : Event
+class WaveCompleteEvent : Event
+class PrepareNextWaveEvent : Event

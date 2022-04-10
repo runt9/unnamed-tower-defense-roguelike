@@ -8,8 +8,9 @@ import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.Vector3
 import com.runt9.untdrl.config.lazyInject
 import com.runt9.untdrl.model.Chunk
+import com.runt9.untdrl.model.event.ChunkCancelledEvent
 import com.runt9.untdrl.model.event.ChunkPlacedEvent
-import com.runt9.untdrl.model.path.IndexedGridGraph
+import com.runt9.untdrl.service.duringRun.IndexedGridGraph
 import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.util.framework.ui.controller.Controller
 import com.runt9.untdrl.util.framework.ui.uiComponent
@@ -45,7 +46,7 @@ class ChunkController(private val eventBus: EventBus, private val grid: IndexedG
                 vm.isValidPlacement(this@ChunkController.grid.isValidChunkPlacement(vm.chunk))
                 vm.position(position)
                 vm.rotation(rotation)
-            }) {
+            }, {
                 if (!grid.isValidChunkPlacement(vm.chunk)) {
                     return@ChunkInputMover false
                 }
@@ -54,12 +55,21 @@ class ChunkController(private val eventBus: EventBus, private val grid: IndexedG
                 input.removeProcessor(this)
                 eventBus.enqueueEventSync(ChunkPlacedEvent(vm.chunk))
                 return@ChunkInputMover true
+            }) {
+                input.removeProcessor(this)
+                eventBus.enqueueEventSync(ChunkCancelledEvent(vm.chunk))
             })
         }
     }
 }
 
-class ChunkInputMover(private val chunk: Chunk, private val camera: OrthographicCamera, private val chunkMoved: Chunk.() -> Unit, private val onClick: ChunkInputMover.() -> Boolean) : KtxInputAdapter {
+class ChunkInputMover(
+    private val chunk: Chunk,
+    private val camera: OrthographicCamera,
+    private val chunkMoved: Chunk.() -> Unit,
+    private val onClick: ChunkInputMover.() -> Boolean,
+    private val onCancel: ChunkInputMover.() -> Unit
+) : KtxInputAdapter {
     override fun mouseMoved(screenX: Int, screenY: Int): Boolean {
         val cameraVector = camera.unproject(Vector3(screenX.toFloat(), screenY.toFloat(), 0f))
         val worldX = cameraVector.x.roundToInt()
@@ -75,8 +85,16 @@ class ChunkInputMover(private val chunk: Chunk, private val camera: Orthographic
     }
 
     override fun touchDown(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
-        return if (button == Buttons.LEFT) onClick(this) else super.touchDown(screenX, screenY, pointer, button)
+        if (button == Buttons.LEFT) {
+            return onClick(this)
+        }
 
+        if (button == Buttons.RIGHT) {
+            onCancel()
+            return false
+        }
+
+        return super.touchDown(screenX, screenY, pointer, button)
     }
 
     override fun keyUp(keycode: Int): Boolean {

@@ -5,6 +5,7 @@ import com.runt9.untdrl.util.ext.unTdRlLogger
 import com.runt9.untdrl.util.framework.ui.view.TableView
 import com.runt9.untdrl.view.duringRun.GAME_HEIGHT
 import com.runt9.untdrl.view.duringRun.GAME_WIDTH
+import com.runt9.untdrl.view.duringRun.game.chunk.ChunkController
 import com.runt9.untdrl.view.duringRun.game.chunk.chunk
 import com.runt9.untdrl.view.duringRun.game.enemy.EnemyController
 import com.runt9.untdrl.view.duringRun.game.enemy.enemy
@@ -20,6 +21,7 @@ class DuringRunGameView(
 ) : TableView(controller, vm) {
     private val logger = unTdRlLogger()
 
+    private val chunks = mutableListOf<ChunkController>()
     private val enemies = mutableListOf<EnemyController>()
     private val projectiles = mutableListOf<ProjectileController>()
 
@@ -31,7 +33,17 @@ class DuringRunGameView(
 
         floatingGroup {
             vm.chunks.bindAdd { chunk ->
-                chunk(chunk) { controller.addChild(this.controller) }
+                chunk(chunk) {
+                    controller.addChild(this.controller)
+                    this@DuringRunGameView.chunks += this.controller
+                }
+            }
+
+            vm.chunks.bindRemove { chunk ->
+                this@DuringRunGameView.chunks.find { it.vm == chunk }?.apply {
+                    this@DuringRunGameView.chunks.remove(this)
+                    this.dispose()
+                }
             }
 
             vm.enemies.bindAdd { enemy ->

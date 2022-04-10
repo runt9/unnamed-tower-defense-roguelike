@@ -1,4 +1,4 @@
-package com.runt9.untdrl.model
+package com.runt9.untdrl.model.tower
 
 import com.badlogic.gdx.ai.steer.Steerable
 import com.badlogic.gdx.ai.steer.SteerableAdapter

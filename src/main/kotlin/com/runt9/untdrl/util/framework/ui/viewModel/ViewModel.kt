@@ -94,8 +94,16 @@ abstract class ViewModel : Disposable {
             add(toAdd)
         }
 
+        operator fun plusAssign(toAdd: Collection<T>) {
+            toAdd.forEach(::add)
+        }
+
         operator fun minusAssign(toRemove: T) {
             remove(toRemove)
+        }
+
+        fun removeIf(predicate: (T) -> Boolean) {
+            get().find(predicate)?.also(::remove)
         }
     }
 }

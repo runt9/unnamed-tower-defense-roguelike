@@ -1,5 +1,7 @@
 package com.runt9.untdrl.model
 
+import com.runt9.untdrl.model.tower.definition.PrototypeTowerDefinition
+import com.runt9.untdrl.model.tower.definition.TowerDefinition
 import com.runt9.untdrl.util.ext.randomString
 import kotlinx.serialization.Serializable
 import kotlin.random.Random
@@ -9,5 +11,5 @@ data class RunState(
     val seed: String = Random.randomString(8),
     var gold: Int = 0,
     var wave: Int = 1,
-    var waveActive: Boolean = false
+    val availableTowers: MutableList<TowerDefinition> = mutableListOf(PrototypeTowerDefinition)
 )

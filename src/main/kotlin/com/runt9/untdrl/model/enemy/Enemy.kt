@@ -1,4 +1,4 @@
-package com.runt9.untdrl.model
+package com.runt9.untdrl.model.enemy
 
 import com.badlogic.gdx.ai.steer.SteerableAdapter
 import com.badlogic.gdx.ai.steer.SteeringAcceleration

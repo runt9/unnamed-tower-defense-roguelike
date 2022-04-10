@@ -6,9 +6,9 @@ import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.Vector3
 import com.runt9.untdrl.config.lazyInject
-import com.runt9.untdrl.model.Tower
+import com.runt9.untdrl.model.tower.Tower
 import com.runt9.untdrl.model.event.TowerPlacedEvent
-import com.runt9.untdrl.model.path.IndexedGridGraph
+import com.runt9.untdrl.service.duringRun.IndexedGridGraph
 import com.runt9.untdrl.service.duringRun.TowerService
 import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.util.framework.ui.controller.Controller
