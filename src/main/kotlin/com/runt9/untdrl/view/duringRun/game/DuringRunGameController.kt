@@ -2,7 +2,6 @@ package com.runt9.untdrl.view.duringRun.game
 
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Disposable
-import com.runt9.untdrl.config.Injector
 import com.runt9.untdrl.model.Chunk
 import com.runt9.untdrl.model.Projectile
 import com.runt9.untdrl.model.Tower
@@ -13,9 +12,9 @@ import com.runt9.untdrl.model.event.NewTowerEvent
 import com.runt9.untdrl.model.event.SpawnEnemiesEvent
 import com.runt9.untdrl.model.event.TowerPlacedEvent
 import com.runt9.untdrl.model.path.IndexedGridGraph
-import com.runt9.untdrl.service.ChunkGeneratorPrototype
-import com.runt9.untdrl.service.EnemyMovementPrototype
-import com.runt9.untdrl.service.TowerAttackPrototype
+import com.runt9.untdrl.service.ChunkGenerator
+import com.runt9.untdrl.service.duringRun.EnemyService
+import com.runt9.untdrl.service.duringRun.TowerService
 import com.runt9.untdrl.util.ext.unTdRlLogger
 import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.util.framework.event.HandlesEvent
@@ -28,27 +27,27 @@ import ktx.assets.async.AssetStorage
 import ktx.async.onRenderingThread
 import kotlin.math.roundToInt
 
+// TODO: Can probably break this into multiple controllers: enemies, towers, projectiles, all floating groups
 class DuringRunGameController(
     private val eventBus: EventBus,
     private val assets: AssetStorage,
-    private val enemyMovementPrototype: EnemyMovementPrototype,
-    private val towerAttackPrototype: TowerAttackPrototype,
-    private val chunkGeneratorPrototype: ChunkGeneratorPrototype
+    private val enemyService: EnemyService,
+    private val towerService: TowerService,
+    private val chunkGenerator: ChunkGenerator,
+    private val grid: IndexedGridGraph
 ) : Controller {
     private val logger = unTdRlLogger()
     override val vm = DuringRunGameViewModel()
-    override val view = DuringRunGameView(this, vm, chunkGeneratorPrototype)
+    override val view = DuringRunGameView(this, vm, chunkGenerator)
     private val children = mutableListOf<Controller>()
-    private val grid = IndexedGridGraph()
 
     override fun load() {
         eventBus.registerHandlers(this)
-        Injector.bindSingleton(grid)
         addHomeChunk()
     }
 
     private fun addHomeChunk() {
-        val chunk = Chunk(chunkGeneratorPrototype.buildHomeChunk(), Vector2(7f, 4f))
+        val chunk = Chunk(chunkGenerator.buildHomeChunk(), Vector2(7f, 4f))
         val chunkVm = ChunkViewModel(chunk)
         chunkVm.isPlaced(true)
         chunkVm.isValidPlacement(true)
@@ -58,7 +57,7 @@ class DuringRunGameController(
 
     @HandlesEvent(NewChunkEvent::class)
     suspend fun handleNewChunk() = onRenderingThread {
-        val chunk = chunkGeneratorPrototype.generateGrid()
+        val chunk = chunkGenerator.generateGrid()
         vm.chunks += ChunkViewModel(Chunk(chunk))
     }
 
@@ -72,9 +71,9 @@ class DuringRunGameController(
         vm.towers += towerVm
     }
 
-    @HandlesEvent(TowerPlacedEvent::class)
+    @HandlesEvent
     suspend fun towerPlaced(event: TowerPlacedEvent) = onRenderingThread {
-        towerAttackPrototype.add(event.tower)
+        towerService.add(event.tower)
     }
 
     private fun spawnProjectile(projectile: Projectile) {
@@ -92,7 +91,7 @@ class DuringRunGameController(
         vm.projectiles += projVm
     }
 
-    @HandlesEvent(ChunkPlacedEvent::class)
+    @HandlesEvent
     suspend fun chunkPlaced(event: ChunkPlacedEvent) = onRenderingThread {
         val chunk = event.chunk
         grid.addChunk(chunk)
@@ -103,13 +102,13 @@ class DuringRunGameController(
     suspend fun spawnEnemies() = onRenderingThread {
         grid.spawners.forEach {
             val enemy = it.spawnEnemy(assets[UnitTexture.ENEMY.assetFile])
-            enemyMovementPrototype.add(enemy)
+            enemyService.add(enemy)
             val enemyVm = EnemyViewModel(enemy)
 
             enemy.onMove {
                 if (position.dst(grid.home.point).roundToInt() == 0) {
                     vm.enemies -= enemyVm
-                    enemyMovementPrototype.remove(enemy)
+                    enemyService.remove(enemy)
                 }
 
                 enemyVm.position(position.cpy())
@@ -123,7 +122,6 @@ class DuringRunGameController(
     override fun dispose() {
         eventBus.unregisterHandlers(this)
         clearChildren()
-        Injector.remove<IndexedGridGraph>()
         super.dispose()
     }
 

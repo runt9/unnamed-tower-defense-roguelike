@@ -1,6 +1,6 @@
 package com.runt9.untdrl.view.duringRun.game
 
-import com.runt9.untdrl.service.ChunkGeneratorPrototype
+import com.runt9.untdrl.service.ChunkGenerator
 import com.runt9.untdrl.util.ext.unTdRlLogger
 import com.runt9.untdrl.util.framework.ui.view.TableView
 import com.runt9.untdrl.view.duringRun.GAME_HEIGHT
@@ -16,7 +16,7 @@ import ktx.scene2d.vis.floatingGroup
 class DuringRunGameView(
     override val controller: DuringRunGameController,
     override val vm: DuringRunGameViewModel,
-    private val chunkGeneratorPrototype: ChunkGeneratorPrototype
+    private val chunkGenerator: ChunkGenerator
 ) : TableView(controller, vm) {
     private val logger = unTdRlLogger()
 

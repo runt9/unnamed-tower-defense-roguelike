@@ -4,7 +4,7 @@ import com.badlogic.gdx.math.Vector2
 import com.runt9.untdrl.util.ext.unTdRlLogger
 import com.runt9.untdrl.view.duringRun.CHUNK_SIZE
 
-class ChunkGeneratorPrototype {
+class ChunkGenerator {
     private val logger = unTdRlLogger()
 
     fun buildHomeChunk(): Array<IntArray> {

@@ -24,12 +24,11 @@ fun <S> KWidget<S>.chunk(chunk: ChunkViewModel, init: ChunkView.(S) -> Unit = {}
     this.initChunkMover()
 }, init)
 
-class ChunkController(private val eventBus: EventBus) : Controller {
+class ChunkController(private val eventBus: EventBus, private val grid: IndexedGridGraph) : Controller {
     override lateinit var vm: ChunkViewModel
     override val view by lazy { ChunkView(this, vm) }
     private val input by lazyInject<InputMultiplexer>()
     private val camera by lazyInject<OrthographicCamera>()
-    private val grid by lazyInject<IndexedGridGraph>()
 
     override fun load() {
         eventBus.registerHandlers(this)

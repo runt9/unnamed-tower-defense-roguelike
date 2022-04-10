@@ -8,16 +8,20 @@ import com.badlogic.gdx.ai.pfa.indexed.IndexedGraph
 import com.badlogic.gdx.math.Vector2
 import com.runt9.untdrl.model.Chunk
 import com.runt9.untdrl.model.Spawner
+import com.runt9.untdrl.service.duringRun.RunService
+import com.runt9.untdrl.service.duringRun.RunServiceRegistry
 import com.runt9.untdrl.util.ext.unTdRlLogger
+import com.runt9.untdrl.util.framework.event.EventBus
 import ktx.collections.GdxArray
 import ktx.collections.isNotEmpty
 import ktx.collections.toGdxArray
 import kotlin.math.abs
 
-class IndexedGridGraph(private val nodes: MutableMap<Vector2, GridNode> = mutableMapOf()) : IndexedGraph<GridNode> {
+class IndexedGridGraph(eventBus: EventBus, registry: RunServiceRegistry) : IndexedGraph<GridNode>, RunService(eventBus, registry) {
     private val logger = unTdRlLogger()
 
     lateinit var home: GridNode
+    private val nodes: MutableMap<Vector2, GridNode> = mutableMapOf()
     val spawners = mutableListOf<Spawner>()
 
     override fun getNodeCount() = nodes.size
@@ -90,4 +94,9 @@ class IndexedGridGraph(private val nodes: MutableMap<Vector2, GridNode> = mutabl
     }
 
     fun isEmptyTile(position: Vector2) = nodes[position]?.type == GridNodeType.EMPTY
+
+    override fun stopInternal() {
+        nodes.clear()
+        spawners.clear()
+    }
 }

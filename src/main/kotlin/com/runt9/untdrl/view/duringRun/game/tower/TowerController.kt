@@ -9,7 +9,7 @@ import com.runt9.untdrl.config.lazyInject
 import com.runt9.untdrl.model.Tower
 import com.runt9.untdrl.model.event.TowerPlacedEvent
 import com.runt9.untdrl.model.path.IndexedGridGraph
-import com.runt9.untdrl.service.TowerAttackPrototype
+import com.runt9.untdrl.service.duringRun.TowerService
 import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.util.framework.ui.controller.Controller
 import com.runt9.untdrl.util.framework.ui.uiComponent
@@ -24,12 +24,11 @@ fun <S> KWidget<S>.tower(tower: TowerViewModel, init: TowerView.(S) -> Unit = {}
     this.initTowerMover()
 }, init)
 
-class TowerController(private val eventBus: EventBus, private val towerPrototype: TowerAttackPrototype) : Controller {
+class TowerController(private val eventBus: EventBus, private val towerPrototype: TowerService, private val grid: IndexedGridGraph) : Controller {
     override lateinit var vm: TowerViewModel
     override val view by lazy { TowerView(this, vm) }
     private val input by lazyInject<InputMultiplexer>()
     private val camera by lazyInject<OrthographicCamera>()
-    private val grid by lazyInject<IndexedGridGraph>()
 
     override fun load() {
         eventBus.registerHandlers(this)

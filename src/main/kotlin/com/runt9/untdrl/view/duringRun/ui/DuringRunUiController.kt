@@ -48,4 +48,6 @@ class DuringRunUiController(private val eventBus: EventBus) : Controller {
     fun spawnEnemies() {
         eventBus.enqueueEventSync(SpawnEnemiesEvent())
     }
+
+    fun addChild(controller: Controller) = children.add(controller)
 }
