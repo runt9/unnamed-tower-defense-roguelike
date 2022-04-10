@@ -52,7 +52,7 @@ class ChunkGeneratorPrototype {
         return node.adjacentNodes.filter { adjNode -> !adjNode.isEdgeNode && adjNode.adjacentNodes.none { it.isEdgeNode } }.random()
     }
 
-    fun buildBranch(startingNode: Vector2, visited: MutableList<Vector2>, grid: Array<IntArray>) {
+    private fun buildBranch(startingNode: Vector2, visited: MutableList<Vector2>, grid: Array<IntArray>) {
         var previousNode = startingNode.cpy()
         logger.info { "Branching from $previousNode" }
 
@@ -95,7 +95,7 @@ class ChunkGeneratorPrototype {
         }
     }
 
-    val Vector2.adjacentNodes
+    private val Vector2.adjacentNodes
         get() = listOf(
             Vector2(x - 1, y),
             Vector2(x + 1, y),
@@ -103,9 +103,9 @@ class ChunkGeneratorPrototype {
             Vector2(x, y + 1)
         )
 
-    val Vector2.isEdgeNode get() = x == 0f || x == CHUNK_SIZE - 1f || y == 0f || y == CHUNK_SIZE - 1f
+    private val Vector2.isEdgeNode get() = x == 0f || x == CHUNK_SIZE - 1f || y == 0f || y == CHUNK_SIZE - 1f
 
-    fun Vector2.getNextValidAdjacents(visited: List<Vector2>, firstNode: Boolean): List<Vector2> {
+    private fun Vector2.getNextValidAdjacents(visited: List<Vector2>, firstNode: Boolean): List<Vector2> {
         val self = this
 
         return adjacentNodes.filter { node2 ->

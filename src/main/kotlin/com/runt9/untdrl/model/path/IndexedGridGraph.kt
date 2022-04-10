@@ -10,6 +10,7 @@ import com.runt9.untdrl.model.Chunk
 import com.runt9.untdrl.model.Spawner
 import com.runt9.untdrl.util.ext.unTdRlLogger
 import ktx.collections.GdxArray
+import ktx.collections.isNotEmpty
 import ktx.collections.toGdxArray
 import kotlin.math.abs
 
@@ -64,4 +65,29 @@ class IndexedGridGraph(private val nodes: MutableMap<Vector2, GridNode> = mutabl
             logger.info { "Found spawner path ${spawner.currentPath.nodes.map { it.point }.toList()}" }
         }
     }
+
+    fun isValidChunkPlacement(chunk: Chunk): Boolean {
+        val xOffset = chunk.position.x - 4
+        val yOffset = chunk.position.y - 4
+
+        var foundValidPath = false
+
+        chunk.grid.forEachIndexed { ri, row ->
+            row.forEachIndexed { ci, col ->
+                val node = GridNode(ci + xOffset, ri + yOffset, nodes.size, GridNodeType.values()[col])
+
+                if (nodes.containsKey(node.point)) {
+                    return false
+                }
+
+                if (!foundValidPath && node.type == GridNodeType.PATH &&  getConnections(node).isNotEmpty()) {
+                    foundValidPath = true
+                }
+            }
+        }
+
+        return foundValidPath
+    }
+
+    fun isEmptyTile(position: Vector2) = nodes[position]?.type == GridNodeType.EMPTY
 }

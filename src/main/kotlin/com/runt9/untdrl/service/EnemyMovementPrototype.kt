@@ -26,9 +26,9 @@ class EnemyMovementPrototype {
         }
     }
 
-    fun getTowerTarget(tower: Tower): Enemy? {
-        return enemies.sortedBy { it.position.dst(7f, 4f) }.find { enemy ->
-            tower.position.dst(enemy.position) <= 6
-        }
-    }
+    fun getTowerTarget(tower: Tower) =
+        enemies.sortedBy { it.position.dst(7f, 4f) }
+            .find { enemy ->
+                tower.position.dst(enemy.position) <= 2
+            }
 }

@@ -66,4 +66,6 @@ class TowerAttackPrototype(private val enemyPrototype: EnemyMovementPrototype) {
 
         return true
     }
+
+    fun isNoTowerPositionOverlap(tower: Tower) = towers.none { it.position == tower.position }
 }

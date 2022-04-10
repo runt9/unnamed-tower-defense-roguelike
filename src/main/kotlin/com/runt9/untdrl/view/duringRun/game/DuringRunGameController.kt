@@ -2,6 +2,7 @@ package com.runt9.untdrl.view.duringRun.game
 
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Disposable
+import com.runt9.untdrl.config.Injector
 import com.runt9.untdrl.model.Chunk
 import com.runt9.untdrl.model.Projectile
 import com.runt9.untdrl.model.Tower
@@ -10,6 +11,7 @@ import com.runt9.untdrl.model.event.ChunkPlacedEvent
 import com.runt9.untdrl.model.event.NewChunkEvent
 import com.runt9.untdrl.model.event.NewTowerEvent
 import com.runt9.untdrl.model.event.SpawnEnemiesEvent
+import com.runt9.untdrl.model.event.TowerPlacedEvent
 import com.runt9.untdrl.model.path.IndexedGridGraph
 import com.runt9.untdrl.service.ChunkGeneratorPrototype
 import com.runt9.untdrl.service.EnemyMovementPrototype
@@ -41,43 +43,18 @@ class DuringRunGameController(
 
     override fun load() {
         eventBus.registerHandlers(this)
+        Injector.bindSingleton(grid)
         addHomeChunk()
-
-//        towerAttackPrototype.onProj {
-//            val proj = ProjectileViewModel(1, "testProjectile", assets[UnitTexture.ENEMY.assetFile], position.cpy(), rotation)
-//
-//            towerAttackPrototype.onProjMove {
-//                proj.position(this@onProjMove.position.cpy())
-//                proj.rotation(this@onProjMove.rotation)
-//            }
-//
-//            towerAttackPrototype.onProjDie {
-//                vm.projectiles -= proj
-//            }
-//
-//            vm.projectiles += proj
-//        }
     }
 
     private fun addHomeChunk() {
-        val chunk = Chunk(chunkGeneratorPrototype.buildHomeChunk(), true, Vector2(7f, 4f))
+        val chunk = Chunk(chunkGeneratorPrototype.buildHomeChunk(), Vector2(7f, 4f))
         val chunkVm = ChunkViewModel(chunk)
+        chunkVm.isPlaced(true)
+        chunkVm.isValidPlacement(true)
         grid.addChunk(chunk)
         vm.chunks += chunkVm
     }
-
-//    private fun addNewTower() {
-//        val tower = 
-//
-////        towerAttackPrototype.onMove {
-////            tower.rotation(rotation)
-////        }
-//
-//        vm.towers += TowerViewModel(tower)
-//
-////        towerAttackPrototype.tower.behavior.target = unitMovementPrototype.enemy
-////        towerAttackPrototype.tower.target = unitMovementPrototype.enemy
-//    }
 
     @HandlesEvent(NewChunkEvent::class)
     suspend fun handleNewChunk() = onRenderingThread {
@@ -89,11 +66,15 @@ class DuringRunGameController(
     suspend fun handleNewTower() = onRenderingThread {
         val tower = Tower(texture = assets[UnitTexture.BOSS.assetFile], projTexture = assets[UnitTexture.HERO.assetFile])
 
-        towerAttackPrototype.add(tower)
         val towerVm = TowerViewModel(tower)
         tower.onRotate { towerVm.rotation(rotation) }
         tower.onProj { spawnProjectile(this) }
         vm.towers += towerVm
+    }
+
+    @HandlesEvent(TowerPlacedEvent::class)
+    suspend fun towerPlaced(event: TowerPlacedEvent) = onRenderingThread {
+        towerAttackPrototype.add(event.tower)
     }
 
     private fun spawnProjectile(projectile: Projectile) {
@@ -129,7 +110,6 @@ class DuringRunGameController(
                 if (position.dst(grid.home.point).roundToInt() == 0) {
                     vm.enemies -= enemyVm
                     enemyMovementPrototype.remove(enemy)
-                    // TODO: Remove all projectiles targeting this enemy
                 }
 
                 enemyVm.position(position.cpy())
@@ -142,10 +122,12 @@ class DuringRunGameController(
 
     override fun dispose() {
         eventBus.unregisterHandlers(this)
+        clearChildren()
+        Injector.remove<IndexedGridGraph>()
         super.dispose()
     }
 
-    fun clearChildren() {
+    private fun clearChildren() {
         children.forEach(Disposable::dispose)
         children.clear()
     }

@@ -6,5 +6,6 @@ import com.runt9.untdrl.util.framework.ui.viewModel.ViewModel
 class ChunkViewModel(val chunk: Chunk) : ViewModel() {
     val position = Binding(chunk.position.cpy())
     val rotation = Binding(chunk.rotation)
-    val isPlaced = Binding(chunk.isPlaced)
+    val isPlaced = Binding(false)
+    val isValidPlacement = Binding(false)
 }

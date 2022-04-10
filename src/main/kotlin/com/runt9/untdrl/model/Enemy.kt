@@ -22,7 +22,7 @@ class Enemy(val texture: Texture, initialPosition: Vector2, initialRotation: Flo
     private val linearVelocity = Vector2()
     private val maxLinearSpeed = 1f
     private val maxLinearAcceleration = maxLinearSpeed * 100f
-    private val maxAngularSpeed = 8f
+    private val maxAngularSpeed = 10f
     private val maxAngularAcceleration = maxAngularSpeed * 100f
     private var angularVelocity = 0f
     private val boundingRadius = 0.375f

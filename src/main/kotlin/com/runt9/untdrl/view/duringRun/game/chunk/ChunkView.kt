@@ -9,6 +9,7 @@ import com.runt9.untdrl.util.ext.ui.toDrawable
 import com.runt9.untdrl.util.ext.unTdRlLogger
 import com.runt9.untdrl.util.framework.ui.view.GroupView
 import com.runt9.untdrl.view.duringRun.CHUNK_SIZE
+import ktx.actors.alpha
 import ktx.actors.plusAssign
 import ktx.scene2d.table
 import ktx.scene2d.vis.visTable
@@ -22,6 +23,10 @@ class ChunkView(override val controller: ChunkController, override val vm: Chunk
         setSize(CHUNK_SIZE.toFloat(), CHUNK_SIZE.toFloat())
         setBounds(0f, 0f, CHUNK_SIZE.toFloat(), CHUNK_SIZE.toFloat())
         setOrigin(Align.center)
+
+        bindUpdatable(vm.isValidPlacement) {
+            alpha = if (vm.isValidPlacement.get()) 1f else 0.5f
+        }
 
         visTable {
             vm.chunk.grid.reversedArray().forEach { row ->
@@ -54,7 +59,5 @@ class ChunkView(override val controller: ChunkController, override val vm: Chunk
                 this@bindUpdatable += rotateAction
             }
         }
-
-        debugAll()
     }
 }

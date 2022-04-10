@@ -7,5 +7,6 @@ class TowerViewModel(val tower: Tower) : ViewModel() {
     val position = Binding(tower.position.cpy())
     val rotation = Binding(tower.rotation)
     val isPlaced = Binding(tower.isPlaced)
+    val isValidPlacement = Binding(false)
     val texture = tower.texture
 }
