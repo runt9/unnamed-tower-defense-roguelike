@@ -12,7 +12,7 @@ class ProjectileView(override val controller: ProjectileController, override val
         setSize(0.25f, 0.25f)
         setBounds(0f, 0f, 0.25f, 0.25f)
         setOrigin(Align.center)
-        bindUpdatable(vm.position) { vm.position.get().apply { setPosition(x, y) } }
+        bindUpdatable(vm.position) { vm.position.get().apply { setPosition(x, y, Align.center) } }
 
         val image = visImage(vm.texture) {
             setSize(0.25f, 0.25f)

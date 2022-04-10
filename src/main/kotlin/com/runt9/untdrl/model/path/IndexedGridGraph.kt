@@ -7,6 +7,7 @@ import com.badlogic.gdx.ai.pfa.indexed.IndexedAStarPathFinder
 import com.badlogic.gdx.ai.pfa.indexed.IndexedGraph
 import com.badlogic.gdx.math.Vector2
 import com.runt9.untdrl.model.Chunk
+import com.runt9.untdrl.model.Spawner
 import com.runt9.untdrl.util.ext.unTdRlLogger
 import ktx.collections.GdxArray
 import ktx.collections.toGdxArray
@@ -16,7 +17,7 @@ class IndexedGridGraph(private val nodes: MutableMap<Vector2, GridNode> = mutabl
     private val logger = unTdRlLogger()
 
     lateinit var home: GridNode
-    val spawners = mutableMapOf<Vector2, GridNode>()
+    val spawners = mutableListOf<Spawner>()
 
     override fun getNodeCount() = nodes.size
     override fun getIndex(node: GridNode) = node.index
@@ -39,7 +40,7 @@ class IndexedGridGraph(private val nodes: MutableMap<Vector2, GridNode> = mutabl
                 if (node.type == GridNodeType.HOME) {
                     home = node
                 } else if (node.type == GridNodeType.SPAWNER) {
-                    spawners[node.point] = node
+                    spawners += Spawner(node)
                 }
             }
         }
@@ -54,19 +55,13 @@ class IndexedGridGraph(private val nodes: MutableMap<Vector2, GridNode> = mutabl
         )
     }
 
-    fun generateSpawnerPaths(): Map<Vector2, DefaultGraphPath<GridNode>> {
-        val result = mutableMapOf<Vector2, DefaultGraphPath<GridNode>>()
-        spawners.forEach { (pos, node) ->
-            result[pos] = getSpawnerPath(pos)
+    fun recalculateSpawnerPaths() {
+        spawners.forEach { spawner ->
+            val newPath = DefaultGraphPath<GridNode>()
+            IndexedAStarPathFinder(this).searchNodePath(spawner.node, home, { sn, en -> abs(en.x - sn.x) + abs(en.y - sn.y) }, newPath)
+            newPath.nodes.removeIndex(0)
+            spawner.currentPath = newPath
+            logger.info { "Found spawner path ${spawner.currentPath.nodes.map { it.point }.toList()}" }
         }
-        return result
-    }
-
-    fun getSpawnerPath(spawner: Vector2): DefaultGraphPath<GridNode> {
-        val node = spawners[spawner]
-        val path = DefaultGraphPath<GridNode>()
-        IndexedAStarPathFinder(this).searchNodePath(node, home, { sn, en -> abs(en.x - sn.x) + abs(en.y - sn.y) }, path)
-        logger.info { "Found spawner path ${path.nodes.map { it.point }.toList()}" }
-        return path
     }
 }

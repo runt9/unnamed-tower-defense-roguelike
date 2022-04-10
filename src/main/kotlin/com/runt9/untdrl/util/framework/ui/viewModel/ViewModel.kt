@@ -72,6 +72,7 @@ abstract class ViewModel : Disposable {
         fun bindAdd(updateFn: UpdatableValue<T>.(T) -> Unit) {
             val updatable = updatableValue(updateFn)
             addBinds.add(updatable)
+            currentValue.forEach(updatable::update)
         }
 
         fun bindRemove(updateFn: UpdatableValue<T>.(T) -> Unit) {

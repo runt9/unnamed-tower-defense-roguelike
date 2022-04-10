@@ -12,7 +12,7 @@ class EnemyView(override val controller: EnemyController, override val vm: Enemy
         setSize(0.5f, 0.5f)
         setBounds(0f, 0f, 0.5f, 0.5f)
         setOrigin(Align.center)
-        bindUpdatable(vm.position) { vm.position.get().apply { setPosition(x, y) } }
+        bindUpdatable(vm.position) { vm.position.get().apply { setPosition(x, y, Align.center) } }
 
         val image = visImage(vm.texture) {
             setSize(0.5f, 0.5f)

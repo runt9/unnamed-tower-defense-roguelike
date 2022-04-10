@@ -4,4 +4,5 @@ import com.runt9.untdrl.util.framework.ui.viewModel.ViewModel
 
 class DuringRunUiViewModel : ViewModel() {
     val placingChunk = Binding(false)
+    val placingTower = Binding(false)
 }
