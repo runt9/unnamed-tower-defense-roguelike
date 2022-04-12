@@ -1,6 +1,5 @@
 package com.runt9.untdrl.view.duringRun.game
 
-import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Disposable
 import com.runt9.untdrl.model.Chunk
 import com.runt9.untdrl.model.event.ChunkCancelledEvent
@@ -18,6 +17,7 @@ import com.runt9.untdrl.util.ext.unTdRlLogger
 import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.util.framework.event.HandlesEvent
 import com.runt9.untdrl.util.framework.ui.controller.Controller
+import com.runt9.untdrl.view.duringRun.HOME_POINT
 import com.runt9.untdrl.view.duringRun.game.chunk.ChunkViewModel
 import com.runt9.untdrl.view.duringRun.game.enemy.EnemyViewModel
 import com.runt9.untdrl.view.duringRun.game.projectile.ProjectileViewModel
@@ -44,7 +44,7 @@ class DuringRunGameController(
     }
 
     private fun addHomeChunk() {
-        val chunk = Chunk(chunkGenerator.buildHomeChunk(), Vector2(7f, 4f))
+        val chunk = Chunk(chunkGenerator.buildHomeChunk(), HOME_POINT)
         val chunkVm = ChunkViewModel(chunk)
         chunkVm.isPlaced(true)
         chunkVm.isValidPlacement(true)
@@ -64,7 +64,7 @@ class DuringRunGameController(
     @HandlesEvent
     suspend fun handleNewTower(event: NewTowerEvent) = onRenderingThread {
         val towerDef = event.towerDefinition
-        val tower = Tower(texture = assets[towerDef.texture.assetFile], projTexture = assets[towerDef.projectileTexture.assetFile])
+        val tower = Tower(towerDef, assets[towerDef.texture.assetFile], assets[towerDef.projectileTexture.assetFile])
 
         val towerVm = TowerViewModel(tower)
         tower.onMove { towerVm.rotation(rotation) }
@@ -113,6 +113,7 @@ class DuringRunGameController(
     @HandlesEvent
     suspend fun chunkCancelled(event: ChunkCancelledEvent) = onRenderingThread {
         vm.chunks.removeIf { it.chunk == event.chunk }
+        event.chunk.rotation = 0f
     }
 
     @HandlesEvent

@@ -7,4 +7,7 @@ interface TowerDefinition {
     val name: String
     val texture: UnitTexture
     val projectileTexture: UnitTexture
+    val range: Int
+    val attackTime: Float
+    val damage: Float
 }

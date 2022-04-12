@@ -10,6 +10,7 @@ import com.runt9.untdrl.model.event.WaveCompleteEvent
 import com.runt9.untdrl.model.tower.Tower
 import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.util.framework.event.HandlesEvent
+import com.runt9.untdrl.view.duringRun.HOME_POINT
 import kotlin.math.roundToInt
 
 class EnemyService(private val grid: IndexedGridGraph, private val eventBus: EventBus, registry: RunServiceRegistry) : RunService(eventBus, registry) {
@@ -45,17 +46,15 @@ class EnemyService(private val grid: IndexedGridGraph, private val eventBus: Eve
                 enemy.applySteering(delta, steeringOutput)
 
                 if (enemy.position.dst(grid.home.point).roundToInt() == 0) {
-                    eventBus.enqueueEventSync(EnemyRemovedEvent(enemy))
+                    eventBus.enqueueEventSync(EnemyRemovedEvent(enemy, false))
                 }
             }
         }
     }
 
-    fun getTowerTarget(tower: Tower) =
-        enemies.sortedBy { it.position.dst(7f, 4f) }
-            .find { enemy ->
-                tower.position.dst(enemy.position) <= 2
-            }
+    fun getTowerTarget(tower: Tower) = enemies.sortedBy { it.position.dst(HOME_POINT) }.find { enemy ->
+        tower.position.dst(enemy.position) <= tower.range
+    }
 
     override fun stopInternal() {
         enemies.clear()

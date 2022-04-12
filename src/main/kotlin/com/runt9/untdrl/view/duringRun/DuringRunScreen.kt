@@ -2,6 +2,8 @@ package com.runt9.untdrl.view.duringRun
 
 import com.badlogic.gdx.ai.Timepiece
 import com.runt9.untdrl.model.event.GamePauseChanged
+import com.runt9.untdrl.model.event.RunEndEvent
+import com.runt9.untdrl.model.event.enqueueShowDialog
 import com.runt9.untdrl.service.duringRun.RunInitializer
 import com.runt9.untdrl.service.duringRun.RunServiceRegistry
 import com.runt9.untdrl.util.framework.event.EventBus
@@ -9,6 +11,7 @@ import com.runt9.untdrl.util.framework.event.HandlesEvent
 import com.runt9.untdrl.util.framework.ui.core.GameScreen
 import com.runt9.untdrl.view.duringRun.game.DuringRunGameController
 import com.runt9.untdrl.view.duringRun.ui.DuringRunUiController
+import com.runt9.untdrl.view.duringRun.ui.runEnd.RunEndDialogController
 import ktx.async.onRenderingThread
 
 class DuringRunScreen(
@@ -17,7 +20,8 @@ class DuringRunScreen(
     private val eventBus: EventBus,
     private val aiTimepiece: Timepiece,
     private val runInitializer: RunInitializer,
-    private val runServiceRegistry: RunServiceRegistry
+    private val runServiceRegistry: RunServiceRegistry,
+    private val inputHandler: DuringRunInputController
 ) : GameScreen(GAME_AREA_WIDTH, GAME_AREA_HEIGHT) {
     private var isRunning = true
     private var isPaused = false
@@ -25,8 +29,16 @@ class DuringRunScreen(
     @HandlesEvent
     suspend fun pauseResume(event: GamePauseChanged) = onRenderingThread { isPaused = event.isPaused }
 
+    @HandlesEvent
+    suspend fun runEnd(event: RunEndEvent) = onRenderingThread {
+        // TODO: Need a proper clear of everything
+        isPaused = true
+        eventBus.enqueueShowDialog<RunEndDialogController>()
+    }
+
     override fun show() {
         eventBus.registerHandlers(this)
+        input.addProcessor(inputHandler)
         runInitializer.initialize()
         super.show()
     }
@@ -42,6 +54,7 @@ class DuringRunScreen(
 
     override fun hide() {
         eventBus.unregisterHandlers(this)
+        input.removeProcessor(inputHandler)
         runInitializer.dispose()
         isRunning = false
         isPaused = false

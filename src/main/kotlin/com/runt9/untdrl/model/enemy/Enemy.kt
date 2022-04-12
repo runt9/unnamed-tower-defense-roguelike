@@ -17,7 +17,8 @@ class Enemy(val texture: Texture, initialPosition: Vector2, initialRotation: Flo
     override val angularAccelerationLimit = angularSpeedLimit * 100f
     override val boundingBoxRadius = 0.25f
 
-    var hp: Int = 100
+    var maxHp = 100f
+    var currentHp = 100f
 
     private val fullPath = LinePath(path, true)
     private val followPathBehavior = FollowPath(this, fullPath, 0.1f)
@@ -32,7 +33,7 @@ class Enemy(val texture: Texture, initialPosition: Vector2, initialRotation: Flo
         add(BlendedSteering.BehaviorAndWeight(lookBehavior, 1f))
     }
 
-    fun takeDamage(damage: Int) {
-        hp -= damage
+    fun takeDamage(damage: Float) {
+        currentHp -= damage
     }
 }

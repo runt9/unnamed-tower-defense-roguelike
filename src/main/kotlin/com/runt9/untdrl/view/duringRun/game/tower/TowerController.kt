@@ -1,23 +1,22 @@
 package com.runt9.untdrl.view.duringRun.game.tower
 
-import com.badlogic.gdx.Input
 import com.badlogic.gdx.InputMultiplexer
 import com.badlogic.gdx.graphics.OrthographicCamera
-import com.badlogic.gdx.math.Vector2
-import com.badlogic.gdx.math.Vector3
 import com.runt9.untdrl.config.lazyInject
+import com.runt9.untdrl.model.event.CancelOpenItemsEvent
 import com.runt9.untdrl.model.event.TowerCancelledEvent
 import com.runt9.untdrl.model.event.TowerPlacedEvent
+import com.runt9.untdrl.model.event.TowerSelectedEvent
 import com.runt9.untdrl.model.tower.Tower
 import com.runt9.untdrl.service.duringRun.IndexedGridGraph
 import com.runt9.untdrl.service.duringRun.TowerService
 import com.runt9.untdrl.util.framework.event.EventBus
+import com.runt9.untdrl.util.framework.event.HandlesEvent
+import com.runt9.untdrl.util.framework.ui.InputMover
 import com.runt9.untdrl.util.framework.ui.controller.Controller
 import com.runt9.untdrl.util.framework.ui.uiComponent
-import ktx.app.KtxInputAdapter
 import ktx.scene2d.KWidget
 import ktx.scene2d.Scene2dDsl
-import kotlin.math.roundToInt
 
 @Scene2dDsl
 fun <S> KWidget<S>.tower(tower: TowerViewModel, init: TowerView.(S) -> Unit = {}) = uiComponent<S, TowerController, TowerView>({
@@ -41,60 +40,34 @@ class TowerController(private val eventBus: EventBus, private val towerPrototype
     }
 
     fun initTowerMover() {
-        if (!vm.isPlaced.get()) {
-            input.addProcessor(TowerInputMover(vm.tower, camera, {
-                vm.isValidPlacement(isValidTowerPlacement(vm.tower))
-                vm.position(position.cpy())
-            }, {
-                if (!isValidTowerPlacement(vm.tower)) {
-                    return@TowerInputMover false
-                }
+        vm.isSelected(true)
 
-                vm.isPlaced(true)
-                input.removeProcessor(this)
-                eventBus.enqueueEventSync(TowerPlacedEvent(vm.tower))
-                return@TowerInputMover true
-            }) {
-                input.removeProcessor(this)
-                eventBus.enqueueEventSync(TowerCancelledEvent(vm.tower))
-            })
-        }
+        input.addProcessor(InputMover(vm.tower, camera, eventBus, {
+            vm.isValidPlacement(isValidTowerPlacement(vm.tower))
+            vm.position(position.cpy())
+        }, {
+            if (!isValidTowerPlacement(vm.tower)) {
+                return@InputMover false
+            }
+
+            input.removeProcessor(this)
+            eventBus.enqueueEventSync(TowerPlacedEvent(vm.tower))
+            return@InputMover true
+        }) {
+            input.removeProcessor(this)
+            eventBus.enqueueEventSync(TowerCancelledEvent(vm.tower))
+        })
     }
 
     private fun isValidTowerPlacement(tower: Tower) = towerPrototype.isNoTowerPositionOverlap(tower) && grid.isEmptyTile(tower.position)
-}
 
-class TowerInputMover(
-    private val tower: Tower,
-    private val camera: OrthographicCamera,
-    private val towerMoved: Tower.() -> Unit,
-    private val onClick: TowerInputMover.() -> Boolean,
-    private val onCancel: TowerInputMover.() -> Unit
-) :
-    KtxInputAdapter {
-    override fun mouseMoved(screenX: Int, screenY: Int): Boolean {
-        val cameraVector = camera.unproject(Vector3(screenX.toFloat(), screenY.toFloat(), 0f))
-        val worldX = cameraVector.x.roundToInt()
-        val worldY = cameraVector.y.roundToInt()
-
-        if (worldX != tower.position.x.roundToInt() || worldY != tower.position.y.roundToInt()) {
-            tower.position.set(Vector2(worldX.toFloat(), worldY.toFloat()))
-            tower.towerMoved()
-        }
-
-        return super.mouseMoved(screenX, screenY)
+    @HandlesEvent
+    fun towerSelected(event: TowerSelectedEvent) {
+        vm.isSelected(event.tower == vm.tower)
     }
 
-    override fun touchDown(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
-        if (button == Input.Buttons.LEFT) {
-            return onClick(this)
-        }
-
-        if (button == Input.Buttons.RIGHT) {
-            onCancel()
-            return false
-        }
-
-        return super.touchDown(screenX, screenY, pointer, button)
+    @HandlesEvent(CancelOpenItemsEvent::class)
+    fun cancelSelection() {
+        vm.isSelected(false)
     }
 }

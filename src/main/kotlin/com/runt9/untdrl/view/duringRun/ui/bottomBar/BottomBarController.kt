@@ -2,6 +2,7 @@ package com.runt9.untdrl.view.duringRun.ui.bottomBar
 
 import com.badlogic.gdx.graphics.Texture
 import com.runt9.untdrl.model.UnitTexture
+import com.runt9.untdrl.model.event.CancelOpenItemsEvent
 import com.runt9.untdrl.model.event.NewTowerEvent
 import com.runt9.untdrl.model.event.RunStateUpdated
 import com.runt9.untdrl.model.event.TowerCancelledEvent
@@ -46,6 +47,7 @@ class BottomBarController(private val runStateService: RunStateService, private 
         if (!vm.canInteract.get()) return
 
         vm.canInteract(false)
+        eventBus.enqueueEventSync(CancelOpenItemsEvent())
         eventBus.enqueueEventSync(NewTowerEvent(tower))
     }
 

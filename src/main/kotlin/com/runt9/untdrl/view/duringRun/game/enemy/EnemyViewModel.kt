@@ -7,4 +7,5 @@ class EnemyViewModel(val enemy: Enemy) : ViewModel() {
     val texture = enemy.texture
     val position = Binding(enemy.position.cpy())
     val rotation = Binding(enemy.rotation)
+    val hpPercent = Binding(1f)
 }

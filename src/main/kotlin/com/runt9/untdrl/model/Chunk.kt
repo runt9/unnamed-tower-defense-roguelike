@@ -1,10 +1,11 @@
 package com.runt9.untdrl.model
 
+import com.badlogic.gdx.ai.steer.SteerableAdapter
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector2
 import com.runt9.untdrl.view.duringRun.CHUNK_SIZE
 
-class Chunk(var grid: Array<IntArray>, var position: Vector2 = Vector2.Zero, var rotation: Float = 0f) {
+class Chunk(var grid: Array<IntArray>, private var position: Vector2 = Vector2.Zero, var rotation: Float = 0f) : SteerableAdapter<Vector2>() {
     fun rotate(clockwise: Boolean) {
         val newGrid = Array(CHUNK_SIZE) { IntArray(CHUNK_SIZE) }
 
@@ -21,4 +22,6 @@ class Chunk(var grid: Array<IntArray>, var position: Vector2 = Vector2.Zero, var
 
         grid = newGrid
     }
+
+    override fun getPosition() = position
 }

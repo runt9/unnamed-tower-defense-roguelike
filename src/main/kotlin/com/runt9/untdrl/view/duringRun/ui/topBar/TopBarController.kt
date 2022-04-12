@@ -24,6 +24,7 @@ class TopBarController(private val eventBus: EventBus) : Controller {
     suspend fun runStateHandler(event: RunStateUpdated) = onRenderingThread {
         val newState = event.newState
         vm.apply {
+            hp(newState.hp)
             gold(newState.gold)
             wave(newState.wave)
         }

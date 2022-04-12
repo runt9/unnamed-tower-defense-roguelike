@@ -9,6 +9,7 @@ import kotlin.random.Random
 @Serializable
 data class RunState(
     val seed: String = Random.randomString(8),
+    var hp: Int = 25,
     var gold: Int = 0,
     var wave: Int = 1,
     val availableTowers: MutableList<TowerDefinition> = mutableListOf(PrototypeTowerDefinition)

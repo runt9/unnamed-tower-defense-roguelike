@@ -48,4 +48,6 @@ class TowerService(private val enemyService: EnemyService, private val projectil
     override fun stopInternal() {
         towers.clear()
     }
+
+    fun getTowerAtPoint(clickPoint: Vector2) = towers.find { it.position == clickPoint }
 }
