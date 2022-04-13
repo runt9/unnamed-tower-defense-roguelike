@@ -9,7 +9,7 @@ import com.runt9.untdrl.model.enemy.Enemy
 import com.runt9.untdrl.util.ext.degRad
 import com.runt9.untdrl.util.ext.ui.BaseSteerable
 
-class Projectile(val texture: Texture, val damage: Float, initialPosition: Vector2, initialRotation: Float, val target: Enemy) : BaseSteerable(initialPosition, initialRotation) {
+class Projectile(val owner: Tower, val texture: Texture, val damage: Float, initialPosition: Vector2, initialRotation: Float, val target: Enemy) : BaseSteerable(initialPosition, initialRotation) {
     override val linearSpeedLimit = 3f
     override val linearAccelerationLimit = maxLinearSpeed * 100f
     override val angularSpeedLimit = 10f
@@ -22,8 +22,8 @@ class Projectile(val texture: Texture, val damage: Float, initialPosition: Vecto
         this.onDieCb = onDieCb
     }
 
-    val pursue = Pursue(this, target)
-    val look = LookWhereYouAreGoing(this).apply {
+    private val pursue = Pursue(this, target)
+    private val look = LookWhereYouAreGoing(this).apply {
         timeToTarget = 0.1f
         alignTolerance = 1f.degRad
         decelerationRadius = 90f.degRad

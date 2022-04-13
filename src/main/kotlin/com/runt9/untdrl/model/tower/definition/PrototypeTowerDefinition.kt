@@ -9,5 +9,5 @@ object PrototypeTowerDefinition : TowerDefinition {
     override val projectileTexture = UnitTexture.HERO
     override val range = 4
     override val attackTime = 2f
-    override val damage = 25f
+    override val damage = 50f
 }

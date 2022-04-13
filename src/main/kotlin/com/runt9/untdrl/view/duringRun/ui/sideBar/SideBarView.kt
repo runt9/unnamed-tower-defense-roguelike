@@ -2,6 +2,7 @@ package com.runt9.untdrl.view.duringRun.ui.sideBar
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.utils.Align
+import com.kotcrab.vis.ui.VisUI
 import com.runt9.untdrl.util.ext.ui.bindLabelText
 import com.runt9.untdrl.util.ext.ui.bindUpdatable
 import com.runt9.untdrl.util.ext.ui.bindVisible
@@ -11,6 +12,8 @@ import com.runt9.untdrl.util.ext.ui.toDrawable
 import com.runt9.untdrl.util.framework.ui.view.TableView
 import ktx.actors.onChange
 import ktx.actors.onClick
+import ktx.scene2d.label
+import ktx.scene2d.progressBar
 import ktx.scene2d.stack
 import ktx.scene2d.textButton
 import ktx.scene2d.vis.flowGroup
@@ -18,6 +21,7 @@ import ktx.scene2d.vis.visImage
 import ktx.scene2d.vis.visLabel
 import ktx.scene2d.vis.visScrollPane
 import ktx.scene2d.vis.visTable
+import ktx.style.progressBar
 import kotlin.math.roundToInt
 
 // TODO: Break the pieces into their own modules
@@ -61,6 +65,31 @@ class SideBarView(override val controller: SideBarController, override val vm: S
                         visLabel("") { bindLabelText { "Damage: ${tower.damage().roundToInt()}" } }.cell(row = true, pad = 2f, align = Align.left)
                         visLabel("") { bindLabelText { "Range: ${tower.range()}" } }.cell(row = true, pad = 2f, align = Align.left)
                         visLabel("") { bindLabelText { "Attack Speed: ${"%.2f".format(1 / tower.attackSpeed())}" } }.cell(row = true, pad = 2f, align = Align.left)
+                        visLabel("") { bindLabelText { "Level: ${tower.level()}" } }.cell(row = true, pad = 2f, align = Align.left)
+                        stack {
+                            progressBar {
+                                style = VisUI.getSkin().progressBar {
+                                    background = rectPixmapTexture(2, 2, Color.DARK_GRAY).toDrawable()
+                                    background.minHeight = 20f
+                                    background.minWidth = 0f
+                                    knobBefore = rectPixmapTexture(2, 2, Color.BLUE).toDrawable()
+                                    knobBefore.minHeight = 20f
+                                    knobBefore.minWidth = 0f
+                                }
+
+                                bindUpdatable(tower.xp) { value = tower.xp.get().toFloat() / tower.xpToLevel.get() }
+
+                                setSize(100f, 20f)
+                                setOrigin(Align.center)
+                                setRound(false)
+                            }
+
+                            label("") {
+                                bindLabelText { "${tower.xp()} / ${tower.xpToLevel()}" }
+                                setAlignment(Align.center)
+                            }
+                        }.cell(width = 100f, height = 20f, row = true)
+
                     }.cell(row = true, growX = true, expandY = true, align = Align.top, pad = 4f)
                 }
             }

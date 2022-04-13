@@ -33,11 +33,14 @@ class ProjectileService(private val eventBus: EventBus, registry: RunServiceRegi
     override fun tick(delta: Float) {
         runOnServiceThread {
             projectiles.toList().forEach { projectile ->
-                if (projectile.position.dst(projectile.target.position) <= 0.1f) {
-                    projectile.target.takeDamage(projectile.damage)
-                    eventBus.enqueueEvent(EnemyHpChanged(projectile.target))
-                    if (projectile.target.currentHp <= 0) {
-                        eventBus.enqueueEvent(EnemyRemovedEvent(projectile.target))
+                val target = projectile.target
+
+                if (projectile.position.dst(target.position) <= 0.1f) {
+                    target.takeDamage(projectile.owner, projectile.damage)
+                    eventBus.enqueueEvent(EnemyHpChanged(target))
+                    if (target.currentHp <= 0) {
+                        target.affectedByTowers.forEach { t -> t.gainXp(target.xpOnDeath) }
+                        eventBus.enqueueEvent(EnemyRemovedEvent(target))
                     }
                     projectile.die()
                     projectiles.remove(projectile)

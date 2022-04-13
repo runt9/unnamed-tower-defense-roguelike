@@ -47,6 +47,7 @@ class SpawnerService(
         runOnServiceThread {
             if (!isSpawning) return@runOnServiceThread
 
+            val runState = runStateService.load()
             var checkedSpawn = false
             spawners.forEach { spawner ->
                 if (spawner.enemiesToSpawn == 0) return@forEach
@@ -56,7 +57,7 @@ class SpawnerService(
                 spawner.enemyDelayTimer.also { timer ->
                     timer.tick(delta)
                     if (timer.isReady) {
-                        val enemy = spawner.spawnEnemy()
+                        val enemy = spawner.spawnEnemy(runState.wave)
                         eventBus.enqueueEvent(EnemySpawnedEvent(enemy))
                         spawner.enemiesToSpawn--
                         timer.reset()

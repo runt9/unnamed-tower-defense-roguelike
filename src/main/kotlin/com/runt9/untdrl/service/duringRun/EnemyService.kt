@@ -10,7 +10,6 @@ import com.runt9.untdrl.model.event.WaveCompleteEvent
 import com.runt9.untdrl.model.tower.Tower
 import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.util.framework.event.HandlesEvent
-import com.runt9.untdrl.view.duringRun.HOME_POINT
 import kotlin.math.roundToInt
 
 class EnemyService(private val grid: IndexedGridGraph, private val eventBus: EventBus, registry: RunServiceRegistry) : RunService(eventBus, registry) {
@@ -52,8 +51,7 @@ class EnemyService(private val grid: IndexedGridGraph, private val eventBus: Eve
         }
     }
 
-    // TODO: This is not quite right, it needs to be "furthest along current path"
-    fun getTowerTarget(tower: Tower) = enemies.sortedBy { it.position.dst(HOME_POINT) }.find { enemy ->
+    fun getTowerTarget(tower: Tower) = enemies.sortedBy { it.numNodesToHome() }.find { enemy ->
         tower.position.dst(enemy.position) <= tower.range
     }
 

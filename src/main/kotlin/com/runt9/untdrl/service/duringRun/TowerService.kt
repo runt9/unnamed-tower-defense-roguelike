@@ -22,7 +22,7 @@ class TowerService(private val enemyService: EnemyService, private val projectil
     }
 
     override fun tick(delta: Float) {
-        towers.forEach { tower ->
+        towers.toList().forEach { tower ->
             val steeringOutput = SteeringAcceleration(Vector2())
 
             tower.attackTimer.tick(delta)

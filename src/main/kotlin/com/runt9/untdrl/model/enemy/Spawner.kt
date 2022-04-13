@@ -14,7 +14,8 @@ class Spawner(val node: GridNode, val texture: Texture) {
     var delayBetweenEnemies = 1f
     val enemyDelayTimer = Timer(delayBetweenEnemies)
 
-    fun spawnEnemy() = Enemy(
+    fun spawnEnemy(wave: Int) = Enemy(
+        wave,
         texture,
         node.point,
         currentPath.nodes.first().point.sub(node.point).toAngle().radDeg,
