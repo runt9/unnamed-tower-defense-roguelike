@@ -24,7 +24,6 @@ import com.runt9.untdrl.view.duringRun.game.DuringRunGameController
 import com.runt9.untdrl.view.duringRun.ui.DuringRunUiController
 import com.runt9.untdrl.view.duringRun.ui.menu.MenuDialogController
 import com.runt9.untdrl.view.duringRun.ui.runEnd.RunEndDialogController
-import com.runt9.untdrl.view.duringRun.ui.topBar.TopBarController
 import com.runt9.untdrl.view.loading.LoadingScreenController
 import com.runt9.untdrl.view.mainMenu.MainMenuScreenController
 import com.runt9.untdrl.view.settings.SettingsDialogController
@@ -82,7 +81,6 @@ object Injector : Context() {
         bindSingleton<DuringRunUiController>()
         bindSingleton<DuringRunInputController>()
         bindSingleton<DuringRunScreen>()
-        bindSingleton<TopBarController>()
         bindSingleton<MenuDialogController>()
     }
 }

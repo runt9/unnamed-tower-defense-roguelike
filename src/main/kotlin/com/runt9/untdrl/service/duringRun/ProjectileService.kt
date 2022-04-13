@@ -17,6 +17,7 @@ class ProjectileService(private val eventBus: EventBus, registry: RunServiceRegi
         projectiles += projectile
     }
 
+    // TODO: Concurrent modification
     fun remove(projectile: Projectile) {
         projectiles -= projectile
     }

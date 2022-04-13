@@ -9,7 +9,7 @@ import com.runt9.untdrl.util.ext.Timer
 import com.runt9.untdrl.util.ext.degRad
 import com.runt9.untdrl.util.ext.ui.BaseSteerable
 
-class Tower(private val definition: TowerDefinition, val texture: Texture, private val projTexture: Texture) : BaseSteerable(Vector2.Zero, 0f) {
+class Tower(val definition: TowerDefinition, val texture: Texture, private val projTexture: Texture) : BaseSteerable(Vector2.Zero, 0f) {
     override val linearSpeedLimit = 0f
     override val linearAccelerationLimit = 0f
     override val angularSpeedLimit = 10f

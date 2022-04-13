@@ -52,6 +52,7 @@ class EnemyService(private val grid: IndexedGridGraph, private val eventBus: Eve
         }
     }
 
+    // TODO: This is not quite right, it needs to be "furthest along current path"
     fun getTowerTarget(tower: Tower) = enemies.sortedBy { it.position.dst(HOME_POINT) }.find { enemy ->
         tower.position.dst(enemy.position) <= tower.range
     }
