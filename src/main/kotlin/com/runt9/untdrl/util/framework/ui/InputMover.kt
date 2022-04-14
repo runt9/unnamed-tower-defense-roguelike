@@ -1,7 +1,7 @@
 package com.runt9.untdrl.util.framework.ui
 
 import com.badlogic.gdx.Input
-import com.badlogic.gdx.ai.steer.Steerable
+import com.badlogic.gdx.ai.utils.Location
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.Vector3
@@ -9,7 +9,7 @@ import com.runt9.untdrl.util.framework.event.EventBus
 import ktx.app.KtxInputAdapter
 import kotlin.math.roundToInt
 
-open class InputMover<T : Steerable<Vector2>>(
+open class InputMover<T : Location<Vector2>>(
     private val item: T,
     private val camera: OrthographicCamera,
     private val eventBus: EventBus,

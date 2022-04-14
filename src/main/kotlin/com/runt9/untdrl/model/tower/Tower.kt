@@ -7,7 +7,7 @@ import com.runt9.untdrl.model.enemy.Enemy
 import com.runt9.untdrl.model.tower.definition.TowerDefinition
 import com.runt9.untdrl.util.ext.Timer
 import com.runt9.untdrl.util.ext.degRad
-import com.runt9.untdrl.util.ext.ui.BaseSteerable
+import com.runt9.untdrl.util.ext.BaseSteerable
 
 class Tower(val definition: TowerDefinition, val texture: Texture, private val projTexture: Texture) : BaseSteerable(Vector2.Zero, 0f) {
     private val maxLevel = 20

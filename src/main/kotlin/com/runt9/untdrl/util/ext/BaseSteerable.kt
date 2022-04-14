@@ -1,12 +1,8 @@
-package com.runt9.untdrl.util.ext.ui
+package com.runt9.untdrl.util.ext
 
 import com.badlogic.gdx.ai.steer.SteerableAdapter
 import com.badlogic.gdx.ai.steer.SteeringAcceleration
 import com.badlogic.gdx.math.Vector2
-import com.runt9.untdrl.util.ext.degRad
-import com.runt9.untdrl.util.ext.radDeg
-import com.runt9.untdrl.util.ext.toAngle
-import com.runt9.untdrl.util.ext.toVector
 
 abstract class BaseSteerable(initialPosition: Vector2, initialRotation: Float) : SteerableAdapter<Vector2>() {
     private val position = initialPosition.cpy()!!

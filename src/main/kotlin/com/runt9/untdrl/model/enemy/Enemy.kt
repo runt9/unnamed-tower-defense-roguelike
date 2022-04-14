@@ -9,7 +9,7 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.math.Vector2
 import com.runt9.untdrl.model.tower.Tower
 import com.runt9.untdrl.util.ext.degRad
-import com.runt9.untdrl.util.ext.ui.BaseSteerable
+import com.runt9.untdrl.util.ext.BaseSteerable
 import ktx.collections.GdxArray
 
 class Enemy(wave: Int, val texture: Texture, initialPosition: Vector2, initialRotation: Float, path: GdxArray<Vector2>) : BaseSteerable(initialPosition, initialRotation) {

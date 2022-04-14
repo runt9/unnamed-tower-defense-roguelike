@@ -48,6 +48,13 @@ class SideBarView(override val controller: SideBarController, override val vm: S
                                     stack {
                                         squarePixmap(60, Color.LIGHT_GRAY)
                                         visImage(controller.loadTexture(tower.texture))
+                                        visTable {
+                                            visLabel(tower.goldCost.toString()) {
+                                                bindUpdatable(vm.gold) {
+                                                    color = if (vm.gold.get() >= tower.goldCost) Color.WHITE else Color.RED
+                                                }
+                                            }.cell(expand = true, align = Align.bottomRight)
+                                        }
 
                                         onClick {
                                             controller.addTower(tower)

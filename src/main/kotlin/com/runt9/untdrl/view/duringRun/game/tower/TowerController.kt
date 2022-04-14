@@ -24,7 +24,7 @@ fun <S> KWidget<S>.tower(tower: TowerViewModel, init: TowerView.(S) -> Unit = {}
     this.initTowerMover()
 }, init)
 
-class TowerController(private val eventBus: EventBus, private val towerPrototype: TowerService, private val grid: IndexedGridGraph) : Controller {
+class TowerController(private val eventBus: EventBus, private val towerService: TowerService, private val grid: IndexedGridGraph) : Controller {
     override lateinit var vm: TowerViewModel
     override val view by lazy { TowerView(this, vm) }
     private val input by lazyInject<InputMultiplexer>()
@@ -59,7 +59,7 @@ class TowerController(private val eventBus: EventBus, private val towerPrototype
         })
     }
 
-    private fun isValidTowerPlacement(tower: Tower) = towerPrototype.isNoTowerPositionOverlap(tower) && grid.isEmptyTile(tower.position)
+    private fun isValidTowerPlacement(tower: Tower) = towerService.isNoTowerPositionOverlap(tower) && grid.isEmptyTile(tower.position)
 
     @HandlesEvent
     fun towerSelected(event: TowerSelectedEvent) {

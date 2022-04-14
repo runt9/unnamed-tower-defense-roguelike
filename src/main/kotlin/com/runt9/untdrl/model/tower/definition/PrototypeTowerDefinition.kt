@@ -10,4 +10,5 @@ object PrototypeTowerDefinition : TowerDefinition {
     override val range = 4
     override val attackTime = 2f
     override val damage = 50f
+    override val goldCost = 30
 }

@@ -44,7 +44,8 @@ class DuringRunGameController(
     }
 
     private fun addHomeChunk() {
-        val chunk = Chunk(chunkGenerator.buildHomeChunk(), HOME_POINT)
+        val chunk = Chunk(chunkGenerator.buildHomeChunk())
+        chunk.position.set(HOME_POINT)
         val chunkVm = ChunkViewModel(chunk)
         chunkVm.isPlaced(true)
         chunkVm.isValidPlacement(true)

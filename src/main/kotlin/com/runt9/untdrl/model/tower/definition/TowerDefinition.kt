@@ -13,4 +13,5 @@ interface TowerDefinition {
     val range: Int
     val attackTime: Float
     val damage: Float
+    val goldCost: Int
 }

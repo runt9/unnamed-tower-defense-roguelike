@@ -7,7 +7,7 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.math.Vector2
 import com.runt9.untdrl.model.enemy.Enemy
 import com.runt9.untdrl.util.ext.degRad
-import com.runt9.untdrl.util.ext.ui.BaseSteerable
+import com.runt9.untdrl.util.ext.BaseSteerable
 
 class Projectile(val owner: Tower, val texture: Texture, val damage: Float, initialPosition: Vector2, initialRotation: Float, val target: Enemy) : BaseSteerable(initialPosition, initialRotation) {
     override val linearSpeedLimit = 3f
