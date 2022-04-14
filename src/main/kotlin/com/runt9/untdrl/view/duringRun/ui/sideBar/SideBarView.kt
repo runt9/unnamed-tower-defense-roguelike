@@ -34,30 +34,30 @@ class SideBarView(override val controller: SideBarController, override val vm: S
         separator()
 
         visTable {
-            bindUpdatable(vm.selectedTower) {
+            bindUpdatable(vm.selectedBuilding) {
                 clear()
 
-                if (vm.selectedTower.get().empty) {
+                if (vm.selectedBuilding.get().empty) {
                     visScrollPane {
                         setScrollingDisabled(true, false)
                         setFlickScroll(false)
 
                         flowGroup(spacing = 2f) {
-                            bindUpdatable(vm.availableTowers) {
-                                vm.availableTowers.get().forEach { tower ->
+                            bindUpdatable(vm.availableBuildings) {
+                                vm.availableBuildings.get().forEach { building ->
                                     stack {
                                         squarePixmap(60, Color.LIGHT_GRAY)
-                                        visImage(controller.loadTexture(tower.texture))
+                                        visImage(controller.loadTexture(building.texture))
                                         visTable {
-                                            visLabel(tower.goldCost.toString()) {
+                                            visLabel(building.goldCost.toString()) {
                                                 bindUpdatable(vm.gold) {
-                                                    color = if (vm.gold.get() >= tower.goldCost) Color.WHITE else Color.RED
+                                                    color = if (vm.gold.get() >= building.goldCost) Color.WHITE else Color.RED
                                                 }
                                             }.cell(expand = true, align = Align.bottomRight)
                                         }
 
                                         onClick {
-                                            controller.addTower(tower)
+                                            controller.addBuilding(building)
                                         }
                                     }
                                 }
@@ -65,14 +65,14 @@ class SideBarView(override val controller: SideBarController, override val vm: S
                         }
                     }.cell(grow = true)
                 } else {
-                    val tower = vm.selectedTower.get()
+                    val building = vm.selectedBuilding.get()
 
                     visTable {
-                        visLabel(tower.name.get()).cell(row = true, pad = 2f, align = Align.left)
-                        visLabel("") { bindLabelText { "Damage: ${tower.damage().roundToInt()}" } }.cell(row = true, pad = 2f, align = Align.left)
-                        visLabel("") { bindLabelText { "Range: ${tower.range()}" } }.cell(row = true, pad = 2f, align = Align.left)
-                        visLabel("") { bindLabelText { "Attack Speed: ${"%.2f".format(1 / tower.attackSpeed())}" } }.cell(row = true, pad = 2f, align = Align.left)
-                        visLabel("") { bindLabelText { "Level: ${tower.level()}" } }.cell(row = true, pad = 2f, align = Align.left)
+                        visLabel(building.name.get()).cell(row = true, pad = 2f, align = Align.left)
+                        visLabel("") { bindLabelText { "Damage: ${building.damage().roundToInt()}" } }.cell(row = true, pad = 2f, align = Align.left)
+                        visLabel("") { bindLabelText { "Range: ${building.range()}" } }.cell(row = true, pad = 2f, align = Align.left)
+                        visLabel("") { bindLabelText { "Attack Speed: ${"%.2f".format(1 / building.attackSpeed())}" } }.cell(row = true, pad = 2f, align = Align.left)
+                        visLabel("") { bindLabelText { "Level: ${building.level()}" } }.cell(row = true, pad = 2f, align = Align.left)
                         stack {
                             progressBar {
                                 style = VisUI.getSkin().progressBar {
@@ -84,7 +84,7 @@ class SideBarView(override val controller: SideBarController, override val vm: S
                                     knobBefore.minWidth = 0f
                                 }
 
-                                bindUpdatable(tower.xp) { value = tower.xp.get().toFloat() / tower.xpToLevel.get() }
+                                bindUpdatable(building.xp) { value = building.xp.get().toFloat() / building.xpToLevel.get() }
 
                                 setSize(100f, 20f)
                                 setOrigin(Align.center)
@@ -92,7 +92,7 @@ class SideBarView(override val controller: SideBarController, override val vm: S
                             }
 
                             label("") {
-                                bindLabelText { "${tower.xp()} / ${tower.xpToLevel()}" }
+                                bindLabelText { "${building.xp()} / ${building.xpToLevel()}" }
                                 setAlignment(Align.center)
                             }
                         }.cell(width = 100f, height = 20f, row = true)

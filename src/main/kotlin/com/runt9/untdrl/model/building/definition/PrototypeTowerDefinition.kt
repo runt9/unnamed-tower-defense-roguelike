@@ -1,8 +1,8 @@
-package com.runt9.untdrl.model.tower.definition
+package com.runt9.untdrl.model.building.definition
 
 import com.runt9.untdrl.model.UnitTexture
 
-object PrototypeTowerDefinition : TowerDefinition {
+object PrototypeBuildingDefinition : BuildingDefinition {
     override val id = 1
     override val name = "Prototype"
     override val texture = UnitTexture.BOSS

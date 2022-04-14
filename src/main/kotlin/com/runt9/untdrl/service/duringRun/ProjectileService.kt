@@ -4,7 +4,7 @@ import com.badlogic.gdx.ai.steer.SteeringAcceleration
 import com.badlogic.gdx.math.Vector2
 import com.runt9.untdrl.model.event.EnemyHpChanged
 import com.runt9.untdrl.model.event.EnemyRemovedEvent
-import com.runt9.untdrl.model.tower.Projectile
+import com.runt9.untdrl.model.building.Projectile
 import com.runt9.untdrl.util.ext.unTdRlLogger
 import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.util.framework.event.HandlesEvent
@@ -39,7 +39,7 @@ class ProjectileService(private val eventBus: EventBus, registry: RunServiceRegi
                     target.takeDamage(projectile.owner, projectile.damage)
                     eventBus.enqueueEvent(EnemyHpChanged(target))
                     if (target.currentHp <= 0) {
-                        target.affectedByTowers.forEach { t -> t.gainXp(target.xpOnDeath) }
+                        target.affectedByBuildings.forEach { t -> t.gainXp(target.xpOnDeath) }
                         eventBus.enqueueEvent(EnemyRemovedEvent(target))
                     }
                     projectile.die()

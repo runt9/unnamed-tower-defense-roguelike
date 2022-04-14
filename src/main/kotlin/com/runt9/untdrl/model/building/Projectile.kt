@@ -1,4 +1,4 @@
-package com.runt9.untdrl.model.tower
+package com.runt9.untdrl.model.building
 
 import com.badlogic.gdx.ai.steer.behaviors.BlendedSteering
 import com.badlogic.gdx.ai.steer.behaviors.LookWhereYouAreGoing
@@ -9,7 +9,7 @@ import com.runt9.untdrl.model.enemy.Enemy
 import com.runt9.untdrl.util.ext.degRad
 import com.runt9.untdrl.util.ext.BaseSteerable
 
-class Projectile(val owner: Tower, val texture: Texture, val damage: Float, initialPosition: Vector2, initialRotation: Float, val target: Enemy) : BaseSteerable(initialPosition, initialRotation) {
+class Projectile(val owner: Building, val texture: Texture, val damage: Float, initialPosition: Vector2, initialRotation: Float, val target: Enemy) : BaseSteerable(initialPosition, initialRotation) {
     override val linearSpeedLimit = 3f
     override val linearAccelerationLimit = maxLinearSpeed * 100f
     override val angularSpeedLimit = 10f

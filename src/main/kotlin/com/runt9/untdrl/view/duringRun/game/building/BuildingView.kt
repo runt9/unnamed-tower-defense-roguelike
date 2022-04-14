@@ -1,4 +1,4 @@
-package com.runt9.untdrl.view.duringRun.game.tower
+package com.runt9.untdrl.view.duringRun.game.building
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.utils.Align
@@ -10,15 +10,15 @@ import com.runt9.untdrl.util.framework.ui.view.GroupView
 import ktx.actors.alpha
 import ktx.scene2d.vis.visImage
 
-class TowerView(override val controller: TowerController, override val vm: TowerViewModel) : GroupView(controller, vm) {
+class BuildingView(override val controller: BuildingController, override val vm: BuildingViewModel) : GroupView(controller, vm) {
     private val logger = unTdRlLogger()
 
     override fun init() {
-        val towerSize = 0.75f
+        val buildingSize = 0.75f
         val vm = vm
 
-        setSize(towerSize, towerSize)
-        setBounds(0f, 0f, towerSize, towerSize)
+        setSize(buildingSize, buildingSize)
+        setBounds(0f, 0f, buildingSize, buildingSize)
         setOrigin(Align.center)
         bindUpdatable(vm.position) { vm.position.get().apply { setPosition(x, y, Align.center) } }
 
@@ -27,7 +27,7 @@ class TowerView(override val controller: TowerController, override val vm: Tower
         }
 
         visImage(vm.texture) {
-            setSize(towerSize, towerSize)
+            setSize(buildingSize, buildingSize)
             setOrigin(Align.center)
             bindUpdatable(vm.rotation) { vm.rotation.get().apply { rotation = this } }
         }
@@ -41,7 +41,7 @@ class TowerView(override val controller: TowerController, override val vm: Tower
             bindUpdatable(vm.range) {
                 val range = vm.range.get().toFloat()
                 setSize(range * 2, range * 2)
-                setPosition(towerSize / 2, towerSize / 2, Align.center)
+                setPosition(buildingSize / 2, buildingSize / 2, Align.center)
             }
         }
     }

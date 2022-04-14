@@ -6,15 +6,15 @@ import com.runt9.untdrl.model.event.CancelOpenItemsEvent
 import com.runt9.untdrl.model.event.ChunkCancelledEvent
 import com.runt9.untdrl.model.event.ChunkPlacedEvent
 import com.runt9.untdrl.model.event.NewChunkEvent
-import com.runt9.untdrl.model.event.NewTowerEvent
+import com.runt9.untdrl.model.event.NewBuildingEvent
 import com.runt9.untdrl.model.event.PrepareNextWaveEvent
 import com.runt9.untdrl.model.event.RunStateUpdated
-import com.runt9.untdrl.model.event.TowerCancelledEvent
-import com.runt9.untdrl.model.event.TowerPlacedEvent
-import com.runt9.untdrl.model.event.TowerSelectedEvent
+import com.runt9.untdrl.model.event.BuildingCancelledEvent
+import com.runt9.untdrl.model.event.BuildingPlacedEvent
+import com.runt9.untdrl.model.event.BuildingSelectedEvent
 import com.runt9.untdrl.model.event.WaveStartedEvent
 import com.runt9.untdrl.model.event.enqueueShowDialog
-import com.runt9.untdrl.model.tower.definition.TowerDefinition
+import com.runt9.untdrl.model.building.definition.BuildingDefinition
 import com.runt9.untdrl.service.duringRun.RunStateService
 import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.util.framework.event.HandlesEvent
@@ -36,7 +36,7 @@ class SideBarController(private val eventBus: EventBus, private val runStateServ
     override fun load() {
         eventBus.registerHandlers(this)
         val runState = runStateService.load()
-        vm.availableTowers(runState.availableTowers)
+        vm.availableBuildings(runState.availableBuildings)
     }
 
     @HandlesEvent
@@ -47,7 +47,7 @@ class SideBarController(private val eventBus: EventBus, private val runStateServ
             research(newState.research)
             gold(newState.gold)
             wave(newState.wave)
-            availableTowers(newState.availableTowers)
+            availableBuildings(newState.availableBuildings)
         }
     }
 
@@ -72,28 +72,28 @@ class SideBarController(private val eventBus: EventBus, private val runStateServ
         }
     }
 
-    @HandlesEvent(TowerPlacedEvent::class)
-    suspend fun towerPlaced() = onRenderingThread {
+    @HandlesEvent(BuildingPlacedEvent::class)
+    suspend fun buildingPlaced() = onRenderingThread {
         vm.canInteract(true)
         vm.actionsVisible(true)
     }
 
-    @HandlesEvent(TowerCancelledEvent::class)
-    suspend fun towerCancelled() = onRenderingThread {
+    @HandlesEvent(BuildingCancelledEvent::class)
+    suspend fun buildingCancelled() = onRenderingThread {
         vm.canInteract(true)
         vm.actionsVisible(true)
     }
 
     @HandlesEvent
-    suspend fun towerSelected(event: TowerSelectedEvent) = onRenderingThread {
-        val tower = event.tower
-        val towerVm = TowerDisplayViewModel.fromTower(tower)
-        vm.selectedTower(towerVm)
+    suspend fun buildingSelected(event: BuildingSelectedEvent) = onRenderingThread {
+        val building = event.building
+        val buildingVm = BuildingDisplayViewModel.fromBuilding(building)
+        vm.selectedBuilding(buildingVm)
     }
 
     @HandlesEvent(CancelOpenItemsEvent::class)
-    suspend fun deselectTower() = onRenderingThread {
-        vm.selectedTower(TowerDisplayViewModel())
+    suspend fun deselectBuilding() = onRenderingThread {
+        vm.selectedBuilding(BuildingDisplayViewModel())
     }
 
     fun menuButtonClicked() = eventBus.enqueueShowDialog<MenuDialogController>()
@@ -115,12 +115,12 @@ class SideBarController(private val eventBus: EventBus, private val runStateServ
 
     fun loadTexture(texture: UnitTexture): Texture = assets[texture.assetFile]
 
-    fun addTower(tower: TowerDefinition) {
+    fun addBuilding(building: BuildingDefinition) {
         if (!vm.canInteract.get()) return
 
         vm.canInteract(false)
         vm.actionsVisible(true)
         eventBus.enqueueEventSync(CancelOpenItemsEvent())
-        eventBus.enqueueEventSync(NewTowerEvent(tower))
+        eventBus.enqueueEventSync(NewBuildingEvent(building))
     }
 }

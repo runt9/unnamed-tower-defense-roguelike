@@ -7,7 +7,7 @@ import com.badlogic.gdx.ai.steer.utils.paths.LinePath
 import com.badlogic.gdx.ai.steer.utils.paths.LinePath.LinePathParam
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.math.Vector2
-import com.runt9.untdrl.model.tower.Tower
+import com.runt9.untdrl.model.building.Building
 import com.runt9.untdrl.util.ext.degRad
 import com.runt9.untdrl.util.ext.BaseSteerable
 import ktx.collections.GdxArray
@@ -23,7 +23,7 @@ class Enemy(wave: Int, val texture: Texture, initialPosition: Vector2, initialRo
     var currentHp = maxHp
     val xpOnDeath = wave
 
-    val affectedByTowers = mutableSetOf<Tower>()
+    val affectedByBuildings = mutableSetOf<Building>()
 
     private val fullPath = LinePath(path, true)
     private val followPathBehavior = FollowPath(this, fullPath, 0.1f)
@@ -38,9 +38,9 @@ class Enemy(wave: Int, val texture: Texture, initialPosition: Vector2, initialRo
         add(BlendedSteering.BehaviorAndWeight(lookBehavior, 1f))
     }
 
-    fun takeDamage(source: Tower, damage: Float) {
+    fun takeDamage(source: Building, damage: Float) {
         currentHp -= damage
-        affectedByTowers += source
+        affectedByBuildings += source
     }
 
     fun numNodesToHome() = fullPath.segments.size - (followPathBehavior.pathParam as LinePathParam).segmentIndex

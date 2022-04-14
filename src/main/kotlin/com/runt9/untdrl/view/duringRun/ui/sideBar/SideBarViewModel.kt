@@ -1,6 +1,6 @@
 package com.runt9.untdrl.view.duringRun.ui.sideBar
 
-import com.runt9.untdrl.model.tower.definition.TowerDefinition
+import com.runt9.untdrl.model.building.definition.BuildingDefinition
 import com.runt9.untdrl.util.framework.ui.viewModel.ViewModel
 
 class SideBarViewModel : ViewModel() {
@@ -11,7 +11,7 @@ class SideBarViewModel : ViewModel() {
 
     val chunkPlacementRequired = Binding(true)
     val actionsVisible = Binding(true)
-    val availableTowers = ListBinding<TowerDefinition>()
+    val availableBuildings = ListBinding<BuildingDefinition>()
     val canInteract = Binding(true)
-    val selectedTower = Binding(TowerDisplayViewModel())
+    val selectedBuilding = Binding(BuildingDisplayViewModel())
 }

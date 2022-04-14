@@ -2,30 +2,30 @@ package com.runt9.untdrl.view.duringRun.game
 
 import com.badlogic.gdx.utils.Disposable
 import com.runt9.untdrl.model.Chunk
+import com.runt9.untdrl.model.building.Building
+import com.runt9.untdrl.model.building.Projectile
+import com.runt9.untdrl.model.event.BuildingCancelledEvent
 import com.runt9.untdrl.model.event.ChunkCancelledEvent
 import com.runt9.untdrl.model.event.ChunkPlacedEvent
 import com.runt9.untdrl.model.event.EnemyRemovedEvent
 import com.runt9.untdrl.model.event.EnemySpawnedEvent
+import com.runt9.untdrl.model.event.NewBuildingEvent
 import com.runt9.untdrl.model.event.NewChunkEvent
-import com.runt9.untdrl.model.event.NewTowerEvent
 import com.runt9.untdrl.model.event.PrepareNextWaveEvent
-import com.runt9.untdrl.model.event.TowerCancelledEvent
-import com.runt9.untdrl.model.tower.Projectile
-import com.runt9.untdrl.model.tower.Tower
 import com.runt9.untdrl.service.ChunkGenerator
 import com.runt9.untdrl.util.ext.unTdRlLogger
 import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.util.framework.event.HandlesEvent
 import com.runt9.untdrl.util.framework.ui.controller.Controller
 import com.runt9.untdrl.view.duringRun.HOME_POINT
+import com.runt9.untdrl.view.duringRun.game.building.BuildingViewModel
 import com.runt9.untdrl.view.duringRun.game.chunk.ChunkViewModel
 import com.runt9.untdrl.view.duringRun.game.enemy.EnemyViewModel
 import com.runt9.untdrl.view.duringRun.game.projectile.ProjectileViewModel
-import com.runt9.untdrl.view.duringRun.game.tower.TowerViewModel
 import ktx.assets.async.AssetStorage
 import ktx.async.onRenderingThread
 
-// TODO: Can probably break this into multiple controllers: enemies, towers, projectiles, all floating groups
+// TODO: Can probably break this into multiple controllers: enemies, buildings, projectiles, all floating groups
 class DuringRunGameController(
     private val eventBus: EventBus,
     private val assets: AssetStorage,
@@ -63,19 +63,19 @@ class DuringRunGameController(
     }
 
     @HandlesEvent
-    suspend fun handleNewTower(event: NewTowerEvent) = onRenderingThread {
-        val towerDef = event.towerDefinition
-        val tower = Tower(towerDef, assets[towerDef.texture.assetFile], assets[towerDef.projectileTexture.assetFile])
+    suspend fun handleNewBuilding(event: NewBuildingEvent) = onRenderingThread {
+        val buildingDef = event.buildingDefinition
+        val building = Building(buildingDef, assets[buildingDef.texture.assetFile], assets[buildingDef.projectileTexture.assetFile])
 
-        val towerVm = TowerViewModel(tower)
-        tower.onMove { towerVm.rotation(rotation) }
-        tower.onProj { spawnProjectile(this) }
-        vm.towers += towerVm
+        val buildingVm = BuildingViewModel(building)
+        building.onMove { buildingVm.rotation(rotation) }
+        building.onProj { spawnProjectile(this) }
+        vm.buildings += buildingVm
     }
 
     @HandlesEvent
-    suspend fun towerCancelled(event: TowerCancelledEvent) = onRenderingThread {
-        vm.towers.removeIf { it.tower == event.tower }
+    suspend fun buildingCancelled(event: BuildingCancelledEvent) = onRenderingThread {
+        vm.buildings.removeIf { it.building == event.building }
     }
 
     @HandlesEvent

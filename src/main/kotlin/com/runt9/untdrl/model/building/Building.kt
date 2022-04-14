@@ -1,15 +1,15 @@
-package com.runt9.untdrl.model.tower
+package com.runt9.untdrl.model.building
 
 import com.badlogic.gdx.ai.steer.behaviors.Face
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.math.Vector2
 import com.runt9.untdrl.model.enemy.Enemy
-import com.runt9.untdrl.model.tower.definition.TowerDefinition
+import com.runt9.untdrl.model.building.definition.BuildingDefinition
 import com.runt9.untdrl.util.ext.Timer
 import com.runt9.untdrl.util.ext.degRad
 import com.runt9.untdrl.util.ext.BaseSteerable
 
-class Tower(val definition: TowerDefinition, val texture: Texture, private val projTexture: Texture) : BaseSteerable(Vector2.Zero, 0f) {
+class Building(val definition: BuildingDefinition, val texture: Texture, private val projTexture: Texture) : BaseSteerable(Vector2.Zero, 0f) {
     private val maxLevel = 20
 
     override val linearSpeedLimit = 0f
