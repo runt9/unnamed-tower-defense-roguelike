@@ -7,13 +7,18 @@ class BuildingDisplayViewModel(val empty: Boolean = true) : ViewModel() {
     // TODO: Need a binding to the building so this updates in real-time
     companion object {
         fun fromBuilding(building: Building): BuildingDisplayViewModel {
-            return BuildingDisplayViewModel(false).apply {
-                name(building.definition.name)
-                xp(building.xp)
-                xpToLevel(building.xpToLevel)
-                level(building.level)
-                stats(building.action.getStats())
+            val applyInfo: BuildingDisplayViewModel.(Building) -> Unit = { b ->
+                name(b.definition.name)
+                xp(b.xp)
+                xpToLevel(b.xpToLevel)
+                level(b.level)
+                stats(b.action.getStats())
             }
+
+            val vm = BuildingDisplayViewModel(false)
+            vm.applyInfo(building)
+            building.onChange { vm.applyInfo(this) }
+            return vm
         }
     }
 

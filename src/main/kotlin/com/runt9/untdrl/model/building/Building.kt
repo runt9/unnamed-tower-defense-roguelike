@@ -15,11 +15,17 @@ class Building(val definition: BuildingDefinition, val texture: Texture) : BaseS
     override val angularAccelerationLimit = angularSpeedLimit * 2f
     override val boundingBoxRadius = 0.5f
 
+    private var onChangeCb: (Building.() -> Unit)? = null
+
     lateinit var action: BuildingAction
 
     var xp = 0
     var xpToLevel = 10
     var level = 1
+
+    fun onChange(onChangeCb: Building.() -> Unit) {
+        this.onChangeCb = onChangeCb
+    }
 
     fun gainXp(xp: Int) {
         if (level == maxLevel) {
@@ -33,5 +39,7 @@ class Building(val definition: BuildingDefinition, val texture: Texture) : BaseS
             xpToLevel *= 2
             action.levelUp(level)
         }
+
+        onChangeCb?.invoke(this)
     }
 }
