@@ -1,11 +1,11 @@
 package com.runt9.untdrl.service.duringRun
 
 import com.runt9.untdrl.model.RunState
+import com.runt9.untdrl.model.event.BuildingPlacedEvent
 import com.runt9.untdrl.model.event.EnemyRemovedEvent
 import com.runt9.untdrl.model.event.PrepareNextWaveEvent
 import com.runt9.untdrl.model.event.RunEndEvent
 import com.runt9.untdrl.model.event.RunStateUpdated
-import com.runt9.untdrl.model.event.BuildingPlacedEvent
 import com.runt9.untdrl.model.event.WaveCompleteEvent
 import com.runt9.untdrl.util.ext.unTdRlLogger
 import com.runt9.untdrl.util.framework.event.EventBus
@@ -64,7 +64,7 @@ class RunStateService(private val eventBus: EventBus, registry: RunServiceRegist
         }
     }
 
-    private fun update(update: RunState.() -> Unit) {
+    fun update(update: RunState.() -> Unit) {
         load().apply {
             update()
             save(this)

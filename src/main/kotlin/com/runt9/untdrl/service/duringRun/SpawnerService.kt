@@ -50,6 +50,7 @@ class SpawnerService(
             val runState = runStateService.load()
             var checkedSpawn = false
             spawners.forEach { spawner ->
+                // TODO: Somehow this can get stuck and enemies will spawn infinitely
                 if (spawner.enemiesToSpawn == 0) return@forEach
 
                 checkedSpawn = true

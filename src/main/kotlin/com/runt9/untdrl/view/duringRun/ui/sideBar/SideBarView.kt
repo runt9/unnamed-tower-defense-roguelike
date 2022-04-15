@@ -69,8 +69,10 @@ class SideBarView(override val controller: SideBarController, override val vm: S
                     visTable {
                         visLabel(building.name.get()).cell(row = true, pad = 2f, align = Align.left)
 
+                        // TODO: Split stats into 2 cells each so wrapping can work its magic
                         building.stats.get().forEach { (name, value) ->
-                            visLabel("$name: $value").cell(row = true, pad = 2f, align = Align.left)
+                            visLabel(name) { wrap = true }.cell(pad = 2f, align = Align.left, growX = true)
+                            visLabel(value).cell(row = true, pad = 2f, align = Align.right, growX = true)
                         }
 
                         visLabel("") { bindLabelText { "Level: ${building.level()}" } }.cell(row = true, pad = 2f, align = Align.left)
