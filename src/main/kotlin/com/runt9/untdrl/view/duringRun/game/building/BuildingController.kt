@@ -2,7 +2,7 @@ package com.runt9.untdrl.view.duringRun.game.building
 
 import com.badlogic.gdx.InputMultiplexer
 import com.badlogic.gdx.graphics.OrthographicCamera
-import com.runt9.untdrl.config.lazyInject
+import com.runt9.untdrl.util.ext.lazyInject
 import com.runt9.untdrl.model.building.Building
 import com.runt9.untdrl.model.event.BuildingCancelledEvent
 import com.runt9.untdrl.model.event.BuildingPlacedEvent

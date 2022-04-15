@@ -3,6 +3,8 @@ package com.runt9.untdrl.view.duringRun
 import com.badlogic.gdx.ai.Timepiece
 import com.runt9.untdrl.model.event.GamePauseChanged
 import com.runt9.untdrl.model.event.RunEndEvent
+import com.runt9.untdrl.model.event.WaveCompleteEvent
+import com.runt9.untdrl.model.event.WaveStartedEvent
 import com.runt9.untdrl.model.event.enqueueShowDialog
 import com.runt9.untdrl.service.duringRun.RunInitializer
 import com.runt9.untdrl.service.duringRun.RunServiceRegistry
@@ -23,8 +25,11 @@ class DuringRunScreen(
     private val runServiceRegistry: RunServiceRegistry,
     private val inputHandler: DuringRunInputController
 ) : GameScreen(GAME_AREA_WIDTH, GAME_AREA_HEIGHT) {
-    private var isRunning = true
+    private var isRunning = false
     private var isPaused = false
+
+    @HandlesEvent(WaveStartedEvent::class) suspend fun waveStart() = onRenderingThread { isRunning = true }
+    @HandlesEvent(WaveCompleteEvent::class) suspend fun waveComplete() = onRenderingThread { isRunning = false }
 
     @HandlesEvent
     suspend fun pauseResume(event: GamePauseChanged) = onRenderingThread { isPaused = event.isPaused }

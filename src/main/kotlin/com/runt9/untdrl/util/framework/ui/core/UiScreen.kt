@@ -1,7 +1,7 @@
 package com.runt9.untdrl.util.framework.ui.core
 
 import com.badlogic.gdx.InputMultiplexer
-import com.runt9.untdrl.config.lazyInject
+import com.runt9.untdrl.util.ext.lazyInject
 import com.runt9.untdrl.util.framework.ui.DialogManager
 import com.runt9.untdrl.util.framework.ui.controller.Controller
 

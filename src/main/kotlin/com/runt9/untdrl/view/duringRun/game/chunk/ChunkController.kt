@@ -2,7 +2,7 @@ package com.runt9.untdrl.view.duringRun.game.chunk
 
 import com.badlogic.gdx.InputMultiplexer
 import com.badlogic.gdx.graphics.OrthographicCamera
-import com.runt9.untdrl.config.lazyInject
+import com.runt9.untdrl.util.ext.lazyInject
 import com.runt9.untdrl.model.event.ChunkCancelledEvent
 import com.runt9.untdrl.model.event.ChunkPlacedEvent
 import com.runt9.untdrl.service.duringRun.IndexedGridGraph

@@ -2,9 +2,11 @@ package com.runt9.untdrl.service.duringRun
 
 import com.badlogic.gdx.ai.steer.SteeringAcceleration
 import com.badlogic.gdx.math.Vector2
+import com.runt9.untdrl.model.building.Projectile
 import com.runt9.untdrl.model.event.EnemyHpChanged
 import com.runt9.untdrl.model.event.EnemyRemovedEvent
-import com.runt9.untdrl.model.building.Projectile
+import com.runt9.untdrl.model.event.ProjectileDespawnedEvent
+import com.runt9.untdrl.model.event.ProjectileSpawnedEvent
 import com.runt9.untdrl.util.ext.unTdRlLogger
 import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.util.framework.event.HandlesEvent
@@ -13,13 +15,15 @@ class ProjectileService(private val eventBus: EventBus, registry: RunServiceRegi
     private val logger = unTdRlLogger()
     private val projectiles = mutableListOf<Projectile>()
 
-    fun add(projectile: Projectile) {
-        projectiles += projectile
+    @HandlesEvent
+    fun add(event: ProjectileSpawnedEvent) {
+        projectiles += event.projectile
     }
 
     // TODO: Concurrent modification
-    fun remove(projectile: Projectile) {
-        projectiles -= projectile
+    @HandlesEvent
+    fun remove(event: ProjectileDespawnedEvent) {
+        projectiles -= event.projectile
     }
 
     @HandlesEvent

@@ -7,7 +7,7 @@ class BuildingViewModel(val building: Building) : ViewModel() {
     val position = Binding(building.position.cpy())
     val rotation = Binding(building.rotation)
     val isSelected = Binding(false)
-    val range = Binding(building.range)
+    val stats = Binding(building.action.getStats())
     val isValidPlacement = Binding(false)
     val texture = building.texture
 }

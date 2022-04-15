@@ -4,7 +4,7 @@ import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.Vector3
-import com.runt9.untdrl.config.lazyInject
+import com.runt9.untdrl.util.ext.lazyInject
 import com.runt9.untdrl.model.event.CancelOpenItemsEvent
 import com.runt9.untdrl.model.event.BuildingSelectedEvent
 import com.runt9.untdrl.service.duringRun.BuildingService

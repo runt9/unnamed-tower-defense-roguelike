@@ -1,17 +1,15 @@
 package com.runt9.untdrl.model.building.definition
 
 import com.runt9.untdrl.model.UnitTexture
-
-// TODO: Probably the way I want to handle building stats is via a BuildingStat object.
-//  It can handle holding the value as well as the level growth and each building definition can add in the building stats relevant to it (composition over inheritance)
+import com.runt9.untdrl.model.building.BuildingType
+import com.runt9.untdrl.model.building.action.BuildingActionDefinition
+import com.runt9.untdrl.service.buildingAction.BuildingAction
 
 interface BuildingDefinition {
     val id: Int
     val name: String
+    val type: BuildingType
     val texture: UnitTexture
-    val projectileTexture: UnitTexture
-    val range: Int
-    val attackTime: Float
-    val damage: Float
     val goldCost: Int
+    val action: BuildingActionDefinition
 }

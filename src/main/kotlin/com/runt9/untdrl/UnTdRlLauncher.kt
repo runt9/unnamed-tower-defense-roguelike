@@ -3,7 +3,7 @@ package com.runt9.untdrl
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application
 import com.runt9.untdrl.config.ApplicationConfiguration
 import com.runt9.untdrl.config.Injector
-import com.runt9.untdrl.config.inject
+import com.runt9.untdrl.util.ext.inject
 
 object UnTdRlLauncher {
     @JvmStatic

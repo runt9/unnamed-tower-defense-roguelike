@@ -38,9 +38,9 @@ class BuildingView(override val controller: BuildingController, override val vm:
 
             bindVisible(vm.isSelected, true)
 
-            bindUpdatable(vm.range) {
-                val range = vm.range.get().toFloat()
-                setSize(range * 2, range * 2)
+            // TODO: This is confirmation that there needs to be a more specific way of handling stats
+            vm.stats.get()["Range"]?.toFloat()?.also {
+                setSize(it * 2, it * 2)
                 setPosition(buildingSize / 2, buildingSize / 2, Align.center)
             }
         }

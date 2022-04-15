@@ -30,9 +30,6 @@ import com.runt9.untdrl.view.settings.SettingsDialogController
 import ktx.inject.Context
 import ktx.inject.register
 
-inline fun <reified Type : Any> inject(): Type = Injector.inject()
-inline fun <reified Type : Any> lazyInject() = lazy { inject<Type>() }
-
 object Injector : Context() {
     fun initStartupDeps() = register {
         bindSingleton<UnTdRlGame>()

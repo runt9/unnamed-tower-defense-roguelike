@@ -11,6 +11,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
 import com.runt9.untdrl.model.config.PlayerSettings
 import com.runt9.untdrl.util.ext.getMatching
+import com.runt9.untdrl.util.ext.lazyInject
 import java.nio.file.Paths
 
 const val USER_DIR = "First Rate Concepts/Fusion Of Souls"

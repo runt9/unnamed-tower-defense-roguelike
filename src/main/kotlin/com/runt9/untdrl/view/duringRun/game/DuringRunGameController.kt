@@ -3,7 +3,6 @@ package com.runt9.untdrl.view.duringRun.game
 import com.badlogic.gdx.utils.Disposable
 import com.runt9.untdrl.model.Chunk
 import com.runt9.untdrl.model.building.Building
-import com.runt9.untdrl.model.building.Projectile
 import com.runt9.untdrl.model.event.BuildingCancelledEvent
 import com.runt9.untdrl.model.event.ChunkCancelledEvent
 import com.runt9.untdrl.model.event.ChunkPlacedEvent
@@ -12,7 +11,9 @@ import com.runt9.untdrl.model.event.EnemySpawnedEvent
 import com.runt9.untdrl.model.event.NewBuildingEvent
 import com.runt9.untdrl.model.event.NewChunkEvent
 import com.runt9.untdrl.model.event.PrepareNextWaveEvent
+import com.runt9.untdrl.model.event.ProjectileSpawnedEvent
 import com.runt9.untdrl.service.ChunkGenerator
+import com.runt9.untdrl.service.duringRun.BuildingService
 import com.runt9.untdrl.util.ext.unTdRlLogger
 import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.util.framework.event.HandlesEvent
@@ -29,7 +30,8 @@ import ktx.async.onRenderingThread
 class DuringRunGameController(
     private val eventBus: EventBus,
     private val assets: AssetStorage,
-    private val chunkGenerator: ChunkGenerator
+    private val chunkGenerator: ChunkGenerator,
+    private val buildingService: BuildingService
 ) : Controller {
     private val logger = unTdRlLogger()
     override val vm = DuringRunGameViewModel()
@@ -65,11 +67,11 @@ class DuringRunGameController(
     @HandlesEvent
     suspend fun handleNewBuilding(event: NewBuildingEvent) = onRenderingThread {
         val buildingDef = event.buildingDefinition
-        val building = Building(buildingDef, assets[buildingDef.texture.assetFile], assets[buildingDef.projectileTexture.assetFile])
+        val building = Building(buildingDef, assets[buildingDef.texture.assetFile])
+        building.action = buildingService.injectBuildingAction(building)
 
         val buildingVm = BuildingViewModel(building)
         building.onMove { buildingVm.rotation(rotation) }
-        building.onProj { spawnProjectile(this) }
         vm.buildings += buildingVm
     }
 
@@ -96,7 +98,9 @@ class DuringRunGameController(
         vm.enemies.removeIf { it.enemy == event.enemy }
     }
 
-    private fun spawnProjectile(projectile: Projectile) {
+    @HandlesEvent
+    fun spawnProjectile(event: ProjectileSpawnedEvent) {
+        val projectile = event.projectile
         val projVm = ProjectileViewModel(projectile)
 
         projectile.onMove {

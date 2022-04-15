@@ -22,7 +22,6 @@ import ktx.scene2d.vis.visLabel
 import ktx.scene2d.vis.visScrollPane
 import ktx.scene2d.vis.visTable
 import ktx.style.progressBar
-import kotlin.math.roundToInt
 
 // TODO: Break the pieces into their own modules
 class SideBarView(override val controller: SideBarController, override val vm: SideBarViewModel) : TableView(controller, vm) {
@@ -69,9 +68,11 @@ class SideBarView(override val controller: SideBarController, override val vm: S
 
                     visTable {
                         visLabel(building.name.get()).cell(row = true, pad = 2f, align = Align.left)
-                        visLabel("") { bindLabelText { "Damage: ${building.damage().roundToInt()}" } }.cell(row = true, pad = 2f, align = Align.left)
-                        visLabel("") { bindLabelText { "Range: ${building.range()}" } }.cell(row = true, pad = 2f, align = Align.left)
-                        visLabel("") { bindLabelText { "Attack Speed: ${"%.2f".format(1 / building.attackSpeed())}" } }.cell(row = true, pad = 2f, align = Align.left)
+
+                        building.stats.get().forEach { (name, value) ->
+                            visLabel("$name: $value").cell(row = true, pad = 2f, align = Align.left)
+                        }
+
                         visLabel("") { bindLabelText { "Level: ${building.level()}" } }.cell(row = true, pad = 2f, align = Align.left)
                         stack {
                             progressBar {

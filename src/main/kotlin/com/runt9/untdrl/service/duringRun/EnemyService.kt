@@ -7,7 +7,6 @@ import com.runt9.untdrl.model.event.EnemyRemovedEvent
 import com.runt9.untdrl.model.event.EnemySpawnedEvent
 import com.runt9.untdrl.model.event.SpawningCompleteEvent
 import com.runt9.untdrl.model.event.WaveCompleteEvent
-import com.runt9.untdrl.model.building.Building
 import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.util.framework.event.HandlesEvent
 import kotlin.math.roundToInt
@@ -51,8 +50,8 @@ class EnemyService(private val grid: IndexedGridGraph, private val eventBus: Eve
         }
     }
 
-    fun getBuildingTarget(building: Building) = enemies.sortedBy { it.numNodesToHome() }.find { enemy ->
-        building.position.dst(enemy.position) <= building.range
+    fun getBuildingTarget(position: Vector2, range: Int) = enemies.sortedBy { it.numNodesToHome() }.find { enemy ->
+        position.dst(enemy.position) <= range
     }
 
     override fun stopInternal() {

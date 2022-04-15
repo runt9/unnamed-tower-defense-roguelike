@@ -9,21 +9,17 @@ class BuildingDisplayViewModel(val empty: Boolean = true) : ViewModel() {
         fun fromBuilding(building: Building): BuildingDisplayViewModel {
             return BuildingDisplayViewModel(false).apply {
                 name(building.definition.name)
-                damage(building.damage)
-                range(building.range)
-                attackSpeed(building.attackTime)
                 xp(building.xp)
                 xpToLevel(building.xpToLevel)
                 level(building.level)
+                stats(building.action.getStats())
             }
         }
     }
 
     val name = Binding("")
-    val damage = Binding(0f)
-    val range = Binding(0)
-    val attackSpeed = Binding(0f)
     val xp = Binding(0)
     val xpToLevel = Binding(0)
     val level = Binding(1)
+    val stats = Binding(mapOf<String, String>())
 }

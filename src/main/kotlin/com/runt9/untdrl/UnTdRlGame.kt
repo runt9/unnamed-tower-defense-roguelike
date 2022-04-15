@@ -5,8 +5,8 @@ import com.badlogic.gdx.Input
 import com.badlogic.gdx.InputMultiplexer
 import com.runt9.untdrl.config.ApplicationInitializer
 import com.runt9.untdrl.config.Injector
-import com.runt9.untdrl.config.inject
-import com.runt9.untdrl.config.lazyInject
+import com.runt9.untdrl.util.ext.inject
+import com.runt9.untdrl.util.ext.lazyInject
 import com.runt9.untdrl.model.event.ChangeScreenRequest
 import com.runt9.untdrl.model.event.ExitRequest
 import com.runt9.untdrl.util.ext.unTdRlLogger
