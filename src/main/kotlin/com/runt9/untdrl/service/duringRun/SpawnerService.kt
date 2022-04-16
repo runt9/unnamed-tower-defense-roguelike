@@ -7,6 +7,7 @@ import com.runt9.untdrl.model.event.PrepareNextWaveEvent
 import com.runt9.untdrl.model.event.SpawnerPlacedEvent
 import com.runt9.untdrl.model.event.SpawningCompleteEvent
 import com.runt9.untdrl.model.event.WaveStartedEvent
+import com.runt9.untdrl.util.ext.unTdRlLogger
 import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.util.framework.event.HandlesEvent
 import ktx.assets.async.AssetStorage
@@ -18,6 +19,8 @@ class SpawnerService(
     private val runStateService: RunStateService,
     registry: RunServiceRegistry
 ) : RunService(eventBus, registry) {
+    private val logger = unTdRlLogger()
+
     private var isSpawning = false
     private val spawners = mutableListOf<Spawner>()
 
@@ -35,11 +38,12 @@ class SpawnerService(
     }
 
     @HandlesEvent(PrepareNextWaveEvent::class)
-    fun prepNextWave() = spawners.forEach(::recalculateSpawner)
+    fun prepNextWave() = runOnServiceThread {  spawners.forEach(::recalculateSpawner) }
 
     private fun recalculateSpawner(spawner: Spawner) {
         val waveNum = runStateService.load().wave
         spawner.enemiesToSpawn = waveNum * 2
+        spawner.enemyDelayTimer.reset(false)
         // TODO: Recalculate time between spawns
     }
 
@@ -50,18 +54,19 @@ class SpawnerService(
             val runState = runStateService.load()
             var checkedSpawn = false
             spawners.forEach { spawner ->
-                // TODO: Somehow this can get stuck and enemies will spawn infinitely
-                if (spawner.enemiesToSpawn == 0) return@forEach
+                // TODO: Somehow a spawner can double spawn
+                if (spawner.enemiesToSpawn <= 0) return@forEach
 
                 checkedSpawn = true
 
                 spawner.enemyDelayTimer.also { timer ->
                     timer.tick(delta)
                     if (timer.isReady) {
+                        logger.info { "${spawner.id} Spawning enemy" }
+                        timer.reset()
+                        spawner.enemiesToSpawn--
                         val enemy = spawner.spawnEnemy(runState.wave)
                         eventBus.enqueueEvent(EnemySpawnedEvent(enemy))
-                        spawner.enemiesToSpawn--
-                        timer.reset()
                     }
                 }
             }

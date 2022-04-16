@@ -5,6 +5,7 @@ import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.util.framework.event.HandlesEvent
 import com.runt9.untdrl.util.framework.ui.controller.Controller
 import com.runt9.untdrl.util.framework.ui.uiComponent
+import ktx.async.onRenderingThread
 import ktx.scene2d.KWidget
 import ktx.scene2d.Scene2dDsl
 
@@ -18,9 +19,9 @@ class EnemyController(private val eventBus: EventBus) : Controller {
     override val view by lazy { EnemyView(this, vm) }
 
     @HandlesEvent
-    fun hpChanged(event: EnemyHpChanged) {
+    suspend fun hpChanged(event: EnemyHpChanged) = onRenderingThread {
         val enemy = event.enemy
-        if (enemy != vm.enemy) return
+        if (enemy != vm.enemy) return@onRenderingThread
 
         vm.hpPercent(enemy.currentHp / enemy.maxHp)
     }

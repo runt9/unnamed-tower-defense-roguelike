@@ -12,6 +12,7 @@ import com.runt9.untdrl.model.event.WaveCompleteEvent
 import com.runt9.untdrl.service.duringRun.EnemyService
 import com.runt9.untdrl.util.ext.Timer
 import com.runt9.untdrl.util.ext.degRad
+import com.runt9.untdrl.util.ext.unTdRlLogger
 import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.util.framework.event.HandlesEvent
 import ktx.assets.async.AssetStorage
@@ -24,6 +25,7 @@ class ProjectileAttackAction(
     private val enemyService: EnemyService,
     private val assets: AssetStorage
 ) : BuildingAction {
+    private val logger = unTdRlLogger()
     private var target: Enemy? = null
     private var attackTime = definition.attackTime
     private var damage = definition.damage
@@ -36,7 +38,7 @@ class ProjectileAttackAction(
         decelerationRadius = 90f.degRad
     }
 
-    override fun act(delta: Float) {
+    override suspend fun act(delta: Float) {
         val steeringOutput = SteeringAcceleration(Vector2())
 
         attackTimer.tick(delta)
@@ -51,8 +53,8 @@ class ProjectileAttackAction(
         }
 
         if (attackTimer.isReady && steeringOutput.isZero) {
-            spawnProjectile()
             attackTimer.reset(false)
+            spawnProjectile()
         }
     }
 
@@ -77,6 +79,7 @@ class ProjectileAttackAction(
 
     private fun spawnProjectile(): Projectile {
         val projectile = Projectile(building, assets[definition.projectileTexture.assetFile], damage, target!!)
+        logger.info { "${building.id} Spawning Projectile ${projectile.id}" }
         eventBus.enqueueEventSync(ProjectileSpawnedEvent(projectile))
         return projectile
     }

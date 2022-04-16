@@ -29,6 +29,7 @@ class EnemyView(override val controller: EnemyController, override val vm: Enemy
             progressBar {
                 style = this@EnemyView.unitBarStyle(Color.GREEN)
 
+                // TODO: This is NPE'ing sometimes
                 bindUpdatable(vm.hpPercent) { value = vm.hpPercent.get() }
 
                 setAnimateDuration(0.15f)

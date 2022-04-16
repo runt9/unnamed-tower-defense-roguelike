@@ -14,7 +14,7 @@ object PrototypeBuildingDefinition : BuildingDefinition {
     override val action = object : ProjectileAttackActionDefinition() {
         override val projectileTexture = UnitTexture.HERO
         override val range = 4
-        override val attackTime = 2f
+        override val attackTime = 1f
         override val damage = 50f
     }
 }

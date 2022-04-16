@@ -6,11 +6,11 @@ import com.runt9.untdrl.model.building.Building
 import com.runt9.untdrl.model.event.BuildingCancelledEvent
 import com.runt9.untdrl.model.event.ChunkCancelledEvent
 import com.runt9.untdrl.model.event.ChunkPlacedEvent
-import com.runt9.untdrl.model.event.EnemyRemovedEvent
 import com.runt9.untdrl.model.event.EnemySpawnedEvent
 import com.runt9.untdrl.model.event.NewBuildingEvent
 import com.runt9.untdrl.model.event.NewChunkEvent
 import com.runt9.untdrl.model.event.PrepareNextWaveEvent
+import com.runt9.untdrl.model.event.ProjectileReadyEvent
 import com.runt9.untdrl.model.event.ProjectileSpawnedEvent
 import com.runt9.untdrl.service.ChunkGenerator
 import com.runt9.untdrl.service.duringRun.BuildingService
@@ -71,7 +71,11 @@ class DuringRunGameController(
         building.action = buildingService.injectBuildingAction(building)
 
         val buildingVm = BuildingViewModel(building)
-        building.onMove { buildingVm.rotation(rotation) }
+        building.onMove {
+            onRenderingThread {
+                buildingVm.rotation(rotation)
+            }
+        }
         vm.buildings += buildingVm
     }
 
@@ -86,33 +90,41 @@ class DuringRunGameController(
         val enemyVm = EnemyViewModel(enemy)
 
         enemy.onMove {
-            enemyVm.position(position.cpy())
-            enemyVm.rotation(rotation)
+            onRenderingThread {
+                enemyVm.position(position.cpy())
+                enemyVm.rotation(rotation)
+            }
+        }
+
+        enemy.onDie {
+            onRenderingThread {
+                vm.enemies -= enemyVm
+            }
         }
 
         vm.enemies += enemyVm
     }
 
     @HandlesEvent
-    suspend fun handleEnemyRemoved(event: EnemyRemovedEvent) = onRenderingThread {
-        vm.enemies.removeIf { it.enemy == event.enemy }
-    }
-
-    @HandlesEvent
-    fun spawnProjectile(event: ProjectileSpawnedEvent) {
+    suspend fun spawnProjectile(event: ProjectileSpawnedEvent) = onRenderingThread {
         val projectile = event.projectile
         val projVm = ProjectileViewModel(projectile)
 
         projectile.onMove {
-            projVm.position(position.cpy())
-            projVm.rotation(rotation)
+            onRenderingThread {
+                projVm.position(position.cpy())
+                projVm.rotation(rotation)
+            }
         }
 
         projectile.onDie {
-            vm.projectiles -= projVm
+            onRenderingThread {
+                vm.projectiles -= projVm
+            }
         }
 
         vm.projectiles += projVm
+        eventBus.enqueueEventSync(ProjectileReadyEvent(projectile))
     }
 
     @HandlesEvent

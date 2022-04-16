@@ -62,45 +62,121 @@ class SideBarView(override val controller: SideBarController, override val vm: S
                                 }
                             }
                         }
-                    }.cell(grow = true)
+                    }.cell(grow = true, row = true)
+
+                    visScrollPane {
+                        setScrollingDisabled(true, false)
+                        setFlickScroll(false)
+
+                        flowGroup(spacing = 5f) {
+                            bindUpdatable(vm.consumables) {
+                                clear()
+                                vm.consumables.get().forEach { consumable ->
+                                    visTable {
+                                        squarePixmap(55, consumable.color)
+
+                                        onClick {
+                                            controller.useConsumable(consumable)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }.cell(grow = true, row = true)
                 } else {
                     val building = vm.selectedBuilding.get()
 
                     visTable {
                         visLabel(building.name.get()).cell(row = true, pad = 2f, align = Align.left)
 
-                        // TODO: Split stats into 2 cells each so wrapping can work its magic
-                        building.stats.get().forEach { (name, value) ->
-                            visLabel(name) { wrap = true }.cell(pad = 2f, align = Align.left, growX = true)
-                            visLabel(value).cell(row = true, pad = 2f, align = Align.right, growX = true)
-                        }
+                        visTable {
+                            building.stats.get().forEach { (name, value) ->
+                                visLabel(name) { wrap = true }.cell(pad = 2f, align = Align.left, growX = true)
+                                visLabel(value).cell(row = true, pad = 2f, align = Align.right)
+                            }
+                        }.cell(row = true, growX = true)
 
-                        visLabel("") { bindLabelText { "Level: ${building.level()}" } }.cell(row = true, pad = 2f, align = Align.left)
-                        stack {
-                            progressBar {
-                                style = VisUI.getSkin().progressBar {
-                                    background = rectPixmapTexture(2, 2, Color.DARK_GRAY).toDrawable()
-                                    background.minHeight = 20f
-                                    background.minWidth = 0f
-                                    knobBefore = rectPixmapTexture(2, 2, Color.BLUE).toDrawable()
-                                    knobBefore.minHeight = 20f
-                                    knobBefore.minWidth = 0f
+                        visTable {
+                            visLabel("") { bindLabelText { "Level: ${building.level()}" } }.cell(pad = 2f, align = Align.left)
+                            stack {
+                                progressBar {
+                                    style = VisUI.getSkin().progressBar {
+                                        background = rectPixmapTexture(2, 2, Color.DARK_GRAY).toDrawable()
+                                        background.minHeight = 20f
+                                        background.minWidth = 0f
+                                        knobBefore = rectPixmapTexture(2, 2, Color.BLUE).toDrawable()
+                                        knobBefore.minHeight = 20f
+                                        knobBefore.minWidth = 0f
+                                    }
+
+                                    bindUpdatable(building.xp) { value = building.xp.get().toFloat() / building.xpToLevel.get() }
+
+                                    setSize(100f, 20f)
+                                    setOrigin(Align.center)
+                                    setRound(false)
                                 }
 
-                                bindUpdatable(building.xp) { value = building.xp.get().toFloat() / building.xpToLevel.get() }
+                                label("") {
+                                    bindLabelText { "${building.xp()} / ${building.xpToLevel()}" }
+                                    setAlignment(Align.center)
+                                }
+                            }.cell(width = 100f, height = 20f, row = true)
+                        }.cell(row = true)
 
-                                setSize(100f, 20f)
-                                setOrigin(Align.center)
-                                setRound(false)
+                        visTable {
+                            bindUpdatable(vm.coreInventoryShown) {
+                                clear()
+                                if (vm.coreInventoryShown.get()) {
+                                    visScrollPane {
+                                        setScrollingDisabled(true, false)
+
+                                        flowGroup(spacing = 5f) {
+                                            bindUpdatable(vm.coreInventory) {
+                                                clear()
+                                                vm.coreInventory.get().forEach { core ->
+                                                    stack {
+                                                        squarePixmap(60, Color.DARK_GRAY)
+
+                                                        visTable {
+                                                            squarePixmap(55, core.color)
+                                                            onClick {
+                                                                controller.placeCore(core)
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }.cell(grow = true, row = true)
+
+                                    textButton("Close") {
+                                        onChange { controller.closeCoreInventory() }
+                                    }
+                                } else {
+                                    flowGroup(spacing = 5f) {
+                                        bindUpdatable(building.cores) {
+                                            clear()
+                                            repeat(building.maxCores.get()) { i ->
+                                                stack {
+                                                    squarePixmap(60, Color.LIGHT_GRAY)
+
+                                                    val core = building.cores.get().getOrNull(i)
+
+                                                    if (core == null) {
+                                                        onClick {
+                                                            controller.openCoreInventory()
+                                                        }
+                                                    } else {
+                                                        squarePixmap(55, core.color)
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
                             }
-
-                            label("") {
-                                bindLabelText { "${building.xp()} / ${building.xpToLevel()}" }
-                                setAlignment(Align.center)
-                            }
-                        }.cell(width = 100f, height = 20f, row = true)
-
-                    }.cell(row = true, growX = true, expandY = true, align = Align.top, pad = 4f)
+                        }.cell(grow = true)
+                    }.cell(row = true, grow = true, align = Align.top, pad = 4f)
                 }
             }
         }.cell(row = true, grow = true)

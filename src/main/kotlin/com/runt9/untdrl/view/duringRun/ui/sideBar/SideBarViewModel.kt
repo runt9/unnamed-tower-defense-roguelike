@@ -1,6 +1,8 @@
 package com.runt9.untdrl.view.duringRun.ui.sideBar
 
 import com.runt9.untdrl.model.building.definition.BuildingDefinition
+import com.runt9.untdrl.model.loot.BuildingCore
+import com.runt9.untdrl.model.loot.Consumable
 import com.runt9.untdrl.util.framework.ui.viewModel.ViewModel
 
 class SideBarViewModel : ViewModel() {
@@ -14,4 +16,7 @@ class SideBarViewModel : ViewModel() {
     val availableBuildings = ListBinding<BuildingDefinition>()
     val canInteract = Binding(true)
     val selectedBuilding = Binding(BuildingDisplayViewModel())
+    val consumables = ListBinding<Consumable>()
+    val coreInventoryShown = Binding(false)
+    val coreInventory = ListBinding<BuildingCore>()
 }

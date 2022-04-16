@@ -7,7 +7,7 @@ import kotlin.math.roundToInt
 interface BuildingAction : Disposable {
     val eventBus: EventBus
 
-    fun act(delta: Float)
+    suspend fun act(delta: Float)
     fun getStats(): Map<String, String>
     fun levelUp(newLevel: Int)
 

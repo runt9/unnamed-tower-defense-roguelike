@@ -8,7 +8,10 @@ import com.runt9.untdrl.util.ext.radDeg
 import com.runt9.untdrl.util.ext.toAngle
 import ktx.collections.toGdxArray
 
+private var idCounter = 0
+
 class Spawner(val node: GridNode, val texture: Texture) {
+    val id = idCounter++
     var currentPath = DefaultGraphPath<GridNode>()
     var enemiesToSpawn = 0
     var delayBetweenEnemies = 1f

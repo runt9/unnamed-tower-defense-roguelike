@@ -17,7 +17,7 @@ class GenerateGoldAction(
 
     private val generateTimer = Timer(timeBetweenGain)
 
-    override fun act(delta: Float) {
+    override suspend fun act(delta: Float) {
         generateTimer.tick(delta)
 
         if (generateTimer.isReady) {

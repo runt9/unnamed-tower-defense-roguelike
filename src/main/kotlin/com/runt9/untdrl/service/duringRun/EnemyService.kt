@@ -7,11 +7,13 @@ import com.runt9.untdrl.model.event.EnemyRemovedEvent
 import com.runt9.untdrl.model.event.EnemySpawnedEvent
 import com.runt9.untdrl.model.event.SpawningCompleteEvent
 import com.runt9.untdrl.model.event.WaveCompleteEvent
+import com.runt9.untdrl.util.ext.unTdRlLogger
 import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.util.framework.event.HandlesEvent
 import kotlin.math.roundToInt
 
 class EnemyService(private val grid: IndexedGridGraph, private val eventBus: EventBus, registry: RunServiceRegistry) : RunService(eventBus, registry) {
+    private val logger = unTdRlLogger()
     private val enemies = mutableListOf<Enemy>()
     private var isSpawning = false
 
@@ -37,20 +39,25 @@ class EnemyService(private val grid: IndexedGridGraph, private val eventBus: Eve
     }
 
     override fun tick(delta: Float) {
-        enemies.toList().forEach { enemy ->
-            val steeringOutput = SteeringAcceleration(Vector2())
-            enemy.behavior.calculateSteering(steeringOutput)
-            if (!steeringOutput.isZero) {
-                enemy.applySteering(delta, steeringOutput)
+        runOnServiceThread {
+            enemies.toList().forEach { enemy ->
+                val steeringOutput = SteeringAcceleration(Vector2())
+                enemy.behavior.calculateSteering(steeringOutput)
+                if (!steeringOutput.isZero) {
+                    enemy.applySteering(delta, steeringOutput)
 
-                if (enemy.position.dst(grid.home.point).roundToInt() == 0) {
-                    eventBus.enqueueEventSync(EnemyRemovedEvent(enemy, false))
+                    if (enemy.position.dst(grid.home.point).roundToInt() == 0) {
+                        logger.info { "${enemy.id}: Enemy hit home" }
+                        enemies -= enemy
+                        enemy.die()
+                        eventBus.enqueueEventSync(EnemyRemovedEvent(enemy, false))
+                    }
                 }
             }
         }
     }
 
-    fun getBuildingTarget(position: Vector2, range: Int) = enemies.sortedBy { it.numNodesToHome() }.find { enemy ->
+    fun getBuildingTarget(position: Vector2, range: Int) = enemies.toList().sortedBy { it.numNodesToHome() }.find { enemy ->
         position.dst(enemy.position) <= range
     }
 

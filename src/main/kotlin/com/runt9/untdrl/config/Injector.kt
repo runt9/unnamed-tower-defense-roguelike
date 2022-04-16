@@ -8,20 +8,22 @@ import com.runt9.untdrl.service.ChunkGenerator
 import com.runt9.untdrl.service.RandomizerService
 import com.runt9.untdrl.service.asset.AssetLoader
 import com.runt9.untdrl.service.asset.SkinLoader
+import com.runt9.untdrl.service.duringRun.BuildingService
 import com.runt9.untdrl.service.duringRun.EnemyService
 import com.runt9.untdrl.service.duringRun.IndexedGridGraph
+import com.runt9.untdrl.service.duringRun.LootService
 import com.runt9.untdrl.service.duringRun.ProjectileService
 import com.runt9.untdrl.service.duringRun.RunInitializer
 import com.runt9.untdrl.service.duringRun.RunServiceRegistry
 import com.runt9.untdrl.service.duringRun.RunStateService
 import com.runt9.untdrl.service.duringRun.SpawnerService
-import com.runt9.untdrl.service.duringRun.BuildingService
 import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.util.framework.ui.DialogManager
 import com.runt9.untdrl.view.duringRun.DuringRunInputController
 import com.runt9.untdrl.view.duringRun.DuringRunScreen
 import com.runt9.untdrl.view.duringRun.game.DuringRunGameController
 import com.runt9.untdrl.view.duringRun.ui.DuringRunUiController
+import com.runt9.untdrl.view.duringRun.ui.loot.LootDialogController
 import com.runt9.untdrl.view.duringRun.ui.menu.MenuDialogController
 import com.runt9.untdrl.view.duringRun.ui.runEnd.RunEndDialogController
 import com.runt9.untdrl.view.loading.LoadingScreenController
@@ -66,6 +68,7 @@ object Injector : Context() {
         bindSingleton<ProjectileService>()
         bindSingleton<BuildingService>()
         bindSingleton<SpawnerService>()
+        bindSingleton<LootService>()
 
         bindSingleton<RunInitializer>()
 
@@ -79,5 +82,6 @@ object Injector : Context() {
         bindSingleton<DuringRunInputController>()
         bindSingleton<DuringRunScreen>()
         bindSingleton<MenuDialogController>()
+        bindSingleton<LootDialogController>()
     }
 }

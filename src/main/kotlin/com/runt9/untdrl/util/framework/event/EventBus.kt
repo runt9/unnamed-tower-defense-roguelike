@@ -1,11 +1,11 @@
 package com.runt9.untdrl.util.framework.event
 
 import com.badlogic.gdx.utils.Disposable
+import com.runt9.untdrl.util.ext.unTdRlLogger
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
 import ktx.async.KtxAsync
 import ktx.async.newSingleThreadAsyncContext
-import com.runt9.untdrl.util.ext.unTdRlLogger
 import kotlin.reflect.KClass
 import kotlin.reflect.full.callSuspend
 import kotlin.reflect.full.declaredMembers
@@ -35,7 +35,7 @@ class EventBus : Disposable {
 
     fun registerHandlers(obj: Any) {
         if (handlerClasses.none { it.obj == obj }) {
-            logger.info { "Initializing event handlers for ${obj::class.simpleName}" }
+//            logger.debug { "Initializing event handlers for ${obj::class.simpleName}" }
             handlerClasses.add(ClassHandlerMapping(obj))
         }
 
@@ -64,7 +64,7 @@ class EventBus : Disposable {
                     }
 
                     val event = getOrThrow()
-                    eventHandlers[event::class]?.forEach {
+                    eventHandlers[event::class]?.toList()?.forEach {
                         it.handle(event)
                     }
                 }
@@ -98,22 +98,22 @@ class EventBus : Disposable {
                 }
             }
 
-            logger.debug { "Found ${handlers.size} event handlers in ${obj::class.simpleName}" }
+//            logger.debug { "Found ${handlers.size} event handlers in ${obj::class.simpleName}" }
             this.handlers = handlers.toMap()
         }
 
         fun registerHandlers() {
-            logger.debug { "Registering event handlers for ${obj::class.simpleName}" }
+//            logger.debug { "Registering event handlers for ${obj::class.simpleName}" }
             handlers.forEach {
-                logger.debug { "Registering handler for ${it.key.simpleName} from ${obj::class.simpleName}" }
+//                logger.debug { "Registering handler for ${it.key.simpleName} from ${obj::class.simpleName}" }
                 registerHandler(it.key, it.value)
             }
         }
 
         fun unregisterHandlers() {
-            logger.debug { "Unregistering event handlers for ${obj::class.simpleName}" }
+//            logger.debug { "Unregistering event handlers for ${obj::class.simpleName}" }
             handlers.forEach {
-                logger.debug { "Unregistering handler for ${it.key.simpleName} from ${obj::class.simpleName}" }
+//                logger.debug { "Unregistering handler for ${it.key.simpleName} from ${obj::class.simpleName}" }
                 unregisterHandler(it.key, it.value)
             }
         }

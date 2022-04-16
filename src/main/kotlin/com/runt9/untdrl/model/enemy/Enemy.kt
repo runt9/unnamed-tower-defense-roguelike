@@ -8,11 +8,14 @@ import com.badlogic.gdx.ai.steer.utils.paths.LinePath.LinePathParam
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.math.Vector2
 import com.runt9.untdrl.model.building.Building
-import com.runt9.untdrl.util.ext.degRad
 import com.runt9.untdrl.util.ext.BaseSteerable
+import com.runt9.untdrl.util.ext.degRad
 import ktx.collections.GdxArray
 
+private var idCounter = 0
+
 class Enemy(wave: Int, val texture: Texture, initialPosition: Vector2, initialRotation: Float, path: GdxArray<Vector2>) : BaseSteerable(initialPosition, initialRotation) {
+    val id = idCounter++
     override val linearSpeedLimit = 1f
     override val linearAccelerationLimit = linearSpeedLimit * 100f
     override val angularSpeedLimit = 10f
@@ -22,6 +25,7 @@ class Enemy(wave: Int, val texture: Texture, initialPosition: Vector2, initialRo
     var maxHp = 100f + (25f * wave)
     var currentHp = maxHp
     val xpOnDeath = wave
+    var isAlive = true
 
     val affectedByBuildings = mutableSetOf<Building>()
 
@@ -38,10 +42,20 @@ class Enemy(wave: Int, val texture: Texture, initialPosition: Vector2, initialRo
         add(BlendedSteering.BehaviorAndWeight(lookBehavior, 1f))
     }
 
+    private lateinit var onDieCb: suspend Enemy.() -> Unit
+
+    fun onDie(onDieCb: suspend Enemy.() -> Unit) {
+        this.onDieCb = onDieCb
+    }
+
     fun takeDamage(source: Building, damage: Float) {
         currentHp -= damage
         affectedByBuildings += source
     }
 
     fun numNodesToHome() = fullPath.segments.size - (followPathBehavior.pathParam as LinePathParam).segmentIndex
+
+    suspend fun die() {
+        onDieCb()
+    }
 }

@@ -9,7 +9,7 @@ import ktx.async.newSingleThreadAsyncContext
 
 @Suppress("LeakingThis")
 abstract class RunService(private val eventBus: EventBus, registry: RunServiceRegistry) : Disposable {
-    private val serviceContext = newSingleThreadAsyncContext("Service-Thread")
+    val serviceContext = newSingleThreadAsyncContext("Service-Thread")
 
     init {
         registry.register(this)

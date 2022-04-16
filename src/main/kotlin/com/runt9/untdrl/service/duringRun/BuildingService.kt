@@ -40,8 +40,10 @@ class BuildingService(eventBus: EventBus, registry: RunServiceRegistry) : RunSer
     }
 
     override fun tick(delta: Float) {
-        buildings.toList().forEach { building ->
-            building.action.act(delta)
+        runOnServiceThread {
+            buildings.toList().forEach { building ->
+                building.action.act(delta)
+            }
         }
     }
 

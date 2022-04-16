@@ -2,7 +2,6 @@ package com.runt9.untdrl.view.duringRun.game.building
 
 import com.badlogic.gdx.InputMultiplexer
 import com.badlogic.gdx.graphics.OrthographicCamera
-import com.runt9.untdrl.util.ext.lazyInject
 import com.runt9.untdrl.model.building.Building
 import com.runt9.untdrl.model.event.BuildingCancelledEvent
 import com.runt9.untdrl.model.event.BuildingPlacedEvent
@@ -10,11 +9,13 @@ import com.runt9.untdrl.model.event.BuildingSelectedEvent
 import com.runt9.untdrl.model.event.CancelOpenItemsEvent
 import com.runt9.untdrl.service.duringRun.BuildingService
 import com.runt9.untdrl.service.duringRun.IndexedGridGraph
+import com.runt9.untdrl.util.ext.lazyInject
 import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.util.framework.event.HandlesEvent
 import com.runt9.untdrl.util.framework.ui.InputMover
 import com.runt9.untdrl.util.framework.ui.controller.Controller
 import com.runt9.untdrl.util.framework.ui.uiComponent
+import ktx.async.onRenderingThread
 import ktx.scene2d.KWidget
 import ktx.scene2d.Scene2dDsl
 
@@ -62,12 +63,12 @@ class BuildingController(private val eventBus: EventBus, private val buildingSer
     private fun isValidBuildingPlacement(building: Building) = buildingService.isNoBuildingPositionOverlap(building) && grid.isEmptyTile(building.position)
 
     @HandlesEvent
-    fun buildingSelected(event: BuildingSelectedEvent) {
+    suspend fun buildingSelected(event: BuildingSelectedEvent) = onRenderingThread {
         vm.isSelected(event.building == vm.building)
     }
 
     @HandlesEvent(CancelOpenItemsEvent::class)
-    fun cancelSelection() {
+    suspend fun cancelSelection() = onRenderingThread {
         vm.isSelected(false)
     }
 }
