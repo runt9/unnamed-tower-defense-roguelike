@@ -49,6 +49,8 @@ class LootDialogController(private val eventBus: EventBus, graphics: Graphics, p
     }
 
     fun lootItem(item: LootItem) {
+        if (vm.selectedItems.get().size >= vm.maxItemSelections.get()) return
+
         vm.lootedItems -= item
         vm.selectedItems += item
     }

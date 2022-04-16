@@ -17,9 +17,9 @@ abstract class BaseSteerable(initialPosition: Vector2, initialRotation: Float) :
     abstract val angularAccelerationLimit: Float
     abstract val boundingBoxRadius: Float
 
-    private val onMoveCbs = mutableListOf<suspend BaseSteerable.() -> Unit>()
+    private val onMoveCbs = mutableListOf<BaseSteerable.() -> Unit>()
 
-    fun onMove(onMoveCb: suspend BaseSteerable.() -> Unit) {
+    fun onMove(onMoveCb: BaseSteerable.() -> Unit) {
         onMoveCbs += onMoveCb
     }
 
@@ -38,7 +38,7 @@ abstract class BaseSteerable(initialPosition: Vector2, initialRotation: Float) :
     override fun vectorToAngle(vector: Vector2) = vector.toAngle()
     override fun angleToVector(outVector: Vector2, angle: Float) = angle.toVector(outVector)
 
-    suspend fun applySteering(time: Float, steeringOutput: SteeringAcceleration<Vector2>) {
+    fun applySteering(time: Float, steeringOutput: SteeringAcceleration<Vector2>) {
         position.mulAdd(linearVelocity, time)
         linearVelocity.mulAdd(steeringOutput.linear, time).limit(maxLinearSpeed)
         rotation += angularVelocity.radDeg * time

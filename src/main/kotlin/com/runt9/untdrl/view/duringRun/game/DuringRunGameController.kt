@@ -10,10 +10,10 @@ import com.runt9.untdrl.model.event.EnemySpawnedEvent
 import com.runt9.untdrl.model.event.NewBuildingEvent
 import com.runt9.untdrl.model.event.NewChunkEvent
 import com.runt9.untdrl.model.event.PrepareNextWaveEvent
-import com.runt9.untdrl.model.event.ProjectileReadyEvent
 import com.runt9.untdrl.model.event.ProjectileSpawnedEvent
 import com.runt9.untdrl.service.ChunkGenerator
 import com.runt9.untdrl.service.duringRun.BuildingService
+import com.runt9.untdrl.service.duringRun.ProjectileService
 import com.runt9.untdrl.util.ext.unTdRlLogger
 import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.util.framework.event.HandlesEvent
@@ -31,7 +31,8 @@ class DuringRunGameController(
     private val eventBus: EventBus,
     private val assets: AssetStorage,
     private val chunkGenerator: ChunkGenerator,
-    private val buildingService: BuildingService
+    private val buildingService: BuildingService,
+    private val projectileService: ProjectileService
 ) : Controller {
     private val logger = unTdRlLogger()
     override val vm = DuringRunGameViewModel()
@@ -72,9 +73,7 @@ class DuringRunGameController(
 
         val buildingVm = BuildingViewModel(building)
         building.onMove {
-            onRenderingThread {
-                buildingVm.rotation(rotation)
-            }
+            buildingVm.rotation(rotation)
         }
         vm.buildings += buildingVm
     }
@@ -90,16 +89,12 @@ class DuringRunGameController(
         val enemyVm = EnemyViewModel(enemy)
 
         enemy.onMove {
-            onRenderingThread {
-                enemyVm.position(position.cpy())
-                enemyVm.rotation(rotation)
-            }
+            enemyVm.position(position.cpy())
+            enemyVm.rotation(rotation)
         }
 
         enemy.onDie {
-            onRenderingThread {
-                vm.enemies -= enemyVm
-            }
+            vm.enemies -= enemyVm
         }
 
         vm.enemies += enemyVm
@@ -111,20 +106,16 @@ class DuringRunGameController(
         val projVm = ProjectileViewModel(projectile)
 
         projectile.onMove {
-            onRenderingThread {
-                projVm.position(position.cpy())
-                projVm.rotation(rotation)
-            }
+            projVm.position(position.cpy())
+            projVm.rotation(rotation)
         }
 
         projectile.onDie {
-            onRenderingThread {
-                vm.projectiles -= projVm
-            }
+            vm.projectiles -= projVm
         }
 
         vm.projectiles += projVm
-        eventBus.enqueueEventSync(ProjectileReadyEvent(projectile))
+        projectileService.add(projectile)
     }
 
     @HandlesEvent

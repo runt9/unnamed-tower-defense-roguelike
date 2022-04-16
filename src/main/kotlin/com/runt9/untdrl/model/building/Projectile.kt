@@ -18,17 +18,17 @@ class Projectile(val owner: Building, val texture: Texture, val damage: Float, v
     override val angularAccelerationLimit = angularSpeedLimit * 10f
     override val boundingBoxRadius = 0.125f
 
-    private lateinit var onDieCb: suspend Projectile.() -> Unit
+    private lateinit var onDieCb: Projectile.() -> Unit
     
-    fun onDie(onDieCb: suspend Projectile.() -> Unit) {
+    fun onDie(onDieCb: Projectile.() -> Unit) {
         this.onDieCb = onDieCb
     }
 
     private val pursue = Pursue(this, target)
     private val look = LookWhereYouAreGoing(this).apply {
-        timeToTarget = 0.1f
-        alignTolerance = 1f.degRad
-        decelerationRadius = 90f.degRad
+        timeToTarget = 0.01f
+        alignTolerance = 0f.degRad
+        decelerationRadius = 45f.degRad
     }
 
     val behavior = BlendedSteering(this).apply {
@@ -36,7 +36,7 @@ class Projectile(val owner: Building, val texture: Texture, val damage: Float, v
         add(BlendedSteering.BehaviorAndWeight(look, 1f))
     }
 
-    suspend fun die() {
+    fun die() {
         onDieCb()
     }
 }

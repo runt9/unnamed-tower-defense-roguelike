@@ -40,7 +40,7 @@ class EnemyService(private val grid: IndexedGridGraph, private val eventBus: Eve
 
     override fun tick(delta: Float) {
         runOnServiceThread {
-            enemies.toList().forEach { enemy ->
+            enemies.toList().filter { it.isAlive }.forEach { enemy ->
                 val steeringOutput = SteeringAcceleration(Vector2())
                 enemy.behavior.calculateSteering(steeringOutput)
                 if (!steeringOutput.isZero) {
@@ -57,9 +57,13 @@ class EnemyService(private val grid: IndexedGridGraph, private val eventBus: Eve
         }
     }
 
-    fun getBuildingTarget(position: Vector2, range: Int) = enemies.toList().sortedBy { it.numNodesToHome() }.find { enemy ->
-        position.dst(enemy.position) <= range
-    }
+    fun getBuildingTarget(position: Vector2, range: Int) =
+        enemies.toList()
+            .sortedBy { it.numNodesToHome() }
+            .filter { it.isAlive }
+            .find { enemy ->
+                position.dst(enemy.position) <= range
+            }
 
     override fun stopInternal() {
         enemies.clear()

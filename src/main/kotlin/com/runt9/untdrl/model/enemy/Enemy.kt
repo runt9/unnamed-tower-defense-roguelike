@@ -42,20 +42,26 @@ class Enemy(wave: Int, val texture: Texture, initialPosition: Vector2, initialRo
         add(BlendedSteering.BehaviorAndWeight(lookBehavior, 1f))
     }
 
-    private lateinit var onDieCb: suspend Enemy.() -> Unit
+    private lateinit var onDieCb: Enemy.() -> Unit
+    private lateinit var onHpChangeCb: Enemy.() -> Unit
 
-    fun onDie(onDieCb: suspend Enemy.() -> Unit) {
+    fun onDie(onDieCb: Enemy.() -> Unit) {
         this.onDieCb = onDieCb
+    }
+
+    fun onHpChange(onHpChangeCb: Enemy.() -> Unit) {
+        this.onHpChangeCb = onHpChangeCb
     }
 
     fun takeDamage(source: Building, damage: Float) {
         currentHp -= damage
         affectedByBuildings += source
+        onHpChangeCb()
     }
 
     fun numNodesToHome() = fullPath.segments.size - (followPathBehavior.pathParam as LinePathParam).segmentIndex
 
-    suspend fun die() {
+    fun die() {
         onDieCb()
     }
 }
