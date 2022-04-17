@@ -1,14 +1,13 @@
-package com.runt9.untdrl.view.duringRun.ui.sideBar
+package com.runt9.untdrl.view.duringRun.ui.sideBar.building
 
 import com.runt9.untdrl.model.building.Building
 import com.runt9.untdrl.model.loot.BuildingCore
 import com.runt9.untdrl.util.framework.ui.viewModel.ViewModel
 
-class BuildingDisplayViewModel(val empty: Boolean = true) : ViewModel() {
-    // TODO: Need a binding to the building so this updates in real-time
+class SideBarBuildingViewModel(val empty: Boolean = true) : ViewModel() {
     companion object {
-        fun fromBuilding(building: Building): BuildingDisplayViewModel {
-            val applyInfo: BuildingDisplayViewModel.(Building) -> Unit = { b ->
+        fun fromBuilding(building: Building): SideBarBuildingViewModel {
+            val applyInfo: SideBarBuildingViewModel.(Building) -> Unit = { b ->
                 name(b.definition.name)
                 xp(b.xp)
                 xpToLevel(b.xpToLevel)
@@ -18,13 +17,15 @@ class BuildingDisplayViewModel(val empty: Boolean = true) : ViewModel() {
                 cores(b.cores)
             }
 
-            val vm = BuildingDisplayViewModel(false)
+            val vm = SideBarBuildingViewModel(false)
             vm.applyInfo(building)
             building.onChange { vm.applyInfo(this) }
             return vm
         }
     }
 
+    val coreInventoryShown = Binding(false)
+    val coreInventory = ListBinding<BuildingCore>()
     val name = Binding("")
     val xp = Binding(0)
     val xpToLevel = Binding(0)
