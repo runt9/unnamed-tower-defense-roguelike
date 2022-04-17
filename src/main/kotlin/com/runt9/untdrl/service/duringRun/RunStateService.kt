@@ -24,12 +24,12 @@ class RunStateService(private val eventBus: EventBus, registry: RunServiceRegist
     }
 
     fun save(runState: RunState) = runOnServiceThread {
-//        if (runState != this@RunStateService.runState) {
+        if (runState != this@RunStateService.runState) {
             logger.info { "Saving run state" }
             this@RunStateService.runState = runState
             eventBus.enqueueEventSync(RunStateUpdated(runState.copy()))
             // TODO: This should also flush the current state to disk
-//        }
+        }
     }
 
     override fun stopInternal() {
