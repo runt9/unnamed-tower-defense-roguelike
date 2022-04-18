@@ -8,6 +8,7 @@ import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.util.framework.event.HandlesEvent
 import com.runt9.untdrl.util.framework.ui.controller.Controller
 import com.runt9.untdrl.util.framework.ui.uiComponent
+import ktx.async.onRenderingThread
 import ktx.scene2d.KWidget
 import ktx.scene2d.Scene2dDsl
 
@@ -25,12 +26,11 @@ class SideBarConsumablesController(private val eventBus: EventBus, private val r
 
     override fun dispose() {
         eventBus.unregisterHandlers(this)
+        super.dispose()
     }
 
     @HandlesEvent
-    fun runStateUpdated(event: RunStateUpdated) {
-        event.newState.applyNewState()
-    }
+    suspend fun runStateUpdated(event: RunStateUpdated) = onRenderingThread { event.newState.applyNewState() }
 
     private fun RunState.applyNewState() {
         vm.consumables(consumables)

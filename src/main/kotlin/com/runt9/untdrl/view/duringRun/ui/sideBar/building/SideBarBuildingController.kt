@@ -1,7 +1,7 @@
 package com.runt9.untdrl.view.duringRun.ui.sideBar.building
 
 import com.runt9.untdrl.model.event.RunStateUpdated
-import com.runt9.untdrl.model.loot.BuildingCore
+import com.runt9.untdrl.model.loot.TowerCore
 import com.runt9.untdrl.service.duringRun.RunStateService
 import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.util.framework.event.HandlesEvent
@@ -26,6 +26,7 @@ class SideBarBuildingController(private val runStateService: RunStateService, pr
 
     override fun dispose() {
         eventBus.unregisterHandlers(this)
+        super.dispose()
     }
 
     @HandlesEvent
@@ -44,7 +45,7 @@ class SideBarBuildingController(private val runStateService: RunStateService, pr
         vm.coreInventoryShown(false)
     }
 
-    fun placeCore(core: BuildingCore) {
+    fun placeCore(core: TowerCore) {
         vm.cores += core
         runStateService.update {
             cores -= core

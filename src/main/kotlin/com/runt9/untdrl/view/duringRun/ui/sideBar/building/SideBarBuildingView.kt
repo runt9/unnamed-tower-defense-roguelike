@@ -3,6 +3,7 @@ package com.runt9.untdrl.view.duringRun.ui.sideBar.building
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.utils.Align
 import com.kotcrab.vis.ui.VisUI
+import com.runt9.untdrl.model.loot.LootItemType
 import com.runt9.untdrl.util.ext.ui.bindLabelText
 import com.runt9.untdrl.util.ext.ui.bindUpdatable
 import com.runt9.untdrl.util.ext.ui.rectPixmapTexture
@@ -78,7 +79,7 @@ class SideBarBuildingView(override val controller: SideBarBuildingController, ov
                                             squarePixmap(60, Color.DARK_GRAY)
 
                                             visTable {
-                                                squarePixmap(55, core.color)
+                                                squarePixmap(55, LootItemType.CORE.color)
                                                 onClick {
                                                     controller.placeCore(core)
                                                 }
@@ -107,7 +108,7 @@ class SideBarBuildingView(override val controller: SideBarBuildingController, ov
                                                 controller.openCoreInventory()
                                             }
                                         } else {
-                                            squarePixmap(55, core.color)
+                                            squarePixmap(55, LootItemType.CORE.color)
                                         }
                                     }
                                 }

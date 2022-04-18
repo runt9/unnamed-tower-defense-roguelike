@@ -1,5 +1,6 @@
 package com.runt9.untdrl.view.duringRun.ui.sideBar.consumables
 
+import com.runt9.untdrl.model.loot.LootItemType
 import com.runt9.untdrl.util.ext.ui.bindUpdatable
 import com.runt9.untdrl.util.ext.ui.squarePixmap
 import com.runt9.untdrl.util.framework.ui.view.TableView
@@ -22,7 +23,7 @@ class SideBarConsumablesView(override val controller: SideBarConsumablesControll
                     clear()
                     vm.consumables.get().forEach { consumable ->
                         visTable {
-                            squarePixmap(55, consumable.color)
+                            squarePixmap(55, LootItemType.CONSUMABLE.color)
 
                             onClick {
                                 controller.useConsumable(consumable)

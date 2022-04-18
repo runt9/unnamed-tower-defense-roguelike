@@ -1,7 +1,7 @@
 package com.runt9.untdrl.view.duringRun.ui.sideBar.building
 
 import com.runt9.untdrl.model.building.Building
-import com.runt9.untdrl.model.loot.BuildingCore
+import com.runt9.untdrl.model.loot.TowerCore
 import com.runt9.untdrl.util.framework.ui.viewModel.ViewModel
 
 class SideBarBuildingViewModel(val empty: Boolean = true) : ViewModel() {
@@ -25,12 +25,12 @@ class SideBarBuildingViewModel(val empty: Boolean = true) : ViewModel() {
     }
 
     val coreInventoryShown = Binding(false)
-    val coreInventory = ListBinding<BuildingCore>()
+    val coreInventory = ListBinding<TowerCore>()
     val name = Binding("")
     val xp = Binding(0)
     val xpToLevel = Binding(0)
     val level = Binding(1)
     val stats = Binding(mapOf<String, String>())
     val maxCores = Binding(1)
-    val cores = ListBinding<BuildingCore>()
+    val cores = ListBinding<TowerCore>()
 }

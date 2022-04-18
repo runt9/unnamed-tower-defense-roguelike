@@ -3,7 +3,7 @@ package com.runt9.untdrl.model.building
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.math.Vector2
 import com.runt9.untdrl.model.building.definition.BuildingDefinition
-import com.runt9.untdrl.model.loot.BuildingCore
+import com.runt9.untdrl.model.loot.TowerCore
 import com.runt9.untdrl.service.buildingAction.BuildingAction
 import com.runt9.untdrl.util.ext.BaseSteerable
 import kotlin.math.roundToInt
@@ -29,7 +29,7 @@ class Building(val definition: BuildingDefinition, val texture: Texture) : BaseS
     var level = 1
     var maxCores = 1
 
-    val cores = mutableListOf<BuildingCore>()
+    val cores = mutableListOf<TowerCore>()
 
     fun onChange(onChangeCb: Building.() -> Unit) {
         this.onChangeCb = onChangeCb

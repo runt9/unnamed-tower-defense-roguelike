@@ -54,7 +54,7 @@ class LootDialogView(
                             clear()
                             vm.lootedItems.get().forEach { item ->
                                 visTable {
-                                    squarePixmap(60, item.color)
+                                    squarePixmap(60, item.type.color)
 
                                     onClick {
                                         controller.lootItem(item)
@@ -88,7 +88,7 @@ class LootDialogView(
 
                                 vm.selectedItems.get().getOrNull(i)?.also { item ->
                                     visTable {
-                                        squarePixmap(55, item.color)
+                                        squarePixmap(55, item.type.color)
 
                                         onClick {
                                             controller.deselectItem(item)

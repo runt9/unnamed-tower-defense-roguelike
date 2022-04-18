@@ -1,8 +1,8 @@
 package com.runt9.untdrl.view.duringRun.ui
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.utils.Align
+import com.runt9.untdrl.model.loot.LootItemType
 import com.runt9.untdrl.util.ext.ui.bindUpdatable
 import com.runt9.untdrl.util.ext.ui.rectPixmapTexture
 import com.runt9.untdrl.util.ext.ui.squarePixmap
@@ -25,7 +25,7 @@ class DuringRunUiView(override val controller: DuringRunUiController, override v
                     clear()
 
                     vm.relics.get().forEach { relic ->
-                        squarePixmap(55, relic.color)
+                        squarePixmap(55, LootItemType.RELIC.color)
                     }
                 }
             }.cell(expand = true, align = Align.topLeft, pad = 5f)
@@ -34,6 +34,6 @@ class DuringRunUiView(override val controller: DuringRunUiController, override v
         sideBar {
             controller.addChild(this.controller)
             background(rectPixmapTexture(1, 1, Color.SLATE).toDrawable())
-        }.cell(growY = true, width = Gdx.graphics.width * 0.15f)
+        }.cell(growY = true, width = 220f)
     }
 }

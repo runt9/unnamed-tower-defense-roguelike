@@ -26,6 +26,7 @@ import com.runt9.untdrl.view.duringRun.ui.DuringRunUiController
 import com.runt9.untdrl.view.duringRun.ui.loot.LootDialogController
 import com.runt9.untdrl.view.duringRun.ui.menu.MenuDialogController
 import com.runt9.untdrl.view.duringRun.ui.runEnd.RunEndDialogController
+import com.runt9.untdrl.view.duringRun.ui.shop.ShopDialogController
 import com.runt9.untdrl.view.loading.LoadingScreenController
 import com.runt9.untdrl.view.mainMenu.MainMenuScreenController
 import com.runt9.untdrl.view.settings.SettingsDialogController
@@ -83,5 +84,6 @@ object Injector : Context() {
         bindSingleton<DuringRunScreen>()
         bindSingleton<MenuDialogController>()
         bindSingleton<LootDialogController>()
+        bindSingleton<ShopDialogController>()
     }
 }

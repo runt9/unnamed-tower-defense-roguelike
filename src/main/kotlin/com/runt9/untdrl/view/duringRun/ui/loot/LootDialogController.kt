@@ -1,7 +1,7 @@
 package com.runt9.untdrl.view.duringRun.ui.loot
 
 import com.badlogic.gdx.Graphics
-import com.runt9.untdrl.model.loot.BuildingCore
+import com.runt9.untdrl.model.loot.TowerCore
 import com.runt9.untdrl.model.loot.Consumable
 import com.runt9.untdrl.model.loot.LootItem
 import com.runt9.untdrl.model.loot.Relic
@@ -39,7 +39,7 @@ class LootDialogController(private val eventBus: EventBus, graphics: Graphics, p
                 when (item) {
                     is Relic -> relics += item
                     is Consumable -> consumables += item
-                    is BuildingCore -> cores += item
+                    is TowerCore -> cores += item
                 }
             }
         }

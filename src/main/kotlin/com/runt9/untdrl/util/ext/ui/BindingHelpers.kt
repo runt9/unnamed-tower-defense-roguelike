@@ -5,10 +5,10 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.Label
-import ktx.actors.onChange
 import com.runt9.untdrl.util.framework.ui.Updatable
 import com.runt9.untdrl.util.framework.ui.updatable
 import com.runt9.untdrl.util.framework.ui.viewModel.ViewModel
+import ktx.actors.onChange
 
 fun <T : Any> Button.bindButtonDisabled(
     binding: ViewModel.Binding<T>,
@@ -16,6 +16,15 @@ fun <T : Any> Button.bindButtonDisabled(
     evaluateOnCall: Boolean = true
 ) = bindUpdatable(binding, evaluateOnCall) {
     isDisabled = binding.get() == disabledValue
+    touchable = if (isDisabled) Touchable.disabled else Touchable.enabled
+}
+
+fun <T : Any> Button.bindButtonDisabled(
+    bindings: Iterable<ViewModel.Binding<T>>,
+    evaluateOnCall: Boolean = true,
+    predicate: () -> Boolean
+) = bindUpdatables(bindings, evaluateOnCall) {
+    isDisabled = predicate()
     touchable = if (isDisabled) Touchable.disabled else Touchable.enabled
 }
 
@@ -37,6 +46,16 @@ fun <T : Any> Actor.bindVisible(
 ) = bindUpdatable(binding, evaluateOnCall) {
     isVisible = binding.get() == visibleValue
     touchable = if (isVisible) Touchable.enabled else Touchable.disabled
+}
+
+fun <T : Any, A : Actor> A.bindUpdatables(bindings: Iterable<ViewModel.Binding<T>>, evaluateOnCall: Boolean = true, updater: A.() -> Unit) {
+    val updatable = updatable { updater() }
+
+    bindings.forEach { it.bind(updatable) }
+
+    if (evaluateOnCall) {
+        updatable.update()
+    }
 }
 
 fun <T : Any, A : Actor> A.bindUpdatable(binding: ViewModel.Binding<T>, evaluateOnCall: Boolean = true, updater: A.() -> Unit) {
