@@ -49,7 +49,6 @@ class EnemyService(private val grid: IndexedGridGraph, private val eventBus: Eve
                     if (enemy.position.dst(grid.home.point).roundToInt() == 0) {
                         logger.info { "${enemy.id}: Enemy hit home" }
                         enemies -= enemy
-                        enemy.die()
                         eventBus.enqueueEventSync(EnemyRemovedEvent(enemy, false))
                     }
                 }
@@ -57,7 +56,7 @@ class EnemyService(private val grid: IndexedGridGraph, private val eventBus: Eve
         }
     }
 
-    fun getBuildingTarget(position: Vector2, range: Int) =
+    fun getBuildingTarget(position: Vector2, range: Float) =
         enemies.toList()
             .sortedBy { it.numNodesToHome() }
             .filter { it.isAlive }
@@ -68,4 +67,6 @@ class EnemyService(private val grid: IndexedGridGraph, private val eventBus: Eve
     override fun stopInternal() {
         enemies.clear()
     }
+
+    fun collidesWithEnemy(position: Vector2, maxDistance: Float) = enemies.firstOrNull { it.position.dst(position) <= maxDistance }
 }

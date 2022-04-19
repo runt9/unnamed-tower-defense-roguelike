@@ -7,7 +7,7 @@ import com.runt9.untdrl.util.framework.ui.controller.Controller
 
 abstract class GameScreen(worldWidth: Float, worldHeight: Float) : UiScreen() {
     private val camera = OrthographicCamera(worldWidth, worldHeight)
-    private val gameStage: UnTdRlStage = UnTdRlStage(FitViewport(worldWidth, worldHeight, camera))
+    protected val gameStage: UnTdRlStage = UnTdRlStage(FitViewport(worldWidth, worldHeight, camera))
     private val cameraController = GameCameraController(camera)
     override val stages = listOf(gameStage, uiStage)
     abstract val gameController: Controller

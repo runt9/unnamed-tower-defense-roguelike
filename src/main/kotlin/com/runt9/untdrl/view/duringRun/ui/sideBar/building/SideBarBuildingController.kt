@@ -33,7 +33,7 @@ class SideBarBuildingController(private val runStateService: RunStateService, pr
     suspend fun runStateHandler(event: RunStateUpdated) = onRenderingThread {
         val newState = event.newState
         vm.apply {
-            cores(newState.cores)
+            coreInventory(newState.cores)
         }
     }
 

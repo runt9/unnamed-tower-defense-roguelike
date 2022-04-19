@@ -1,6 +1,7 @@
 package com.runt9.untdrl.util.ext
 
 import com.badlogic.gdx.math.MathUtils
+import kotlin.math.roundToInt
 import kotlin.math.sqrt
 import kotlin.random.Random
 
@@ -15,3 +16,8 @@ fun Float.sqrt() = sqrt(this)
 fun Int.sqrt() = toDouble().sqrt()
 
 fun ClosedRange<Float>.random(rng: Random) = rng.nextFloat() * (endInclusive - start) + start
+
+fun Float.displayInt() = roundToInt().toString()
+fun Float.displayDecimal(decimals: Int = 2) = "%.${decimals}f".format(this)
+fun Float.displayMultiplier() = "${displayDecimal()}x"
+fun Float.displayPercent(decimals: Int = 1) = "${displayDecimal(decimals)}%"

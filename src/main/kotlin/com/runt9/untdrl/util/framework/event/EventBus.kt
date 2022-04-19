@@ -35,7 +35,7 @@ class EventBus : Disposable {
 
     fun registerHandlers(obj: Any) {
         if (handlerClasses.none { it.obj == obj }) {
-//            logger.debug { "Initializing event handlers for ${obj::class.simpleName}" }
+            logger.debug { "Initializing event handlers for ${obj::class.simpleName}" }
             handlerClasses.add(ClassHandlerMapping(obj))
         }
 
@@ -43,6 +43,7 @@ class EventBus : Disposable {
     }
 
     fun unregisterHandlers(obj: Any) {
+        logger.debug { "Deinitializing event handlers for ${obj::class.simpleName}" }
         handlerClasses.find { it.obj == obj }?.unregisterHandlers()
     }
 

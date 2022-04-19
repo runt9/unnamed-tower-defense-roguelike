@@ -2,16 +2,17 @@ package com.runt9.untdrl.model.building
 
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.math.Vector2
+import com.runt9.untdrl.model.attribute.Attribute
+import com.runt9.untdrl.model.attribute.AttributeModifier
+import com.runt9.untdrl.model.attribute.AttributeType
 import com.runt9.untdrl.model.building.definition.BuildingDefinition
 import com.runt9.untdrl.model.loot.TowerCore
 import com.runt9.untdrl.service.buildingAction.BuildingAction
 import com.runt9.untdrl.util.ext.BaseSteerable
-import kotlin.math.roundToInt
 
 private var idCounter = 0
 
 class Building(val definition: BuildingDefinition, val texture: Texture) : BaseSteerable(Vector2.Zero, 0f) {
-    private val maxLevel = 20
     val id = idCounter++
 
     override val linearSpeedLimit = 0f
@@ -20,7 +21,7 @@ class Building(val definition: BuildingDefinition, val texture: Texture) : BaseS
     override val angularAccelerationLimit = angularSpeedLimit * 2f
     override val boundingBoxRadius = 0.5f
 
-    private var onChangeCb: (Building.() -> Unit)? = null
+    private var onChangeCb: (suspend Building.() -> Unit)? = null
 
     lateinit var action: BuildingAction
 
@@ -29,27 +30,14 @@ class Building(val definition: BuildingDefinition, val texture: Texture) : BaseS
     var level = 1
     var maxCores = 1
 
+    val attrs = definition.attrs.mapValues { (type, _) -> Attribute(type) }.toMutableMap()
+    val attrMods = mutableListOf<AttributeModifier>()
+
     val cores = mutableListOf<TowerCore>()
 
-    fun onChange(onChangeCb: Building.() -> Unit) {
+    fun onChange(onChangeCb: suspend Building.() -> Unit) {
         this.onChangeCb = onChangeCb
     }
-
-    fun gainXp(xp: Int) {
-        if (level == maxLevel) {
-            return
-        }
-
-        this.xp += xp
-        if (this.xp >= xpToLevel) {
-            level++
-            if (level != maxLevel) {
-                this.xp = this.xp - xpToLevel
-                xpToLevel = (xpToLevel * 1.5f).roundToInt()
-            }
-            action.levelUp(level)
-        }
-
-        onChangeCb?.invoke(this)
-    }
 }
+
+fun Map<AttributeType, Attribute>.mapToFloats() = mapValues { (_, v) -> v() }

@@ -15,7 +15,12 @@ import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.util.framework.event.HandlesEvent
 import kotlin.math.roundToInt
 
-class LootService(private val eventBus: EventBus, registry: RunServiceRegistry, private val randomizerService: RandomizerService, private val runStateService: RunStateService) : RunService(eventBus, registry) {
+class LootService(
+    private val eventBus: EventBus,
+    registry: RunServiceRegistry,
+    private val randomizerService: RandomizerService,
+    private val runStateService: RunStateService
+) : RunService(eventBus, registry) {
     private val logger = unTdRlLogger()
 
     private val lootWeights = mapOf(
@@ -50,9 +55,9 @@ class LootService(private val eventBus: EventBus, registry: RunServiceRegistry, 
     }
 
     @HandlesEvent
-    fun enemyKilled(event: EnemyRemovedEvent) {
+    fun enemyKilled(event: EnemyRemovedEvent) = runOnServiceThread {
         logger.info { "Enemy removed event" }
-        if (!event.wasKilled) return
+        if (!event.wasKilled) return@runOnServiceThread
 
         generateLoot()
     }

@@ -2,6 +2,7 @@ package com.runt9.untdrl.view.duringRun.game.building
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.utils.Align
+import com.runt9.untdrl.model.attribute.AttributeType
 import com.runt9.untdrl.util.ext.ui.bindUpdatable
 import com.runt9.untdrl.util.ext.ui.bindVisible
 import com.runt9.untdrl.util.ext.ui.circlePixmapTexture
@@ -38,10 +39,13 @@ class BuildingView(override val controller: BuildingController, override val vm:
 
             bindVisible(vm.isSelected, true)
 
-            // TODO: This is confirmation that there needs to be a more specific way of handling stats
-            vm.stats.get()["Range"]?.toFloat()?.also {
-                setSize(it * 2, it * 2)
-                setPosition(buildingSize / 2, buildingSize / 2, Align.center)
+            bindUpdatable(vm.attrs) {
+                val attrs = vm.attrs.get()
+                attrs[AttributeType.RANGE]?.also {
+                    setSize(it * 2, it * 2)
+                    setPosition(buildingSize / 2, buildingSize / 2, Align.center)
+
+                }
             }
         }
     }

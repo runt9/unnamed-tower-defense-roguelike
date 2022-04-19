@@ -1,18 +1,15 @@
 package com.runt9.untdrl.model.building.definition
 
 import com.runt9.untdrl.model.UnitTexture
+import com.runt9.untdrl.model.attribute.AttributeModificationType
+import com.runt9.untdrl.model.attribute.AttributeType
 import com.runt9.untdrl.model.building.BuildingType
-import com.runt9.untdrl.model.building.action.GenerateResearchActionDefinition
+import com.runt9.untdrl.model.building.action.generateResearch
 
-object ResearchLabDefinition : BuildingDefinition {
-    override val name = "Research Lab"
-    override val type = BuildingType.NON_COMBAT
-    override val texture = UnitTexture.RESEARCH_LAB
-    override val goldCost = 100
+val researchLabDefinition = building("Research Lab", BuildingType.NON_COMBAT, UnitTexture.RESEARCH_LAB, 100) {
+    generateResearch()
 
-    override val action = object : GenerateResearchActionDefinition() {
-        override val timeBetweenGain = 1f
-        override val amountPerTime = 1
-        override val goldCostPerTime = 1
-    }
+    AttributeType.GAIN_INTERVAL(5f)
+    AttributeType.AMOUNT_PER_INTERVAL(1f, 1f, AttributeModificationType.FLAT)
+    AttributeType.COST_PER_INTERVAL(1f)
 }

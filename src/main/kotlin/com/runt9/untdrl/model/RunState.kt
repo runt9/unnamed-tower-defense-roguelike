@@ -1,9 +1,9 @@
 package com.runt9.untdrl.model
 
 import com.runt9.untdrl.model.building.definition.BuildingDefinition
-import com.runt9.untdrl.model.building.definition.GoldMineDefinition
-import com.runt9.untdrl.model.building.definition.PrototypeTowerDefinition
-import com.runt9.untdrl.model.building.definition.ResearchLabDefinition
+import com.runt9.untdrl.model.building.definition.goldMineDefinition
+import com.runt9.untdrl.model.building.definition.prototypeTowerDefinition
+import com.runt9.untdrl.model.building.definition.researchLabDefinition
 import com.runt9.untdrl.model.loot.Consumable
 import com.runt9.untdrl.model.loot.Relic
 import com.runt9.untdrl.model.loot.Shop
@@ -22,7 +22,7 @@ data class RunState(
     var currentShop: Shop = Shop(),
     var research: Int = 0,
     var wave: Int = 1,
-    var availableBuildings: List<BuildingDefinition> = listOf(PrototypeTowerDefinition, GoldMineDefinition, ResearchLabDefinition),
+    var availableBuildings: List<BuildingDefinition> = listOf(prototypeTowerDefinition, goldMineDefinition, researchLabDefinition),
     var relics: List<Relic> = listOf(),
     var consumables: List<Consumable> = listOf(),
     var cores: List<TowerCore> = listOf()

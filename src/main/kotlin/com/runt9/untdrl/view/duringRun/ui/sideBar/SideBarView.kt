@@ -15,7 +15,6 @@ import ktx.actors.onChange
 import ktx.scene2d.textButton
 import ktx.scene2d.vis.visTable
 
-// TODO: Break the pieces into their own modules
 class SideBarView(override val controller: SideBarController, override val vm: SideBarViewModel) : TableView(controller, vm) {
     override fun init() {
         val vm = vm
@@ -27,12 +26,20 @@ class SideBarView(override val controller: SideBarController, override val vm: S
         visTable {
             bindUpdatable(vm.selectedBuilding) {
                 clear()
+                controller.removeDynamicSidebarControllers()
 
                 if (vm.selectedBuilding.get().empty) {
-                    availableBuildings().cell(grow = true, row = true)
-                    consumables().cell(grow = true, row = true)
+                    availableBuildings {
+                        controller.addChild(this.controller)
+                    }.cell(grow = true, row = true)
+
+                    consumables {
+                        controller.addChild(this.controller)
+                    }.cell(grow = true, row = true)
                 } else {
-                    sideBarBuilding(vm.selectedBuilding.get()).cell(row = true, grow = true, align = Align.top, pad = 4f)
+                    sideBarBuilding(vm.selectedBuilding.get()) {
+                        controller.addChild(this.controller)
+                    }.cell(row = true, grow = true, align = Align.top, pad = 4f)
                 }
             }
         }.cell(row = true, grow = true)

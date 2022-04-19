@@ -1,44 +1,36 @@
 package com.runt9.untdrl.service.buildingAction
 
 import com.runt9.untdrl.model.building.Building
-import com.runt9.untdrl.model.building.action.GenerateGoldActionDefinition
+import com.runt9.untdrl.model.building.amountPerInterval
+import com.runt9.untdrl.model.building.gainInterval
+import com.runt9.untdrl.service.duringRun.BuildingService
 import com.runt9.untdrl.service.duringRun.RunStateService
 import com.runt9.untdrl.util.ext.Timer
 import com.runt9.untdrl.util.framework.event.EventBus
+import kotlin.math.roundToInt
 
 class GenerateGoldAction(
-    private val definition: GenerateGoldActionDefinition,
     private val building: Building,
     override val eventBus: EventBus,
+    private val buildingService: BuildingService,
     private val runStateService: RunStateService
 ) : BuildingAction {
-    private var timeBetweenGain = definition.timeBetweenGain
-    private var amountPerTime = definition.amountPerTime
-
-    private val generateTimer = Timer(timeBetweenGain)
+    private val generateTimer = Timer(building.gainInterval)
 
     override suspend fun act(delta: Float) {
+        if (building.gainInterval != generateTimer.targetTime) {
+            generateTimer.targetTime = building.gainInterval
+        }
+
         generateTimer.tick(delta)
 
         if (generateTimer.isReady) {
             runStateService.update {
-                gold += amountPerTime
+                gold += building.amountPerInterval.roundToInt()
             }
 
-            building.gainXp(1)
+            buildingService.gainXp(building, 1)
             generateTimer.reset()
         }
-    }
-
-    override fun getStats(): Map<String, String> {
-        return mapOf(
-            "Time Between Ticks" to timeBetweenGain.displayDecimal(),
-            "Gold per Tick" to amountPerTime.toString()
-        )
-    }
-
-    override fun levelUp(newLevel: Int) {
-        // TODO: Decide if we want to actually have timeBetweenGain get better with levels
-        amountPerTime += definition.amountPerTime
     }
 }

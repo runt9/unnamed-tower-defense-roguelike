@@ -43,6 +43,7 @@ class DuringRunScreen(
 
     override fun show() {
         eventBus.registerHandlers(this)
+        inputHandler.stage = gameStage
         input.addProcessor(inputHandler)
         runInitializer.initialize()
         super.show()

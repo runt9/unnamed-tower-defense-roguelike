@@ -65,9 +65,9 @@ object Injector : Context() {
         bindSingleton<IndexedGridGraph>()
         bindSingleton<RandomizerService>()
         bindSingleton<ChunkGenerator>()
+        bindSingleton<BuildingService>()
         bindSingleton<EnemyService>()
         bindSingleton<ProjectileService>()
-        bindSingleton<BuildingService>()
         bindSingleton<SpawnerService>()
         bindSingleton<LootService>()
 

@@ -4,6 +4,8 @@ import com.badlogic.gdx.graphics.Texture
 import com.runt9.untdrl.model.RunState
 import com.runt9.untdrl.model.UnitTexture
 import com.runt9.untdrl.model.building.definition.BuildingDefinition
+import com.runt9.untdrl.model.event.BuildingCancelledEvent
+import com.runt9.untdrl.model.event.BuildingPlacedEvent
 import com.runt9.untdrl.model.event.CancelOpenItemsEvent
 import com.runt9.untdrl.model.event.NewBuildingEvent
 import com.runt9.untdrl.model.event.RunStateUpdated
@@ -47,10 +49,20 @@ class SideBarAvailableBuildingsController(private val eventBus: EventBus, privat
     fun loadTexture(texture: UnitTexture): Texture = assets[texture.assetFile]
 
     fun addBuilding(building: BuildingDefinition) {
-        if (!canInteract) return
+        if (!canInteract || vm.gold.get() < building.goldCost) return
 
         canInteract = false
         eventBus.enqueueEventSync(CancelOpenItemsEvent())
         eventBus.enqueueEventSync(NewBuildingEvent(building))
+    }
+
+    @HandlesEvent(BuildingPlacedEvent::class)
+    suspend fun buildingPlaced() = onRenderingThread {
+        canInteract = true
+    }
+
+    @HandlesEvent(BuildingCancelledEvent::class)
+    suspend fun buildingCancelled() = onRenderingThread {
+        canInteract = true
     }
 }

@@ -3,6 +3,7 @@ package com.runt9.untdrl.view.duringRun.game.building
 import com.badlogic.gdx.InputMultiplexer
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.runt9.untdrl.model.building.Building
+import com.runt9.untdrl.model.building.mapToFloats
 import com.runt9.untdrl.model.event.BuildingCancelledEvent
 import com.runt9.untdrl.model.event.BuildingPlacedEvent
 import com.runt9.untdrl.model.event.BuildingSelectedEvent
@@ -31,12 +32,18 @@ class BuildingController(private val eventBus: EventBus, private val buildingSer
     private val input by lazyInject<InputMultiplexer>()
     private val camera by lazyInject<OrthographicCamera>()
 
+    val buildingCb: suspend (Building) -> Unit = { b -> onRenderingThread {
+        vm.attrs(b.attrs.mapToFloats())
+    }}
+
     override fun load() {
         eventBus.registerHandlers(this)
+        buildingService.onBuildingChange(vm.building.id, buildingCb)
     }
 
     override fun dispose() {
         eventBus.unregisterHandlers(this)
+        buildingService.removeBuildingChangeCb(vm.building.id, buildingCb)
         super.dispose()
     }
 

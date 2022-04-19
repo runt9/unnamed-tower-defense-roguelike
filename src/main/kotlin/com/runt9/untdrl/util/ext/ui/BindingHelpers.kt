@@ -43,8 +43,14 @@ fun <T : Any> Actor.bindVisible(
     binding: ViewModel.Binding<T>,
     visibleValue: T,
     evaluateOnCall: Boolean = true
+) = bindVisible(binding, evaluateOnCall) { this == visibleValue }
+
+fun <T : Any> Actor.bindVisible(
+    binding: ViewModel.Binding<T>,
+    evaluateOnCall: Boolean = true,
+    predicate: T.() -> Boolean
 ) = bindUpdatable(binding, evaluateOnCall) {
-    isVisible = binding.get() == visibleValue
+    isVisible = predicate(binding.get())
     touchable = if (isVisible) Touchable.enabled else Touchable.disabled
 }
 

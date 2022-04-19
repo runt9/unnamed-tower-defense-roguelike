@@ -6,5 +6,4 @@ import com.runt9.untdrl.util.framework.ui.viewModel.ViewModel
 class SideBarAvailableBuildingsViewModel : ViewModel() {
     val availableBuildings = ListBinding<BuildingDefinition>()
     val gold = Binding(0)
-    val canInteract = Binding(true)
 }

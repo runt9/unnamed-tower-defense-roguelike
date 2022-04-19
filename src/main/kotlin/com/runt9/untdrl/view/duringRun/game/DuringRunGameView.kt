@@ -6,14 +6,14 @@ import com.runt9.untdrl.util.framework.ui.view.TableView
 import com.runt9.untdrl.util.framework.ui.viewModel.ViewModel
 import com.runt9.untdrl.view.duringRun.GAME_HEIGHT
 import com.runt9.untdrl.view.duringRun.GAME_WIDTH
+import com.runt9.untdrl.view.duringRun.game.building.BuildingController
+import com.runt9.untdrl.view.duringRun.game.building.building
 import com.runt9.untdrl.view.duringRun.game.chunk.ChunkController
 import com.runt9.untdrl.view.duringRun.game.chunk.chunk
 import com.runt9.untdrl.view.duringRun.game.enemy.EnemyController
 import com.runt9.untdrl.view.duringRun.game.enemy.enemy
 import com.runt9.untdrl.view.duringRun.game.projectile.ProjectileController
 import com.runt9.untdrl.view.duringRun.game.projectile.projectile
-import com.runt9.untdrl.view.duringRun.game.building.BuildingController
-import com.runt9.untdrl.view.duringRun.game.building.building
 import ktx.scene2d.vis.floatingGroup
 
 class DuringRunGameView(
@@ -42,6 +42,7 @@ class DuringRunGameView(
 
             vmList.bindRemove { item ->
                 viewList.find { it.vm == item }?.apply {
+                    // TODO: This is causing a common crash somehow when an enemy is removed
                     viewList.remove(this)
                     this.dispose()
                 }

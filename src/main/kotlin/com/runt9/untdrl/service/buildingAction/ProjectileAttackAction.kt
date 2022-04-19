@@ -6,9 +6,15 @@ import com.badlogic.gdx.math.Vector2
 import com.runt9.untdrl.model.building.Building
 import com.runt9.untdrl.model.building.Projectile
 import com.runt9.untdrl.model.building.action.ProjectileAttackActionDefinition
+import com.runt9.untdrl.model.building.attackSpeed
+import com.runt9.untdrl.model.building.critChance
+import com.runt9.untdrl.model.building.critMulti
+import com.runt9.untdrl.model.building.damage
+import com.runt9.untdrl.model.building.range
 import com.runt9.untdrl.model.enemy.Enemy
 import com.runt9.untdrl.model.event.ProjectileSpawnedEvent
 import com.runt9.untdrl.model.event.WaveCompleteEvent
+import com.runt9.untdrl.service.RandomizerService
 import com.runt9.untdrl.service.duringRun.EnemyService
 import com.runt9.untdrl.util.ext.Timer
 import com.runt9.untdrl.util.ext.degRad
@@ -23,15 +29,13 @@ class ProjectileAttackAction(
     private val building: Building,
     override val eventBus: EventBus,
     private val enemyService: EnemyService,
-    private val assets: AssetStorage
+    private val assets: AssetStorage,
+    private val randomizerService: RandomizerService
 ) : BuildingAction {
     private val logger = unTdRlLogger()
     private var target: Enemy? = null
-    private var attackTime = definition.attackTime
-    private var damage = definition.damage
-    private var range = definition.range
 
-    private val attackTimer = Timer(attackTime)
+    private val attackTimer = Timer(building.attackSpeed)
     private val behavior = Face(building).apply {
         timeToTarget = 0.1f
         alignTolerance = 5f.degRad
@@ -41,9 +45,14 @@ class ProjectileAttackAction(
     override suspend fun act(delta: Float) {
         val steeringOutput = SteeringAcceleration(Vector2())
 
+        // Easy way to avoid another callback, just check this every tick, it's not expensive
+        if (building.attackSpeed != attackTimer.targetTime) {
+            attackTimer.targetTime = building.attackSpeed
+        }
+
         attackTimer.tick(delta)
 
-        val target = enemyService.getBuildingTarget(building.position, range) ?: return
+        val target = enemyService.getBuildingTarget(building.position, building.range) ?: return
 
         setTarget(target)
 
@@ -58,30 +67,19 @@ class ProjectileAttackAction(
         }
     }
 
-    // TODO: This will need to be the same in the definition for tooltips in the building menu
-    override fun getStats() =
-        mapOf(
-            "Damage" to damage.displayInt(),
-            "Attack Speed" to (1 / attackTime).displayDecimal(),
-            "Range" to range.toString()
-        )
-
-    override fun levelUp(newLevel: Int) {
-        // TODO: Real scaling?
-        attackTime *= .9f
-        attackTimer.targetTime = attackTime
-        damage *= 1.1f
-
-        if (newLevel % 5 == 0) {
-            range++
-        }
-    }
-
     private fun spawnProjectile(): Projectile {
-        val projectile = Projectile(building, assets[definition.projectileTexture.assetFile], damage, target!!)
-        logger.info { "${building.id} Spawning Projectile ${projectile.id}" }
+        val finalDamage = rollForDamage()
+        val projectile = Projectile(building, assets[definition.projectileTexture.assetFile], finalDamage, target!!)
         eventBus.enqueueEventSync(ProjectileSpawnedEvent(projectile))
         return projectile
+    }
+
+    private fun rollForDamage(): Float {
+        val roll = randomizerService.rng.nextInt(0, 100)
+        val isCrit = roll / 100f <= building.critChance
+        var damageMulti = randomizerService.rng.nextInt(90, 111).toFloat() / 100f
+        if (isCrit) damageMulti *= building.critMulti
+        return building.damage * damageMulti
     }
 
     private fun setTarget(target: Enemy) {

@@ -6,6 +6,7 @@ import com.runt9.untdrl.model.building.Building
 import com.runt9.untdrl.model.event.BuildingCancelledEvent
 import com.runt9.untdrl.model.event.ChunkCancelledEvent
 import com.runt9.untdrl.model.event.ChunkPlacedEvent
+import com.runt9.untdrl.model.event.EnemyRemovedEvent
 import com.runt9.untdrl.model.event.EnemySpawnedEvent
 import com.runt9.untdrl.model.event.NewBuildingEvent
 import com.runt9.untdrl.model.event.NewChunkEvent
@@ -69,6 +70,7 @@ class DuringRunGameController(
     suspend fun handleNewBuilding(event: NewBuildingEvent) = onRenderingThread {
         val buildingDef = event.buildingDefinition
         val building = Building(buildingDef, assets[buildingDef.texture.assetFile])
+        buildingService.recalculateAttrs(building)
         building.action = buildingService.injectBuildingAction(building)
 
         val buildingVm = BuildingViewModel(building)
@@ -93,11 +95,12 @@ class DuringRunGameController(
             enemyVm.rotation(rotation)
         }
 
-        enemy.onDie {
-            vm.enemies -= enemyVm
-        }
-
         vm.enemies += enemyVm
+    }
+
+    @HandlesEvent
+    suspend fun enemyRemoved(event: EnemyRemovedEvent) = onRenderingThread {
+        vm.enemies.removeIf { it.enemy == event.enemy }
     }
 
     @HandlesEvent

@@ -3,6 +3,8 @@ package com.runt9.untdrl.view.duringRun.ui.sideBar.building
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.utils.Align
 import com.kotcrab.vis.ui.VisUI
+import com.runt9.untdrl.model.attribute.definition.displayName
+import com.runt9.untdrl.model.attribute.definition.getDisplayValue
 import com.runt9.untdrl.model.loot.LootItemType
 import com.runt9.untdrl.util.ext.ui.bindLabelText
 import com.runt9.untdrl.util.ext.ui.bindUpdatable
@@ -31,9 +33,12 @@ class SideBarBuildingView(override val controller: SideBarBuildingController, ov
             visLabel(vm.name.get()).cell(row = true, pad = 2f, align = Align.left)
 
             visTable {
-                vm.stats.get().forEach { (name, value) ->
-                    visLabel(name) { wrap = true }.cell(pad = 2f, align = Align.left, growX = true)
-                    visLabel(value).cell(row = true, pad = 2f, align = Align.right)
+                bindUpdatable(vm.attrs) {
+                    clear()
+                    vm.attrs.get().forEach { (type, value) ->
+                        visLabel(type.displayName) { wrap = true }.cell(pad = 2f, align = Align.left, growX = true)
+                        visLabel(type.getDisplayValue(value)).cell(row = true, pad = 2f, align = Align.right)
+                    }
                 }
             }.cell(row = true, growX = true)
 

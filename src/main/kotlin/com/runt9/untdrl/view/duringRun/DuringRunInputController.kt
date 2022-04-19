@@ -4,10 +4,11 @@ import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.Vector3
-import com.runt9.untdrl.util.ext.lazyInject
-import com.runt9.untdrl.model.event.CancelOpenItemsEvent
+import com.badlogic.gdx.scenes.scene2d.Stage
 import com.runt9.untdrl.model.event.BuildingSelectedEvent
+import com.runt9.untdrl.model.event.CancelOpenItemsEvent
 import com.runt9.untdrl.service.duringRun.BuildingService
+import com.runt9.untdrl.util.ext.lazyInject
 import com.runt9.untdrl.util.framework.event.EventBus
 import ktx.app.KtxInputAdapter
 import kotlin.math.roundToInt
@@ -17,6 +18,7 @@ class DuringRunInputController(private val eventBus: EventBus, private val build
     private val cancelButton = Input.Buttons.RIGHT
     private val cancelKey = Input.Keys.ESCAPE
     private val camera by lazyInject<OrthographicCamera>()
+    lateinit var stage: Stage
 
     override fun touchDown(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
         if (button == cancelButton) {

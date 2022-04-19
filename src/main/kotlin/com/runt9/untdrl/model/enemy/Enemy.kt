@@ -15,14 +15,15 @@ import ktx.collections.GdxArray
 private var idCounter = 0
 
 class Enemy(wave: Int, val texture: Texture, initialPosition: Vector2, initialRotation: Float, path: GdxArray<Vector2>) : BaseSteerable(initialPosition, initialRotation) {
+    private val difficultyModifier = 1 + (path.size / 200f)
     val id = idCounter++
-    override val linearSpeedLimit = 1f
+    override val linearSpeedLimit = 1f * difficultyModifier
     override val linearAccelerationLimit = linearSpeedLimit * 100f
     override val angularSpeedLimit = 10f
     override val angularAccelerationLimit = angularSpeedLimit * 100f
     override val boundingBoxRadius = 0.25f
 
-    var maxHp = 100f + (25f * wave)
+    var maxHp = (100f + (25f * wave)) * difficultyModifier
     var currentHp = maxHp
     val xpOnDeath = wave
     var isAlive = true
@@ -42,12 +43,7 @@ class Enemy(wave: Int, val texture: Texture, initialPosition: Vector2, initialRo
         add(BlendedSteering.BehaviorAndWeight(lookBehavior, 1f))
     }
 
-    private lateinit var onDieCb: Enemy.() -> Unit
     private lateinit var onHpChangeCb: Enemy.() -> Unit
-
-    fun onDie(onDieCb: Enemy.() -> Unit) {
-        this.onDieCb = onDieCb
-    }
 
     fun onHpChange(onHpChangeCb: Enemy.() -> Unit) {
         this.onHpChangeCb = onHpChangeCb
@@ -60,8 +56,4 @@ class Enemy(wave: Int, val texture: Texture, initialPosition: Vector2, initialRo
     }
 
     fun numNodesToHome() = fullPath.segments.size - (followPathBehavior.pathParam as LinePathParam).segmentIndex
-
-    fun die() {
-        onDieCb()
-    }
 }

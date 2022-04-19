@@ -1,17 +1,16 @@
 package com.runt9.untdrl.model.building.definition
 
 import com.runt9.untdrl.model.UnitTexture
+import com.runt9.untdrl.model.attribute.AttributeModificationType
+import com.runt9.untdrl.model.attribute.AttributeType.AMOUNT_PER_INTERVAL
+import com.runt9.untdrl.model.attribute.AttributeType.GAIN_INTERVAL
 import com.runt9.untdrl.model.building.BuildingType
-import com.runt9.untdrl.model.building.action.GenerateGoldActionDefinition
+import com.runt9.untdrl.model.building.action.generateGold
 
-object GoldMineDefinition : BuildingDefinition {
-    override val name = "Gold Mine"
-    override val type = BuildingType.NON_COMBAT
-    override val texture = UnitTexture.GOLD_MINE
-    override val goldCost = 50
 
-    override val action = object : GenerateGoldActionDefinition() {
-        override val timeBetweenGain = 1f
-        override val amountPerTime = 1
-    }
+val goldMineDefinition = building("Gold Mine", BuildingType.NON_COMBAT, UnitTexture.GOLD_MINE, 50) {
+    generateGold()
+
+    GAIN_INTERVAL(5f)
+    AMOUNT_PER_INTERVAL(1f, 1f, AttributeModificationType.FLAT)
 }
