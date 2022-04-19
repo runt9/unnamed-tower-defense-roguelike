@@ -48,6 +48,8 @@ class BuildingController(private val eventBus: EventBus, private val buildingSer
     }
 
     fun initBuildingMover() {
+        if (vm.isValidPlacement.get()) return
+
         vm.isSelected(true)
 
         input.addProcessor(InputMover(vm.building, camera, eventBus, {

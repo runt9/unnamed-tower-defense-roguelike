@@ -19,6 +19,7 @@ import ktx.scene2d.progressBar
 import ktx.scene2d.stack
 import ktx.scene2d.textButton
 import ktx.scene2d.vis.flowGroup
+import ktx.scene2d.vis.visImage
 import ktx.scene2d.vis.visLabel
 import ktx.scene2d.vis.visScrollPane
 import ktx.scene2d.vis.visTable
@@ -30,17 +31,15 @@ class SideBarBuildingView(override val controller: SideBarBuildingController, ov
         val vm = vm
 
         visTable {
-            visLabel(vm.name.get()).cell(row = true, pad = 2f, align = Align.left)
+            val separator = {
+                visTable {
+                    background(rectPixmapTexture(1, 1, Color.BLACK).toDrawable())
+                }.cell(row = true, height = 2f, growX = true, padTop = 2f, padBottom = 2f)
+            }
 
-            visTable {
-                bindUpdatable(vm.attrs) {
-                    clear()
-                    vm.attrs.get().forEach { (type, value) ->
-                        visLabel(type.displayName) { wrap = true }.cell(pad = 2f, align = Align.left, growX = true)
-                        visLabel(type.getDisplayValue(value)).cell(row = true, pad = 2f, align = Align.right)
-                    }
-                }
-            }.cell(row = true, growX = true)
+            visLabel(vm.name.get()).cell(row = true, pad = 2f)
+
+            separator()
 
             visTable {
                 visLabel("") { bindLabelText { "Level: ${vm.level()}" } }.cell(pad = 2f, align = Align.left)
@@ -69,10 +68,26 @@ class SideBarBuildingView(override val controller: SideBarBuildingController, ov
                 }.cell(width = 100f, height = 20f, row = true)
             }.cell(row = true)
 
+            separator()
+
+            visTable {
+                bindUpdatable(vm.attrs) {
+                    clear()
+                    vm.attrs.get().forEach { (type, value) ->
+                        visLabel(type.displayName) { wrap = true }.cell(pad = 2f, align = Align.left, growX = true)
+                        visLabel(type.getDisplayValue(value)).cell(row = true, pad = 2f, align = Align.right)
+                    }
+                }
+            }.cell(row = true, growX = true)
+
+            separator()
+
             visTable {
                 bindUpdatable(vm.coreInventoryShown) {
                     clear()
                     if (vm.coreInventoryShown.get()) {
+                        visLabel("Core Inventory:").cell(growX = true, row = true, padBottom = 4f)
+
                         visScrollPane {
                             setScrollingDisabled(true, false)
 
@@ -99,6 +114,8 @@ class SideBarBuildingView(override val controller: SideBarBuildingController, ov
                             onChange { controller.closeCoreInventory() }
                         }
                     } else {
+                        visLabel("Tower Cores:").cell(growX = true, row = true, padBottom = 2f)
+
                         flowGroup(spacing = 5f) {
                             bindUpdatable(vm.cores) {
                                 clear()
@@ -118,10 +135,37 @@ class SideBarBuildingView(override val controller: SideBarBuildingController, ov
                                     }
                                 }
                             }
-                        }
+                        }.cell(grow = true, row = true, pad = 4f)
                     }
                 }
-            }.cell(grow = true)
+            }.cell(grow = true, row = true)
+
+            separator()
+
+            visTable {
+                visLabel("") { bindLabelText { "Upgrade Points: ${vm.upgradePoints()}" } }.cell(growX = true, row = true, padBottom = 2f)
+
+                visTable {
+                    bindUpdatable(vm.availableUpgrades) {
+                        clear()
+                        val upgrades = vm.availableUpgrades.get()
+
+                        if (upgrades.isEmpty()) {
+                            visLabel("No upgrades available for this tower") {
+                                wrap = true
+                                setAlignment(Align.center)
+                            }.cell(grow = true, pad = 10f)
+                        } else {
+                            upgrades.forEach { upgrade ->
+                                visImage(controller.loadTexture(upgrade.icon)) {
+                                    setSize(50f, 50f)
+                                    onClick { controller.applyUpgrade(upgrade) }
+                                }.cell(expand = true, pad = 10f, height = 50f, width = 50f)
+                            }
+                        }
+                    }
+                }.cell(grow = true, row = true, pad = 4f)
+            }.cell(grow = true, row = true)
         }.cell(row = true, grow = true, align = Align.top, pad = 4f)
     }
 }

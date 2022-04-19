@@ -42,7 +42,6 @@ class DuringRunGameView(
 
             vmList.bindRemove { item ->
                 viewList.find { it.vm == item }?.apply {
-                    // TODO: This is causing a common crash somehow when an enemy is removed
                     viewList.remove(this)
                     this.dispose()
                 }

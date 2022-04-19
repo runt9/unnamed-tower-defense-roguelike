@@ -1,8 +1,12 @@
 package com.runt9.untdrl.view.duringRun.game
 
+import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Disposable
 import com.runt9.untdrl.model.Chunk
 import com.runt9.untdrl.model.building.Building
+import com.runt9.untdrl.model.building.definition.BuildingDefinition
+import com.runt9.untdrl.model.building.definition.goldMineDefinition
+import com.runt9.untdrl.model.building.definition.researchLabDefinition
 import com.runt9.untdrl.model.event.BuildingCancelledEvent
 import com.runt9.untdrl.model.event.ChunkCancelledEvent
 import com.runt9.untdrl.model.event.ChunkPlacedEvent
@@ -13,7 +17,9 @@ import com.runt9.untdrl.model.event.NewChunkEvent
 import com.runt9.untdrl.model.event.PrepareNextWaveEvent
 import com.runt9.untdrl.model.event.ProjectileSpawnedEvent
 import com.runt9.untdrl.service.ChunkGenerator
+import com.runt9.untdrl.service.RandomizerService
 import com.runt9.untdrl.service.duringRun.BuildingService
+import com.runt9.untdrl.service.duringRun.IndexedGridGraph
 import com.runt9.untdrl.service.duringRun.ProjectileService
 import com.runt9.untdrl.util.ext.unTdRlLogger
 import com.runt9.untdrl.util.framework.event.EventBus
@@ -24,7 +30,10 @@ import com.runt9.untdrl.view.duringRun.game.building.BuildingViewModel
 import com.runt9.untdrl.view.duringRun.game.chunk.ChunkViewModel
 import com.runt9.untdrl.view.duringRun.game.enemy.EnemyViewModel
 import com.runt9.untdrl.view.duringRun.game.projectile.ProjectileViewModel
+import kotlinx.coroutines.launch
 import ktx.assets.async.AssetStorage
+import ktx.async.KtxAsync
+import ktx.async.MainDispatcher
 import ktx.async.onRenderingThread
 
 // TODO: Can probably break this into multiple controllers: enemies, buildings, projectiles, all floating groups
@@ -33,7 +42,9 @@ class DuringRunGameController(
     private val assets: AssetStorage,
     private val chunkGenerator: ChunkGenerator,
     private val buildingService: BuildingService,
-    private val projectileService: ProjectileService
+    private val projectileService: ProjectileService,
+    private val grid: IndexedGridGraph,
+    private val randomizer: RandomizerService
 ) : Controller {
     private val logger = unTdRlLogger()
     override val vm = DuringRunGameViewModel()
@@ -44,6 +55,7 @@ class DuringRunGameController(
     override fun load() {
         eventBus.registerHandlers(this)
         addHomeChunk()
+        placeGoldAndResearchBuildings()
         eventBus.enqueueEventSync(PrepareNextWaveEvent())
     }
 
@@ -54,7 +66,25 @@ class DuringRunGameController(
         chunkVm.isPlaced(true)
         chunkVm.isValidPlacement(true)
         vm.chunks += chunkVm
-        eventBus.enqueueEventSync(ChunkPlacedEvent(chunk))
+        grid.addChunk(chunk)
+    }
+
+    private fun placeGoldAndResearchBuildings() {
+        val addBuilding = { def: BuildingDefinition, point: Vector2 ->
+            val building = Building(def, assets[def.texture.assetFile])
+            KtxAsync.launch(MainDispatcher) { buildingService.recalculateAttrs(building) }
+            building.action = buildingService.injectBuildingAction(building)
+            building.position.set(point)
+
+            val buildingVm = BuildingViewModel(building)
+            buildingVm.isValidPlacement(true)
+            vm.buildings += buildingVm
+            buildingService.add(building)
+        }
+
+        val emptyTiles = grid.emptyTiles().map { it.point }.shuffled(randomizer.rng).take(2)
+        addBuilding(goldMineDefinition, emptyTiles[0])
+        addBuilding(researchLabDefinition, emptyTiles[1])
     }
 
     @HandlesEvent(NewChunkEvent::class)
@@ -69,9 +99,7 @@ class DuringRunGameController(
     @HandlesEvent
     suspend fun handleNewBuilding(event: NewBuildingEvent) = onRenderingThread {
         val buildingDef = event.buildingDefinition
-        val building = Building(buildingDef, assets[buildingDef.texture.assetFile])
-        buildingService.recalculateAttrs(building)
-        building.action = buildingService.injectBuildingAction(building)
+        val building = buildingService.newBuilding(buildingDef)
 
         val buildingVm = BuildingViewModel(building)
         building.onMove {
@@ -113,9 +141,9 @@ class DuringRunGameController(
             projVm.rotation(rotation)
         }
 
-        projectile.onDie {
+        projectile.onDie { onRenderingThread {
             vm.projectiles -= projVm
-        }
+        }}
 
         vm.projectiles += projVm
         projectileService.add(projectile)

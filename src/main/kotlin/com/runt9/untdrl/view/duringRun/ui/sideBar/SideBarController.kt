@@ -94,7 +94,9 @@ class SideBarController(
                 level(b.level)
                 attrs(b.attrs.mapToFloats())
                 maxCores(b.maxCores)
-                cores(b.cores)
+                cores(b.cores.toList())
+                upgradePoints(b.upgradePoints)
+                availableUpgrades(b.selectableUpgrades.toList())
             }
         }}
 

@@ -6,6 +6,7 @@ import com.runt9.untdrl.model.attribute.Attribute
 import com.runt9.untdrl.model.attribute.AttributeModifier
 import com.runt9.untdrl.model.attribute.AttributeType
 import com.runt9.untdrl.model.building.definition.BuildingDefinition
+import com.runt9.untdrl.model.building.upgrade.BuildingUpgrade
 import com.runt9.untdrl.model.loot.TowerCore
 import com.runt9.untdrl.service.buildingAction.BuildingAction
 import com.runt9.untdrl.util.ext.BaseSteerable
@@ -29,11 +30,16 @@ class Building(val definition: BuildingDefinition, val texture: Texture) : BaseS
     var xpToLevel = 10
     var level = 1
     var maxCores = 1
+    var upgradePoints = 0
+    var selectableUpgradeOptions = 2
 
     val attrs = definition.attrs.mapValues { (type, _) -> Attribute(type) }.toMutableMap()
     val attrMods = mutableListOf<AttributeModifier>()
 
     val cores = mutableListOf<TowerCore>()
+    val availableUpgrades = mutableListOf<BuildingUpgrade>()
+    val selectableUpgrades = mutableListOf<BuildingUpgrade>()
+    val appliedUpgrades = mutableListOf<BuildingUpgrade>()
 
     fun onChange(onChangeCb: suspend Building.() -> Unit) {
         this.onChangeCb = onChangeCb

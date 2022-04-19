@@ -68,5 +68,5 @@ class EnemyService(private val grid: IndexedGridGraph, private val eventBus: Eve
         enemies.clear()
     }
 
-    fun collidesWithEnemy(position: Vector2, maxDistance: Float) = enemies.firstOrNull { it.position.dst(position) <= maxDistance }
+    fun collidesWithEnemy(position: Vector2, maxDistance: Float) = enemies.toList().firstOrNull { it.position.dst(position) <= maxDistance }
 }

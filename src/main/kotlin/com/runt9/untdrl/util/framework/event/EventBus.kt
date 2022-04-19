@@ -66,6 +66,7 @@ class EventBus : Disposable {
 
                     val event = getOrThrow()
                     eventHandlers[event::class]?.toList()?.forEach {
+                        logger.debug { "Handling event ${event::class.simpleName}" }
                         it.handle(event)
                     }
                 }

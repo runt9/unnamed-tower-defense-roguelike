@@ -29,7 +29,7 @@ class GenerateResearchAction(
             runStateService.update {
                 if (gold < building.costPerInterval) return@update
 
-                research += building.amountPerInterval.roundToInt()
+                researchAmount += building.amountPerInterval.roundToInt()
                 gold -= building.costPerInterval.roundToInt()
             }
 

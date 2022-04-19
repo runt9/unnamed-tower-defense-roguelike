@@ -9,6 +9,7 @@ import com.runt9.untdrl.util.framework.event.HandlesEvent
 import com.runt9.untdrl.util.framework.ui.controller.Controller
 import com.runt9.untdrl.util.framework.ui.uiComponent
 import com.runt9.untdrl.view.duringRun.ui.menu.MenuDialogController
+import com.runt9.untdrl.view.duringRun.ui.research.ResearchDialogController
 import com.runt9.untdrl.view.duringRun.ui.shop.ShopDialogController
 import ktx.async.onRenderingThread
 import ktx.scene2d.KWidget
@@ -37,11 +38,11 @@ class SideBarInfoPanelController(private val eventBus: EventBus, private val run
     private fun RunState.applyNewState() {
         vm.hp(hp)
         vm.gold(gold)
-        vm.research(research)
+        vm.research(researchAmount)
         vm.wave(wave)
     }
 
     fun menuButtonClicked() = eventBus.enqueueShowDialog<MenuDialogController>()
     fun shopButtonClicked() = eventBus.enqueueShowDialog<ShopDialogController>()
-    fun researchButtonClicked() = Unit
+    fun researchButtonClicked() = eventBus.enqueueShowDialog<ResearchDialogController>()
 }

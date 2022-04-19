@@ -18,9 +18,9 @@ class Projectile(val owner: Building, val texture: Texture, val damage: Float, v
     override val angularAccelerationLimit = angularSpeedLimit * 10f
     override val boundingBoxRadius = 0.125f
 
-    private lateinit var onDieCb: Projectile.() -> Unit
+    private lateinit var onDieCb: suspend Projectile.() -> Unit
     
-    fun onDie(onDieCb: Projectile.() -> Unit) {
+    fun onDie(onDieCb: suspend Projectile.() -> Unit) {
         this.onDieCb = onDieCb
     }
 
@@ -36,7 +36,7 @@ class Projectile(val owner: Building, val texture: Texture, val damage: Float, v
         add(BlendedSteering.BehaviorAndWeight(look, 1f))
     }
 
-    fun die() {
+    suspend fun die() {
         onDieCb()
     }
 }

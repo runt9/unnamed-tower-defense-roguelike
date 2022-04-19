@@ -64,7 +64,7 @@ class ProjectileService(
         }
     }
 
-    private fun despawnProjectile(proj: Projectile) {
+    private suspend fun despawnProjectile(proj: Projectile) {
         if (projectiles.remove(proj)) {
             proj.die()
         }

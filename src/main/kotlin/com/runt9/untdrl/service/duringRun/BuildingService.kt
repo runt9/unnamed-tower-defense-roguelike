@@ -7,25 +7,36 @@ import com.runt9.untdrl.model.attribute.AttributeModificationType.PERCENT
 import com.runt9.untdrl.model.attribute.AttributeModifier
 import com.runt9.untdrl.model.building.Building
 import com.runt9.untdrl.model.building.action.BuildingActionDefinition
+import com.runt9.untdrl.model.building.definition.BuildingDefinition
+import com.runt9.untdrl.model.building.upgrade.BuildingUpgrade
 import com.runt9.untdrl.model.event.BuildingPlacedEvent
 import com.runt9.untdrl.model.loot.TowerCore
+import com.runt9.untdrl.service.RandomizerService
 import com.runt9.untdrl.service.buildingAction.BuildingAction
 import com.runt9.untdrl.util.ext.unTdRlLogger
 import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.util.framework.event.HandlesEvent
 import com.runt9.untdrl.view.duringRun.MAX_BUILDING_LEVEL
+import ktx.assets.async.AssetStorage
 import ktx.reflect.reflect
 import kotlin.math.roundToInt
 
-class BuildingService(private val eventBus: EventBus, registry: RunServiceRegistry) : RunService(eventBus, registry) {
+class BuildingService(
+    private val eventBus: EventBus,
+    registry: RunServiceRegistry,
+    private val assets: AssetStorage,
+    private val randomizer: RandomizerService
+) : RunService(eventBus, registry) {
     private val logger = unTdRlLogger()
     private val buildings = mutableListOf<Building>()
     private val buildingChangeCbs = mutableMapOf<Int, MutableList<suspend (Building) -> Unit>>()
 
-    @HandlesEvent
-    fun add(event: BuildingPlacedEvent) = runOnServiceThread {
-        buildings += event.building
+    fun add(building: Building) = runOnServiceThread {
+        buildings += building
     }
+
+    @HandlesEvent
+    fun add(event: BuildingPlacedEvent) = add(event.building)
 
     fun remove(building: Building) {
         buildings -= building
@@ -96,6 +107,7 @@ class BuildingService(private val eventBus: EventBus, registry: RunServiceRegist
 
             xp -= xpToLevel
             xpToLevel = (xpToLevel * 1.5f).roundToInt()
+            upgradePoints++
 
             definition.attrs.forEach { (type, def) ->
                 attrMods += AttributeModifier(
@@ -132,12 +144,54 @@ class BuildingService(private val eventBus: EventBus, registry: RunServiceRegist
     }
 
     suspend fun addCore(id: Int, core: TowerCore) = runOnServiceThread {
-        buildings.find { it.id == id }?.apply {
+        withBuilding(id) {
             cores += core
             attrMods += core.modifiers
             recalculateAttrs(this)
         }
     }
 
+    suspend fun applyUpgradeToBuilding(id: Int, upgrade: BuildingUpgrade) {
+        logger.info { "Applying ${upgrade.name} to $id" }
+        withBuilding(id) {
+            upgradePoints--
+            availableUpgrades -= upgrade
+            appliedUpgrades += upgrade
+            selectableUpgrades -= upgrade
+
+            availableUpgrades.removeIf { it.isExclusiveOf(upgrade) }
+            selectableUpgrades.removeIf { it.isExclusiveOf(upgrade) }
+
+            addUpgrades()
+            changed()
+        }
+    }
+
+    private fun Building.addUpgrades() {
+        val newUpgrades = definition.upgrades.filter { up ->
+            // Exclude upgrades already made available, already applied, or anything made exclusive
+            if (availableUpgrades.contains(up)) return@filter false
+            if (appliedUpgrades.contains(up)) return@filter false
+            if (appliedUpgrades.any { it.isExclusiveOf(up) }) return@filter false
+
+            // Only include upgrades with no dependencies or satisfied dependencies
+            return@filter appliedUpgrades.containsAll(up.dependsOn)
+        }
+
+        availableUpgrades += newUpgrades
+        while (selectableUpgrades.size < selectableUpgradeOptions && selectableUpgrades.size < availableUpgrades.size) {
+            selectableUpgrades += availableUpgrades.filter { !selectableUpgrades.contains(it) }.random(randomizer.rng)
+        }
+    }
+
+    suspend fun newBuilding(buildingDef: BuildingDefinition): Building {
+        val building = Building(buildingDef, assets[buildingDef.texture.assetFile])
+        building.addUpgrades()
+        recalculateAttrs(building)
+        building.action = injectBuildingAction(building)
+        return building
+    }
+
     private suspend fun Building.changed() = buildingChangeCbs[id]?.forEach { it(this) }
+    private suspend fun withBuilding(id: Int, fn: suspend Building.() -> Unit) = buildings.find { it.id == id }?.fn()
 }

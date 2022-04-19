@@ -13,6 +13,7 @@ import com.runt9.untdrl.service.duringRun.EnemyService
 import com.runt9.untdrl.service.duringRun.IndexedGridGraph
 import com.runt9.untdrl.service.duringRun.LootService
 import com.runt9.untdrl.service.duringRun.ProjectileService
+import com.runt9.untdrl.service.duringRun.ResearchService
 import com.runt9.untdrl.service.duringRun.RunInitializer
 import com.runt9.untdrl.service.duringRun.RunServiceRegistry
 import com.runt9.untdrl.service.duringRun.RunStateService
@@ -25,6 +26,7 @@ import com.runt9.untdrl.view.duringRun.game.DuringRunGameController
 import com.runt9.untdrl.view.duringRun.ui.DuringRunUiController
 import com.runt9.untdrl.view.duringRun.ui.loot.LootDialogController
 import com.runt9.untdrl.view.duringRun.ui.menu.MenuDialogController
+import com.runt9.untdrl.view.duringRun.ui.research.ResearchDialogController
 import com.runt9.untdrl.view.duringRun.ui.runEnd.RunEndDialogController
 import com.runt9.untdrl.view.duringRun.ui.shop.ShopDialogController
 import com.runt9.untdrl.view.loading.LoadingScreenController
@@ -70,6 +72,7 @@ object Injector : Context() {
         bindSingleton<ProjectileService>()
         bindSingleton<SpawnerService>()
         bindSingleton<LootService>()
+        bindSingleton<ResearchService>()
 
         bindSingleton<RunInitializer>()
 
@@ -85,5 +88,6 @@ object Injector : Context() {
         bindSingleton<MenuDialogController>()
         bindSingleton<LootDialogController>()
         bindSingleton<ShopDialogController>()
+        bindSingleton<ResearchDialogController>()
     }
 }

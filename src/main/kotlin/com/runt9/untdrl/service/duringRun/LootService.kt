@@ -18,7 +18,7 @@ import com.runt9.untdrl.util.framework.event.HandlesEvent
 import kotlin.math.roundToInt
 
 class LootService(
-    private val eventBus: EventBus,
+    eventBus: EventBus,
     registry: RunServiceRegistry,
     private val randomizer: RandomizerService,
     private val runStateService: RunStateService

@@ -39,7 +39,7 @@ class SideBarView(override val controller: SideBarController, override val vm: S
                 } else {
                     sideBarBuilding(vm.selectedBuilding.get()) {
                         controller.addChild(this.controller)
-                    }.cell(row = true, grow = true, align = Align.top, pad = 4f)
+                    }.cell(row = true, grow = true, align = Align.top)
                 }
             }
         }.cell(row = true, grow = true)

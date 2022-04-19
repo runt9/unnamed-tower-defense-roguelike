@@ -12,7 +12,7 @@ import com.runt9.untdrl.service.duringRun.RunStateService
 import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.util.framework.event.HandlesEvent
 import com.runt9.untdrl.util.framework.ui.controller.DialogController
-import com.runt9.untdrl.view.duringRun.SHOP_REROLL_COST
+import com.runt9.untdrl.view.duringRun.REROLL_COST
 import ktx.async.onRenderingThread
 
 class ShopDialogController(
@@ -51,7 +51,7 @@ class ShopDialogController(
         runStateService.update {
             currentShop = newShop
             gold -= vm.rerollCost.get()
-            shopRerollCost += SHOP_REROLL_COST
+            shopRerollCost += REROLL_COST
         }
     }
 

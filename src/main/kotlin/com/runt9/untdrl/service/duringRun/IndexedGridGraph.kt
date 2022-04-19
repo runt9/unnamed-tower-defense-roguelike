@@ -20,7 +20,10 @@ import ktx.collections.isNotEmpty
 import ktx.collections.toGdxArray
 import kotlin.math.abs
 
-class IndexedGridGraph(private val eventBus: EventBus, registry: RunServiceRegistry) : IndexedGraph<GridNode>, RunService(eventBus, registry) {
+class IndexedGridGraph(
+    private val eventBus: EventBus,
+    registry: RunServiceRegistry
+) : IndexedGraph<GridNode>, RunService(eventBus, registry) {
     private val logger = unTdRlLogger()
 
     lateinit var home: GridNode
@@ -37,8 +40,9 @@ class IndexedGridGraph(private val eventBus: EventBus, registry: RunServiceRegis
     operator fun MutableMap<Vector2, GridNode>.get(x: Number, y: Number): GridNode? = get(Vector2(x.toFloat(), y.toFloat()))
 
     @HandlesEvent
-    fun addChunk(event: ChunkPlacedEvent) {
-        val chunk = event.chunk
+    fun addChunk(event: ChunkPlacedEvent) = addChunk(event.chunk)
+
+    fun addChunk(chunk: Chunk) {
         val xOffset = chunk.position.x - 4
         val yOffset = chunk.position.y - 4
 
@@ -101,4 +105,6 @@ class IndexedGridGraph(private val eventBus: EventBus, registry: RunServiceRegis
         nodes.clear()
         spawners.clear()
     }
+
+    fun emptyTiles() = nodes.values.filter { it.type == GridNodeType.EMPTY }
 }

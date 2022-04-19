@@ -6,7 +6,7 @@ import com.runt9.untdrl.model.attribute.AttributeType
 import com.runt9.untdrl.model.building.BuildingType
 import com.runt9.untdrl.model.building.action.generateResearch
 
-val researchLabDefinition = building("Research Lab", BuildingType.NON_COMBAT, UnitTexture.RESEARCH_LAB, 100) {
+val researchLabDefinition = building("Research Lab", BuildingType.NON_COMBAT, UnitTexture.RESEARCH_LAB, 0) {
     generateResearch()
 
     AttributeType.GAIN_INTERVAL(5f)
