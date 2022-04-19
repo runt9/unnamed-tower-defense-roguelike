@@ -85,7 +85,7 @@ class SideBarController(
     suspend fun buildingSelected(event: BuildingSelectedEvent) = onRenderingThread {
         val building = event.building
         val buildingVm = SideBarBuildingViewModel(false)
-        buildingCb = { b ->
+        buildingCb = { b -> onRenderingThread {
             buildingVm.apply {
                 id(b.id)
                 name(b.definition.name)
@@ -96,7 +96,7 @@ class SideBarController(
                 maxCores(b.maxCores)
                 cores(b.cores)
             }
-        }
+        }}
 
         buildingCb?.invoke(building)
         buildingService.onBuildingChange(building.id, buildingCb!!)

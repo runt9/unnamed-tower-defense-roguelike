@@ -77,9 +77,9 @@ class SideBarBuildingView(override val controller: SideBarBuildingController, ov
                             setScrollingDisabled(true, false)
 
                             flowGroup(spacing = 5f) {
-                                bindUpdatable(this@SideBarBuildingView.vm.coreInventory) {
+                                bindUpdatable(vm.coreInventory) {
                                     clear()
-                                    this@SideBarBuildingView.vm.coreInventory.get().forEach { core ->
+                                    vm.coreInventory.get().forEach { core ->
                                         stack {
                                             squarePixmap(60, Color.DARK_GRAY)
 

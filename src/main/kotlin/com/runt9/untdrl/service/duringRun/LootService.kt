@@ -1,5 +1,7 @@
 package com.runt9.untdrl.service.duringRun
 
+import com.runt9.untdrl.model.attribute.AttributeModifier
+import com.runt9.untdrl.model.attribute.AttributeType
 import com.runt9.untdrl.model.event.EnemyRemovedEvent
 import com.runt9.untdrl.model.loot.Consumable
 import com.runt9.untdrl.model.loot.LootItem
@@ -18,7 +20,7 @@ import kotlin.math.roundToInt
 class LootService(
     private val eventBus: EventBus,
     registry: RunServiceRegistry,
-    private val randomizerService: RandomizerService,
+    private val randomizer: RandomizerService,
     private val runStateService: RunStateService
 ) : RunService(eventBus, registry) {
     private val logger = unTdRlLogger()
@@ -50,7 +52,7 @@ class LootService(
     private fun <T : LootItem> generateShopItem(generateFn: LootService.() -> T): Pair<T, Int> {
         val item = generateFn()
         val baseCost = item.type.baseCost
-        val finalCost = ((randomizerService.rng.nextInt(90, 111).toFloat() / 100f) * (baseCost * item.rarity.costMultiplier)).roundToInt()
+        val finalCost = ((randomizer.rng.nextInt(90, 111).toFloat() / 100f) * (baseCost * item.rarity.costMultiplier)).roundToInt()
         return Pair(item, finalCost)
     }
 
@@ -63,7 +65,7 @@ class LootService(
     }
 
     private fun generateLoot() = runOnServiceThread {
-        randomizerService.randomize {
+        randomizer.randomize {
             when (lootTable.random(it)) {
                 LootType.GOLD -> generateGold()
                 LootType.RELIC -> lootPool.items += generateRelic()
@@ -84,8 +86,26 @@ class LootService(
     }
 
     private fun generateCore(): TowerCore {
-        logger.info { "Generating core" }
-        return TowerCore(generateRarity())
+        val rarity = generateRarity()
+        val count = rarity.numCoreAttrs
+        val allowedAttributeTypes = runStateService.load().availableBuildings.flatMap { it.attrs.keys }.distinct()
+
+        val generatedSoFar = mutableListOf<AttributeType>()
+        val modifiers = mutableListOf<AttributeModifier>()
+
+        repeat(count) {
+            val type = allowedAttributeTypes.filter { !generatedSoFar.contains(it) }.random(randomizer.rng)
+
+            modifiers += randomizer.randomAttributeModifier(type)
+            generatedSoFar += type
+        }
+
+        // TODO: Legendary passives
+//        val passive = if (rarity == Rarity.LEGENDARY) passiveService.randomPassive(rarity) else null
+
+        val core = TowerCore(rarity, modifiers)
+        logger.info { "Generated core:\n${core.description}" }
+        return core
     }
 
     private fun generateLootTable(): List<LootType> {
@@ -105,7 +125,7 @@ class LootService(
     }
 
     private fun generateRarity(): Rarity {
-        val roll = randomizerService.rng.nextInt(0, 100)
+        val roll = randomizer.rng.nextInt(0, 100)
 
         return when {
             roll >= 95 -> Rarity.LEGENDARY
@@ -113,5 +133,11 @@ class LootService(
             roll >= 50 -> Rarity.UNCOMMON
             else -> Rarity.COMMON
         }
+    }
+
+    private val Rarity.numCoreAttrs: Int get() = when (this) {
+        Rarity.COMMON -> 1
+        Rarity.UNCOMMON -> 2
+        Rarity.RARE, Rarity.LEGENDARY -> 3
     }
 }

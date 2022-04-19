@@ -2,9 +2,11 @@ package com.runt9.untdrl.model.attribute
 
 import com.runt9.untdrl.model.attribute.definition.displayName
 import com.runt9.untdrl.model.attribute.definition.getDisplayValue
+import kotlinx.serialization.Serializable
 import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
 
+@Serializable
 data class AttributeModifier(val type: AttributeType, val flatModifier: Float = 0f, val percentModifier: Float = 0f, val isTemporary: Boolean = false) {
     val name by lazy { generateDisplayName() }
 

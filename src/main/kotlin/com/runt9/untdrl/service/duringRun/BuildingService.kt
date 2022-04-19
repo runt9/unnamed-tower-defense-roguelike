@@ -8,6 +8,7 @@ import com.runt9.untdrl.model.attribute.AttributeModifier
 import com.runt9.untdrl.model.building.Building
 import com.runt9.untdrl.model.building.action.BuildingActionDefinition
 import com.runt9.untdrl.model.event.BuildingPlacedEvent
+import com.runt9.untdrl.model.loot.TowerCore
 import com.runt9.untdrl.service.buildingAction.BuildingAction
 import com.runt9.untdrl.util.ext.unTdRlLogger
 import com.runt9.untdrl.util.framework.event.EventBus
@@ -128,6 +129,14 @@ class BuildingService(private val eventBus: EventBus, registry: RunServiceRegist
         }
 
         building.changed()
+    }
+
+    suspend fun addCore(id: Int, core: TowerCore) = runOnServiceThread {
+        buildings.find { it.id == id }?.apply {
+            cores += core
+            attrMods += core.modifiers
+            recalculateAttrs(this)
+        }
     }
 
     private suspend fun Building.changed() = buildingChangeCbs[id]?.forEach { it(this) }
