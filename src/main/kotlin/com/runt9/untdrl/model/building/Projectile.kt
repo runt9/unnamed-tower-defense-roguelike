@@ -10,7 +10,7 @@ import com.runt9.untdrl.util.ext.degRad
 
 private var idCounter = 0
 
-class Projectile(val owner: Building, val texture: Texture, val damage: Float, val target: Enemy) : BaseSteerable(owner.position, owner.rotation) {
+class Projectile(val owner: Building, val texture: Texture, val target: Enemy) : BaseSteerable(owner.position, owner.rotation) {
     val id = idCounter++
     override val linearSpeedLimit = 3f
     override val linearAccelerationLimit = maxLinearSpeed * 100f

@@ -39,7 +39,7 @@ class EnemyView(override val controller: EnemyController, override val vm: Enemy
             }.cell(height = 0.2f, width = 0.5f, row = true)
         }
 
-        visImage(vm.texture) {
+        visImage(controller.loadTexture(vm.texture)) {
             setSize(0.5f, 0.5f)
             setOrigin(Align.center)
             bindUpdatable(vm.rotation) { vm.rotation.get().apply { rotation = this } }

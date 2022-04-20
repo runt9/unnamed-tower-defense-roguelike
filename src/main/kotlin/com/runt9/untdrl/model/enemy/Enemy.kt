@@ -5,25 +5,28 @@ import com.badlogic.gdx.ai.steer.behaviors.FollowPath
 import com.badlogic.gdx.ai.steer.behaviors.LookWhereYouAreGoing
 import com.badlogic.gdx.ai.steer.utils.paths.LinePath
 import com.badlogic.gdx.ai.steer.utils.paths.LinePath.LinePathParam
-import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.math.Vector2
 import com.runt9.untdrl.model.building.Building
+import com.runt9.untdrl.model.damage.DamageType
+import com.runt9.untdrl.model.enemy.definition.EnemyDefinition
 import com.runt9.untdrl.util.ext.BaseSteerable
+import com.runt9.untdrl.util.ext.clamp
 import com.runt9.untdrl.util.ext.degRad
 import ktx.collections.GdxArray
 
 private var idCounter = 0
 
-class Enemy(wave: Int, val texture: Texture, initialPosition: Vector2, initialRotation: Float, path: GdxArray<Vector2>) : BaseSteerable(initialPosition, initialRotation) {
+class Enemy(val definition: EnemyDefinition, wave: Int, initialPosition: Vector2, initialRotation: Float, path: GdxArray<Vector2>) : BaseSteerable(initialPosition, initialRotation) {
     private val difficultyModifier = 1 + (path.size / 200f)
     val id = idCounter++
-    override val linearSpeedLimit = 1f * difficultyModifier
+
+    override val linearSpeedLimit = definition.baseSpeed * difficultyModifier
     override val linearAccelerationLimit = linearSpeedLimit * 100f
     override val angularSpeedLimit = 10f
     override val angularAccelerationLimit = angularSpeedLimit * 100f
     override val boundingBoxRadius = 0.25f
 
-    var maxHp = (100f + (25f * wave)) * difficultyModifier
+    var maxHp = (definition.baseHp + (25f * wave)) * difficultyModifier
     var currentHp = maxHp
     val xpOnDeath = wave
     var isAlive = true
@@ -37,6 +40,7 @@ class Enemy(wave: Int, val texture: Texture, initialPosition: Vector2, initialRo
         alignTolerance = 0f.degRad
         decelerationRadius = 45f.degRad
     }
+    private val resistances = definition.resistances.toMap()
 
     val behavior = BlendedSteering(this).apply {
         add(BlendedSteering.BehaviorAndWeight(followPathBehavior, 1f))
@@ -56,4 +60,10 @@ class Enemy(wave: Int, val texture: Texture, initialPosition: Vector2, initialRo
     }
 
     fun numNodesToHome() = fullPath.segments.size - (followPathBehavior.pathParam as LinePathParam).segmentIndex
+
+    fun getResistance(type: DamageType, penetration: Float): Float {
+        val resist = resistances.getOrDefault(type, 1f)
+        // Resists are capped from -90% to +90%
+        return (resist - penetration).clamp(0.1f, 1.9f)
+    }
 }

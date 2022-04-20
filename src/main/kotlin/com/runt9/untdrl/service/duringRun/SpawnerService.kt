@@ -7,6 +7,7 @@ import com.runt9.untdrl.model.event.PrepareNextWaveEvent
 import com.runt9.untdrl.model.event.SpawnerPlacedEvent
 import com.runt9.untdrl.model.event.SpawningCompleteEvent
 import com.runt9.untdrl.model.event.WaveStartedEvent
+import com.runt9.untdrl.service.RandomizerService
 import com.runt9.untdrl.util.ext.unTdRlLogger
 import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.util.framework.event.HandlesEvent
@@ -17,6 +18,7 @@ class SpawnerService(
     private val grid: IndexedGridGraph,
     private val eventBus: EventBus,
     private val runStateService: RunStateService,
+    private val randomizer: RandomizerService,
     registry: RunServiceRegistry
 ) : RunService(eventBus, registry) {
     private val logger = unTdRlLogger()
@@ -26,10 +28,12 @@ class SpawnerService(
 
     @HandlesEvent
     fun addSpawner(event: SpawnerPlacedEvent) = runOnServiceThread {
-        val spawner = Spawner(event.node, assets[UnitTexture.ENEMY.assetFile])
+        val chunk = event.chunk
+        val spawner = Spawner(event.node, assets[UnitTexture.ENEMY.assetFile], chunk.biome)
         grid.calculateSpawnerPath(spawner)
         spawners += spawner
         recalculateSpawner(spawner)
+        chunk.spawner = spawner
     }
 
     @HandlesEvent(WaveStartedEvent::class)
@@ -44,6 +48,7 @@ class SpawnerService(
         val waveNum = runStateService.load().wave
         spawner.enemiesToSpawn = waveNum * 2
         spawner.enemyDelayTimer.reset(false)
+        spawner.currentEnemySpawnType = spawner.enemyTypesToSpawn.random(randomizer.rng)
         // TODO: Recalculate time between spawns
     }
 

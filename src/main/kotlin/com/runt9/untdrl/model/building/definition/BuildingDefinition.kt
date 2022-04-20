@@ -6,6 +6,8 @@ import com.runt9.untdrl.model.attribute.AttributeType
 import com.runt9.untdrl.model.building.BuildingType
 import com.runt9.untdrl.model.building.action.BuildingActionDefinition
 import com.runt9.untdrl.model.building.upgrade.BuildingUpgrade
+import com.runt9.untdrl.model.damage.DamageMap
+import com.runt9.untdrl.model.damage.DamageType
 
 interface BuildingDefinition {
     val name: String
@@ -15,11 +17,13 @@ interface BuildingDefinition {
     val action: BuildingActionDefinition
     val attrs: Map<AttributeType, BuildingAttributeDefinition>
     val upgrades: List<BuildingUpgrade>
+    val damageTypes: List<DamageMap>
 
     class Builder {
         lateinit var actionDefinition: BuildingActionDefinition
         val attrs = mutableMapOf<AttributeType, BuildingAttributeDefinition>()
         val upgrades = mutableListOf<BuildingUpgrade>()
+        val damageTypes = mutableListOf<DamageMap>()
 
         operator fun AttributeType.invoke(baseValue: Float) = invoke(baseValue, 0f, AttributeModificationType.FLAT)
         operator fun AttributeType.invoke(baseValue: Float, growth: Float, growthType: AttributeModificationType) {
@@ -39,6 +43,10 @@ interface BuildingDefinition {
 
             upgrades += upgrade
             return upgrade
+        }
+
+        fun damage(type: DamageType, pctOfBase: Float = 1f, penetration: Float = 0f) {
+            damageTypes += DamageMap(type, pctOfBase, penetration)
         }
 
         class UpgradeBuilder {
@@ -69,5 +77,6 @@ fun building(
         override val action = builder.actionDefinition
         override val attrs = builder.attrs.toMap()
         override val upgrades = builder.upgrades.toList()
+        override val damageTypes = builder.damageTypes.toList()
     }
 }

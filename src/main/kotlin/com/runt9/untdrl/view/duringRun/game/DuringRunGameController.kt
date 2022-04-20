@@ -2,11 +2,12 @@ package com.runt9.untdrl.view.duringRun.game
 
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Disposable
-import com.runt9.untdrl.model.Chunk
 import com.runt9.untdrl.model.building.Building
 import com.runt9.untdrl.model.building.definition.BuildingDefinition
 import com.runt9.untdrl.model.building.definition.goldMineDefinition
 import com.runt9.untdrl.model.building.definition.researchLabDefinition
+import com.runt9.untdrl.model.enemy.Chunk
+import com.runt9.untdrl.model.enemy.Biome
 import com.runt9.untdrl.model.event.BuildingCancelledEvent
 import com.runt9.untdrl.model.event.ChunkCancelledEvent
 import com.runt9.untdrl.model.event.ChunkPlacedEvent
@@ -60,7 +61,7 @@ class DuringRunGameController(
     }
 
     private fun addHomeChunk() {
-        val chunk = Chunk(chunkGenerator.buildHomeChunk())
+        val chunk = Chunk(chunkGenerator.buildHomeChunk(), randomizer.randomize { Biome.values().random(randomizer.rng) })
         chunk.position.set(HOME_POINT)
         val chunkVm = ChunkViewModel(chunk)
         chunkVm.isPlaced(true)
@@ -90,7 +91,7 @@ class DuringRunGameController(
     @HandlesEvent(NewChunkEvent::class)
     suspend fun handleNewChunk() = onRenderingThread {
         if (nextChunk == null) {
-            nextChunk = Chunk(chunkGenerator.generateGrid())
+            nextChunk = Chunk(chunkGenerator.generateGrid(), randomizer.randomize { Biome.values().random(randomizer.rng) })
         }
 
         vm.chunks += ChunkViewModel(nextChunk!!)

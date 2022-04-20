@@ -6,7 +6,7 @@ import com.badlogic.gdx.ai.pfa.DefaultGraphPath
 import com.badlogic.gdx.ai.pfa.indexed.IndexedAStarPathFinder
 import com.badlogic.gdx.ai.pfa.indexed.IndexedGraph
 import com.badlogic.gdx.math.Vector2
-import com.runt9.untdrl.model.Chunk
+import com.runt9.untdrl.model.enemy.Chunk
 import com.runt9.untdrl.model.enemy.Spawner
 import com.runt9.untdrl.model.event.ChunkPlacedEvent
 import com.runt9.untdrl.model.event.SpawnerPlacedEvent
@@ -54,7 +54,7 @@ class IndexedGridGraph(
                 if (node.type == GridNodeType.HOME) {
                     home = node
                 } else if (node.type == GridNodeType.SPAWNER) {
-                    eventBus.enqueueEventSync(SpawnerPlacedEvent(node))
+                    eventBus.enqueueEventSync(SpawnerPlacedEvent(chunk, node))
                 }
             }
         }

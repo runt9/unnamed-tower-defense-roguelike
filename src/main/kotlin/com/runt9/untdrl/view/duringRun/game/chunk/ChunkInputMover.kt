@@ -2,7 +2,7 @@ package com.runt9.untdrl.view.duringRun.game.chunk
 
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.OrthographicCamera
-import com.runt9.untdrl.model.Chunk
+import com.runt9.untdrl.model.enemy.Chunk
 import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.util.framework.ui.InputMover
 

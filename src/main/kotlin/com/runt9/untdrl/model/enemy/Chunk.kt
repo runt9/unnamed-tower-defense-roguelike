@@ -1,10 +1,12 @@
-package com.runt9.untdrl.model
+package com.runt9.untdrl.model.enemy
 
 import com.badlogic.gdx.math.MathUtils
 import com.runt9.untdrl.util.ext.LocationAdapter
 import com.runt9.untdrl.view.duringRun.CHUNK_SIZE
 
-class Chunk(var grid: Array<IntArray>) : LocationAdapter() {
+class Chunk(var grid: Array<IntArray>, val biome: Biome) : LocationAdapter() {
+    lateinit var spawner: Spawner
+
     fun rotate(clockwise: Boolean) {
         val newGrid = Array(CHUNK_SIZE) { IntArray(CHUNK_SIZE) }
 

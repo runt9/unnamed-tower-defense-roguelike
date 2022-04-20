@@ -14,6 +14,7 @@ import com.runt9.untdrl.model.attribute.AttributeType.DAMAGE
 import com.runt9.untdrl.model.attribute.AttributeType.RANGE
 import com.runt9.untdrl.model.building.BuildingType
 import com.runt9.untdrl.model.building.action.projectileAttack
+import com.runt9.untdrl.model.damage.DamageType
 
 val prototypeTowerDefinition = building("Prototype Tower", BuildingType.TOWER, PROTOTYPE_TOWER, 30) {
     projectileAttack(PROJECTILE)
@@ -23,6 +24,8 @@ val prototypeTowerDefinition = building("Prototype Tower", BuildingType.TOWER, P
     DAMAGE(50f, 10f, PERCENT)
     CRIT_CHANCE(0.05f, 10f, PERCENT)
     CRIT_MULTI(1.5f, 0.1f, FLAT)
+
+    damage(DamageType.PHYSICAL)
 
     val incendiary = upgrade("Incendiary Bullets", ENEMY)
     val piercing = upgrade("Piercing Bullets", RESEARCH_LAB)

@@ -34,7 +34,7 @@ class ChunkView(override val controller: ChunkController, override val vm: Chunk
                     val color = when (col) {
                         1 -> Color.WHITE
                         2 -> Color.GREEN
-                        3 -> Color.RED
+                        3 -> vm.spawnerColor.get()
                         else -> Color.DARK_GRAY
                     }
 

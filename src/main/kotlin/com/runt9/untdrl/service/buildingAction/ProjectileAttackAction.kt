@@ -7,9 +7,6 @@ import com.runt9.untdrl.model.building.Building
 import com.runt9.untdrl.model.building.Projectile
 import com.runt9.untdrl.model.building.action.ProjectileAttackActionDefinition
 import com.runt9.untdrl.model.building.attackSpeed
-import com.runt9.untdrl.model.building.critChance
-import com.runt9.untdrl.model.building.critMulti
-import com.runt9.untdrl.model.building.damage
 import com.runt9.untdrl.model.building.range
 import com.runt9.untdrl.model.enemy.Enemy
 import com.runt9.untdrl.model.event.ProjectileSpawnedEvent
@@ -68,18 +65,9 @@ class ProjectileAttackAction(
     }
 
     private fun spawnProjectile(): Projectile {
-        val finalDamage = rollForDamage()
-        val projectile = Projectile(building, assets[definition.projectileTexture.assetFile], finalDamage, target!!)
+        val projectile = Projectile(building, assets[definition.projectileTexture.assetFile], target!!)
         eventBus.enqueueEventSync(ProjectileSpawnedEvent(projectile))
         return projectile
-    }
-
-    private fun rollForDamage(): Float {
-        val roll = randomizerService.rng.nextInt(0, 100)
-        val isCrit = roll / 100f <= building.critChance
-        var damageMulti = randomizerService.rng.nextInt(90, 111).toFloat() / 100f
-        if (isCrit) damageMulti *= building.critMulti
-        return building.damage * damageMulti
     }
 
     private fun setTarget(target: Enemy) {
