@@ -5,15 +5,16 @@ import com.badlogic.gdx.Input
 import com.badlogic.gdx.InputMultiplexer
 import com.runt9.untdrl.config.ApplicationInitializer
 import com.runt9.untdrl.config.Injector
-import com.runt9.untdrl.util.ext.inject
-import com.runt9.untdrl.util.ext.lazyInject
 import com.runt9.untdrl.model.event.ChangeScreenRequest
 import com.runt9.untdrl.model.event.ExitRequest
+import com.runt9.untdrl.util.ext.inject
+import com.runt9.untdrl.util.ext.lazyInject
 import com.runt9.untdrl.util.ext.unTdRlLogger
 import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.util.framework.event.HandlesEvent
 import com.runt9.untdrl.util.framework.ui.core.UnTdRlScreen
 import com.runt9.untdrl.view.duringRun.DuringRunScreen
+import com.runt9.untdrl.view.factionSelect.FactionSelectController
 import com.runt9.untdrl.view.loading.LoadingScreenController
 import com.runt9.untdrl.view.mainMenu.MainMenuScreenController
 import ktx.app.KtxGame
@@ -38,6 +39,7 @@ class UnTdRlGame : KtxGame<KtxScreen>() {
 
         addScreen<LoadingScreenController>()
         addScreen<MainMenuScreenController>()
+        addScreen<FactionSelectController>()
         addScreen<DuringRunScreen>()
         setScreen<LoadingScreenController>()
     }

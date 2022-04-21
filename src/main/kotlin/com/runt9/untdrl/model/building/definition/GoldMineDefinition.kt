@@ -8,7 +8,7 @@ import com.runt9.untdrl.model.building.BuildingType
 import com.runt9.untdrl.model.building.action.generateGold
 
 
-val goldMineDefinition = building("Gold Mine", BuildingType.NON_COMBAT, UnitTexture.GOLD_MINE, 0) {
+val goldMine = building("Gold Mine", BuildingType.NON_COMBAT, UnitTexture.GOLD_MINE, 0) {
     generateGold()
 
     GAIN_INTERVAL(5f)

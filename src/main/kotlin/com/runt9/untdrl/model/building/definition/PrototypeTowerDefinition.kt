@@ -16,7 +16,7 @@ import com.runt9.untdrl.model.building.BuildingType
 import com.runt9.untdrl.model.building.action.projectileAttack
 import com.runt9.untdrl.model.damage.DamageType
 
-val prototypeTowerDefinition = building("Prototype Tower", BuildingType.TOWER, PROTOTYPE_TOWER, 30) {
+val prototypeTower = building("Prototype Tower", BuildingType.TOWER, PROTOTYPE_TOWER, 30) {
     projectileAttack(PROJECTILE)
 
     RANGE(4f, 0.25f, FLAT)

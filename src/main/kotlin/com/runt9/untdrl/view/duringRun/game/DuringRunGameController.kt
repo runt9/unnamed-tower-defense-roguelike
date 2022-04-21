@@ -4,10 +4,8 @@ import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Disposable
 import com.runt9.untdrl.model.building.Building
 import com.runt9.untdrl.model.building.definition.BuildingDefinition
-import com.runt9.untdrl.model.building.definition.goldMineDefinition
-import com.runt9.untdrl.model.building.definition.researchLabDefinition
-import com.runt9.untdrl.model.enemy.Chunk
 import com.runt9.untdrl.model.enemy.Biome
+import com.runt9.untdrl.model.enemy.Chunk
 import com.runt9.untdrl.model.event.BuildingCancelledEvent
 import com.runt9.untdrl.model.event.ChunkCancelledEvent
 import com.runt9.untdrl.model.event.ChunkPlacedEvent
@@ -22,6 +20,7 @@ import com.runt9.untdrl.service.RandomizerService
 import com.runt9.untdrl.service.duringRun.BuildingService
 import com.runt9.untdrl.service.duringRun.IndexedGridGraph
 import com.runt9.untdrl.service.duringRun.ProjectileService
+import com.runt9.untdrl.service.duringRun.RunStateService
 import com.runt9.untdrl.util.ext.unTdRlLogger
 import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.util.framework.event.HandlesEvent
@@ -45,7 +44,8 @@ class DuringRunGameController(
     private val buildingService: BuildingService,
     private val projectileService: ProjectileService,
     private val grid: IndexedGridGraph,
-    private val randomizer: RandomizerService
+    private val randomizer: RandomizerService,
+    private val runStateService: RunStateService
 ) : Controller {
     private val logger = unTdRlLogger()
     override val vm = DuringRunGameViewModel()
@@ -84,8 +84,11 @@ class DuringRunGameController(
         }
 
         val emptyTiles = grid.emptyTiles().map { it.point }.shuffled(randomizer.rng).take(2)
-        addBuilding(goldMineDefinition, emptyTiles[0])
-        addBuilding(researchLabDefinition, emptyTiles[1])
+        runStateService.load().apply {
+            // TODO: Future: Allow player to select one of multiple instead of hard coded
+            addBuilding(faction.goldBuildings[0], emptyTiles[0])
+            addBuilding(faction.researchBuildings[0], emptyTiles[1])
+        }
     }
 
     @HandlesEvent(NewChunkEvent::class)

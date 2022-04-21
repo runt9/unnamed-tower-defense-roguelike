@@ -13,27 +13,17 @@ import com.runt9.untdrl.util.framework.event.HandlesEvent
 
 class RunStateService(private val eventBus: EventBus, registry: RunServiceRegistry) : RunService(eventBus, registry) {
     private val logger = unTdRlLogger()
-    private var runState: RunState? = null
+    private lateinit var runState: RunState
 
-    fun load(): RunState {
-        if (runState == null) {
-            runState = RunState()
-        }
-
-        return runState!!.copy()
-    }
+    fun load() = runState.copy()
 
     fun save(runState: RunState) = runOnServiceThread {
-        if (runState != this@RunStateService.runState) {
+        if (!this@RunStateService::runState.isInitialized || runState != this@RunStateService.runState) {
             logger.info { "Saving run state" }
             this@RunStateService.runState = runState
             eventBus.enqueueEventSync(RunStateUpdated(runState.copy()))
             // TODO: This should also flush the current state to disk
         }
-    }
-
-    override fun stopInternal() {
-        runState = null
     }
 
     @HandlesEvent(WaveCompleteEvent::class)

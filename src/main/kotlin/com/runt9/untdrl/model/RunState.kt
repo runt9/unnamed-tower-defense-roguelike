@@ -1,7 +1,7 @@
 package com.runt9.untdrl.model
 
 import com.runt9.untdrl.model.building.definition.BuildingDefinition
-import com.runt9.untdrl.model.building.definition.prototypeTowerDefinition
+import com.runt9.untdrl.model.faction.FactionDefinition
 import com.runt9.untdrl.model.loot.Consumable
 import com.runt9.untdrl.model.loot.Relic
 import com.runt9.untdrl.model.loot.Shop
@@ -15,6 +15,7 @@ import kotlin.random.Random
 @Serializable
 data class RunState(
     val seed: String = Random.randomString(8),
+    val faction: FactionDefinition,
     var hp: Int = 25,
     var gold: Int = 100,
     var shopRerollCost: Int = REROLL_COST,
@@ -26,7 +27,7 @@ data class RunState(
     var selectableResearchOptionCount: Int = 5,
     var researchAmount: Int = 0,
     var wave: Int = 1,
-    var availableBuildings: List<BuildingDefinition> = listOf(prototypeTowerDefinition),
+    var availableBuildings: List<BuildingDefinition> = faction.startingTowers,
     var relics: List<Relic> = listOf(),
     var consumables: List<Consumable> = listOf(),
     var cores: List<TowerCore> = listOf()
