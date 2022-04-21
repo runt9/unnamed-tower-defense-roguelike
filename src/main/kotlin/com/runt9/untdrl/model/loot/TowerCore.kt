@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 class TowerCore(override val rarity: Rarity, val modifiers: List<AttributeModifier>) : LootItem {
     override val type = LootItemType.CORE
-    val description by lazy { generateDescription() }
+    override val description by lazy { generateDescription() }
 
     private fun generateDescription(): String {
         val sb = StringBuilder()

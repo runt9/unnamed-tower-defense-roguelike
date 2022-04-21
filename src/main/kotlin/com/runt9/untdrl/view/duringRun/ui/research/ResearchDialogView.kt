@@ -1,14 +1,19 @@
 package com.runt9.untdrl.view.duringRun.ui.research
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.Actor
+import com.kotcrab.vis.ui.VisUI
+import com.runt9.untdrl.model.research.Research
 import com.runt9.untdrl.util.ext.ui.bindButtonDisabled
 import com.runt9.untdrl.util.ext.ui.bindLabelText
 import com.runt9.untdrl.util.ext.ui.bindUpdatable
+import com.runt9.untdrl.util.ext.ui.separator
 import com.runt9.untdrl.util.framework.ui.view.DialogView
 import ktx.actors.onChange
 import ktx.actors.onClick
 import ktx.scene2d.KTable
 import ktx.scene2d.textButton
+import ktx.scene2d.tooltip
 import ktx.scene2d.vis.visImage
 import ktx.scene2d.vis.visLabel
 import ktx.scene2d.vis.visTable
@@ -36,6 +41,7 @@ class ResearchDialogView(
                     research.forEach { r ->
                         visTable {
                             visImage(controller.loadTexture(r.icon)).cell(row = true)
+                            researchTooltip(r)
                             visLabel("R ${r.cost}") {
                                 bindUpdatable(vm.researchAmount) {
                                     color = if (vm.researchAmount.get() >= r.cost) Color.WHITE else Color.RED
@@ -76,4 +82,17 @@ class ResearchDialogView(
             }.cell(grow = true, padLeft = 20f)
         }.cell(grow = true)
     }
+}
+
+fun Actor.researchTooltip(research: Research) = tooltip {
+    it.setInstant(true)
+    background(VisUI.getSkin().getDrawable("panel1"))
+
+    visLabel(research.name).cell(growX = true, row = true, pad = 4f)
+
+    separator(2f)
+
+    visLabel(research.description) {
+        wrap = true
+    }.cell(growX = true, row = true, pad = 5f, minWidth = 50f)
 }

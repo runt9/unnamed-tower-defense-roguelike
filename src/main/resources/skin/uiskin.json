@@ -244,5 +244,41 @@
             listStyle: default,
             backgroundOpen: select-box-down
         }
-    }
+    },
+    com.kotcrab.vis.ui.Sizes: {
+        default: {
+            scaleFactor: 1,
+            spacingBottom: 8,
+            spacingRight: 6,
+            buttonBarSpacing: 10,
+            menuItemIconSize: 22,
+            borderSize: 1,
+            spinnerButtonHeight: 12,
+            spinnerFieldSize: 40,
+            fileChooserViewModeBigIconsSize: 200,
+            fileChooserViewModeMediumIconsSize: 128,
+            fileChooserViewModeSmallIconsSize: 64,
+            fileChooserViewModeListWidthSize: 155
+        },
+        x2: {
+            scaleFactor: 2,
+            menuItemIconSize: 44,
+            spinnerButtonHeight: 24,
+            spinnerFieldSize: 80,
+            spacingBottom: 8,
+            spacingRight: 6,
+            buttonBarSpacing: 10,
+            borderSize: 1,
+            fileChooserViewModeBigIconsSize: 200,
+            fileChooserViewModeMediumIconsSize: 128,
+            fileChooserViewModeSmallIconsSize: 64,
+            fileChooserViewModeListWidthSize: 155
+        }
+    },
+    com.kotcrab.vis.ui.widget.Tooltip$TooltipStyle: {
+        default: {background: panel1 }
+    },
+    com.badlogic.gdx.scenes.scene2d.ui.TextTooltip$TextTooltipStyle: {
+        default: {background: panel1, label: {font: font-label, fontColor: white} }
+    },
 }

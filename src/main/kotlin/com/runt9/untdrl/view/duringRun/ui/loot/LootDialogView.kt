@@ -8,6 +8,7 @@ import com.runt9.untdrl.util.ext.ui.rectPixmapTexture
 import com.runt9.untdrl.util.ext.ui.squarePixmap
 import com.runt9.untdrl.util.ext.ui.toDrawable
 import com.runt9.untdrl.util.framework.ui.view.DialogView
+import com.runt9.untdrl.view.duringRun.ui.util.lootItem
 import ktx.actors.onChange
 import ktx.actors.onClick
 import ktx.scene2d.KTable
@@ -17,6 +18,7 @@ import ktx.scene2d.vis.flowGroup
 import ktx.scene2d.vis.visLabel
 import ktx.scene2d.vis.visScrollPane
 import ktx.scene2d.vis.visTable
+import ktx.scene2d.vis.visTextTooltip
 
 class LootDialogView(
     override val controller: LootDialogController,
@@ -53,9 +55,7 @@ class LootDialogView(
                         bindUpdatable(vm.lootedItems) {
                             clear()
                             vm.lootedItems.get().forEach { item ->
-                                visTable {
-                                    squarePixmap(60, item.type.color)
-
+                                lootItem(item) {
                                     onClick {
                                         controller.lootItem(item)
                                     }

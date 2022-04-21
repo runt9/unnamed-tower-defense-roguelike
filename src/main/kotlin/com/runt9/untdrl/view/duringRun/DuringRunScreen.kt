@@ -46,6 +46,7 @@ class DuringRunScreen(
         inputHandler.stage = gameStage
         input.addProcessor(inputHandler)
         runInitializer.initialize()
+
         super.show()
     }
 

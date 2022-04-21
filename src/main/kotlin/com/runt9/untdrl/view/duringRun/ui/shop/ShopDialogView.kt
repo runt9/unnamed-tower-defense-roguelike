@@ -6,8 +6,8 @@ import com.runt9.untdrl.model.loot.LootItem
 import com.runt9.untdrl.util.ext.ui.bindButtonDisabled
 import com.runt9.untdrl.util.ext.ui.bindLabelText
 import com.runt9.untdrl.util.ext.ui.bindUpdatable
-import com.runt9.untdrl.util.ext.ui.squarePixmap
 import com.runt9.untdrl.util.framework.ui.view.DialogView
+import com.runt9.untdrl.view.duringRun.ui.util.lootItem
 import ktx.actors.onChange
 import ktx.actors.onClick
 import ktx.scene2d.KTable
@@ -29,8 +29,9 @@ class ShopDialogView(
             visLabel(label).cell(row = true, colspan = 5, pad = 5f, align = Align.left, expandX = true)
 
             items.forEach { (item, cost) ->
-                visTable {
-                    squarePixmap(55, item.type.color).cell(row = true)
+                lootItem(item) {
+                    row()
+
                     visLabel("G $cost") {
                         bindUpdatable(vm.gold) {
                             color = if (vm.gold.get() >= cost) Color.WHITE else Color.RED

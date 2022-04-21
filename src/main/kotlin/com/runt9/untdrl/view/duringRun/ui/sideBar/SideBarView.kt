@@ -1,11 +1,9 @@
 package com.runt9.untdrl.view.duringRun.ui.sideBar
 
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.utils.Align
 import com.runt9.untdrl.util.ext.ui.bindUpdatable
 import com.runt9.untdrl.util.ext.ui.bindVisible
-import com.runt9.untdrl.util.ext.ui.rectPixmapTexture
-import com.runt9.untdrl.util.ext.ui.toDrawable
+import com.runt9.untdrl.util.ext.ui.separator
 import com.runt9.untdrl.util.framework.ui.view.TableView
 import com.runt9.untdrl.view.duringRun.ui.sideBar.availableBuildings.availableBuildings
 import com.runt9.untdrl.view.duringRun.ui.sideBar.building.sideBarBuilding
@@ -21,7 +19,7 @@ class SideBarView(override val controller: SideBarController, override val vm: S
         val controller = controller
 
         infoPanel().cell(row = true, growX = true)
-        separator()
+        separator(4f)
 
         visTable {
             bindUpdatable(vm.selectedBuilding) {
@@ -44,14 +42,8 @@ class SideBarView(override val controller: SideBarController, override val vm: S
             }
         }.cell(row = true, grow = true)
 
-        separator()
+        separator(4f)
         actionButton()
-    }
-
-    private fun separator() {
-        visTable {
-            background(rectPixmapTexture(1, 1, Color.BLACK).toDrawable())
-        }.cell(row = true, height = 4f, growX = true)
     }
 
     private fun actionButton() {

@@ -11,6 +11,7 @@ import com.runt9.untdrl.model.damage.DamageType
 
 interface BuildingDefinition {
     val name: String
+    val description: String
     val type: BuildingType
     val texture: UnitTexture
     val goldCost: Int
@@ -21,6 +22,7 @@ interface BuildingDefinition {
 
     class Builder {
         lateinit var actionDefinition: BuildingActionDefinition
+        var description = ""
         val attrs = mutableMapOf<AttributeType, BuildingAttributeDefinition>()
         val upgrades = mutableListOf<BuildingUpgrade>()
         val damageTypes = mutableListOf<DamageMap>()
@@ -30,6 +32,10 @@ interface BuildingDefinition {
             attrs[this] = BuildingAttributeDefinition(this, baseValue, growth, growthType)
         }
 
+        operator fun String.unaryPlus() {
+            description = this
+        }
+
         fun upgrade(name: String, icon: UnitTexture, builder: UpgradeBuilder.() -> Unit = {}): BuildingUpgrade {
             val upgradeBuilder = UpgradeBuilder()
             upgradeBuilder.builder()
@@ -37,6 +43,7 @@ interface BuildingDefinition {
             val upgrade = object : BuildingUpgrade {
                 override val icon = icon
                 override val name = name
+                override val description = upgradeBuilder.description
                 override val dependsOn = upgradeBuilder.dependsOn.toList()
                 override val exclusiveOf = upgradeBuilder.exclusiveOf.toList()
             }
@@ -52,9 +59,13 @@ interface BuildingDefinition {
         class UpgradeBuilder {
             internal val dependsOn = mutableListOf<BuildingUpgrade>()
             internal val exclusiveOf = mutableListOf<BuildingUpgrade>()
+            internal var description = ""
 
             fun dependsOn(vararg upgrades: BuildingUpgrade) = dependsOn.addAll(upgrades)
             fun exclusiveOf(vararg upgrades: BuildingUpgrade) = exclusiveOf.addAll(upgrades)
+            operator fun String.unaryPlus() {
+                description = this
+            }
         }
     }
 }
@@ -71,6 +82,7 @@ fun building(
 
     return object : BuildingDefinition {
         override val name = name
+        override val description = builder.description
         override val type = type
         override val texture = texture
         override val goldCost = goldCost

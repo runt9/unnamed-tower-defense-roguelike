@@ -1,19 +1,22 @@
 package com.runt9.untdrl.view.duringRun.ui.sideBar.building
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.utils.Align
 import com.kotcrab.vis.ui.VisUI
 import com.runt9.untdrl.model.attribute.definition.displayName
 import com.runt9.untdrl.model.attribute.definition.getDisplayValue
 import com.runt9.untdrl.model.building.BuildingType
 import com.runt9.untdrl.model.building.TargetingMode
-import com.runt9.untdrl.model.loot.LootItemType
+import com.runt9.untdrl.model.building.upgrade.BuildingUpgrade
 import com.runt9.untdrl.util.ext.ui.bindLabelText
 import com.runt9.untdrl.util.ext.ui.bindUpdatable
 import com.runt9.untdrl.util.ext.ui.rectPixmapTexture
+import com.runt9.untdrl.util.ext.ui.separator
 import com.runt9.untdrl.util.ext.ui.squarePixmap
 import com.runt9.untdrl.util.ext.ui.toDrawable
 import com.runt9.untdrl.util.framework.ui.view.TableView
+import com.runt9.untdrl.view.duringRun.ui.util.lootItem
 import ktx.actors.onChange
 import ktx.actors.onClick
 import ktx.collections.toGdxArray
@@ -21,6 +24,7 @@ import ktx.scene2d.label
 import ktx.scene2d.progressBar
 import ktx.scene2d.stack
 import ktx.scene2d.textButton
+import ktx.scene2d.tooltip
 import ktx.scene2d.vis.flowGroup
 import ktx.scene2d.vis.visImage
 import ktx.scene2d.vis.visLabel
@@ -35,15 +39,9 @@ class SideBarBuildingView(override val controller: SideBarBuildingController, ov
         val vm = vm
 
         visTable {
-            val separator = {
-                visTable {
-                    background(rectPixmapTexture(1, 1, Color.BLACK).toDrawable())
-                }.cell(row = true, height = 2f, growX = true, padTop = 2f, padBottom = 2f)
-            }
-
             visLabel(vm.name.get()).cell(row = true, pad = 2f)
 
-            separator()
+            separator(2f)
 
             visTable {
                 visLabel("") { bindLabelText { "Level: ${vm.level()}" } }.cell(pad = 2f, align = Align.left)
@@ -72,7 +70,7 @@ class SideBarBuildingView(override val controller: SideBarBuildingController, ov
                 }.cell(width = 100f, height = 20f, row = true)
             }.cell(row = true)
 
-            separator()
+            separator(2f)
 
             visTable {
                 bindUpdatable(vm.attrs) {
@@ -84,7 +82,7 @@ class SideBarBuildingView(override val controller: SideBarBuildingController, ov
                 }
             }.cell(row = true, growX = true)
 
-            separator()
+            separator(2f)
 
             visTable {
                 bindUpdatable(vm.coreInventoryShown) {
@@ -102,8 +100,7 @@ class SideBarBuildingView(override val controller: SideBarBuildingController, ov
                                         stack {
                                             squarePixmap(60, Color.DARK_GRAY)
 
-                                            visTable {
-                                                squarePixmap(55, LootItemType.CORE.color)
+                                            lootItem(core) {
                                                 onClick {
                                                     controller.placeCore(core)
                                                 }
@@ -134,7 +131,7 @@ class SideBarBuildingView(override val controller: SideBarBuildingController, ov
                                                 controller.openCoreInventory()
                                             }
                                         } else {
-                                            squarePixmap(55, LootItemType.CORE.color)
+                                            lootItem(core)
                                         }
                                     }
                                 }
@@ -144,7 +141,7 @@ class SideBarBuildingView(override val controller: SideBarBuildingController, ov
                 }
             }.cell(grow = true, row = true)
 
-            separator()
+            separator(2f)
 
             visTable {
                 visLabel("") { bindLabelText { "Upgrade Points: ${vm.upgradePoints()}" } }.cell(growX = true, row = true, padBottom = 2f)
@@ -161,9 +158,14 @@ class SideBarBuildingView(override val controller: SideBarBuildingController, ov
                             }.cell(grow = true, pad = 10f)
                         } else {
                             upgrades.forEach { upgrade ->
-                                visImage(controller.loadTexture(upgrade.icon)) {
-                                    setSize(50f, 50f)
-                                    onClick { controller.applyUpgrade(upgrade) }
+                                visTable {
+                                    visImage(controller.loadTexture(upgrade.icon)) {
+                                        setSize(50f, 50f)
+                                        onClick { controller.applyUpgrade(upgrade) }
+                                        upgradeTooltip(upgrade)
+                                    }.cell(grow = true)
+
+
                                 }.cell(expand = true, pad = 10f, height = 50f, width = 50f)
                             }
                         }
@@ -172,7 +174,7 @@ class SideBarBuildingView(override val controller: SideBarBuildingController, ov
             }.cell(grow = true, row = true)
 
             if (vm.type.get() == BuildingType.TOWER) {
-                separator()
+                separator(2f)
 
                 visTable {
                     visLabel("Targeting Mode:").cell(growX = true, row = true, padBottom = 2f)
@@ -187,4 +189,17 @@ class SideBarBuildingView(override val controller: SideBarBuildingController, ov
             }
         }.cell(row = true, grow = true, align = Align.top, pad = 4f)
     }
+}
+
+fun Actor.upgradeTooltip(upgrade: BuildingUpgrade) = tooltip {
+    it.setInstant(true)
+    background(VisUI.getSkin().getDrawable("panel1"))
+
+    visLabel(upgrade.name).cell(growX = true, row = true, pad = 4f)
+
+    separator(2f)
+
+    visLabel(upgrade.description) {
+        wrap = true
+    }.cell(growX = true, row = true, pad = 5f, minWidth = 50f)
 }

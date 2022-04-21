@@ -2,13 +2,12 @@ package com.runt9.untdrl.view.duringRun.ui
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.utils.Align
-import com.runt9.untdrl.model.loot.LootItemType
 import com.runt9.untdrl.util.ext.ui.bindUpdatable
 import com.runt9.untdrl.util.ext.ui.rectPixmapTexture
-import com.runt9.untdrl.util.ext.ui.squarePixmap
 import com.runt9.untdrl.util.ext.ui.toDrawable
 import com.runt9.untdrl.util.framework.ui.view.ScreenView
 import com.runt9.untdrl.view.duringRun.ui.sideBar.sideBar
+import com.runt9.untdrl.view.duringRun.ui.util.lootItem
 import ktx.scene2d.vis.flowGroup
 import ktx.scene2d.vis.visTable
 
@@ -25,7 +24,7 @@ class DuringRunUiView(override val controller: DuringRunUiController, override v
                     clear()
 
                     vm.relics.get().forEach { relic ->
-                        squarePixmap(55, LootItemType.RELIC.color)
+                        lootItem(relic)
                     }
                 }
             }.cell(expand = true, align = Align.topLeft, pad = 5f)

@@ -28,7 +28,7 @@ class LootService(
     private val lootWeights = mapOf(
         LootType.GOLD to 90,
         LootType.CONSUMABLE to 5,
-        LootType.CORE to 4,
+        LootType.CORE to 400,
         LootType.RELIC to 1
     )
 

@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Color
 sealed interface LootItem {
     val type: LootItemType
     val rarity: Rarity
+    val description: String
 }
 
 enum class LootItemType(val color: Color, val baseCost: Int) {
