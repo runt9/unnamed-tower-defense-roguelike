@@ -89,6 +89,7 @@ class SideBarController(
             buildingVm.apply {
                 id(b.id)
                 name(b.definition.name)
+                type(b.definition.type)
                 xp(b.xp)
                 xpToLevel(b.xpToLevel)
                 level(b.level)
@@ -97,6 +98,7 @@ class SideBarController(
                 cores(b.cores.toList())
                 upgradePoints(b.upgradePoints)
                 availableUpgrades(b.selectableUpgrades.toList())
+                targetingMode(b.targetingMode)
             }
         }}
 

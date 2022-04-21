@@ -194,4 +194,8 @@ class BuildingService(
 
     private suspend fun Building.changed() = buildingChangeCbs[id]?.forEach { it(this) }
     private suspend fun withBuilding(id: Int, fn: suspend Building.() -> Unit) = buildings.find { it.id == id }?.fn()
+    suspend fun update(id: Int, fn: suspend Building.() -> Unit) = withBuilding(id) {
+        fn()
+        changed()
+    }
 }

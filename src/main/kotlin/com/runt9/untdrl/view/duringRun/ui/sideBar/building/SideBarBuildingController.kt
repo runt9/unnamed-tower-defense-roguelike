@@ -2,6 +2,7 @@ package com.runt9.untdrl.view.duringRun.ui.sideBar.building
 
 import com.badlogic.gdx.graphics.Texture
 import com.runt9.untdrl.model.UnitTexture
+import com.runt9.untdrl.model.building.TargetingMode
 import com.runt9.untdrl.model.building.upgrade.BuildingUpgrade
 import com.runt9.untdrl.model.event.RunStateUpdated
 import com.runt9.untdrl.model.loot.TowerCore
@@ -69,6 +70,12 @@ class SideBarBuildingController(
             buildingService.addCore(vm.id.get(), core)
         }
         closeCoreInventory()
+    }
+
+    fun targetingModeChange(targetingMode: TargetingMode) = KtxAsync.launch(MainDispatcher) {
+        buildingService.update(vm.id.get()) {
+            this.targetingMode = targetingMode
+        }
     }
 
     fun loadTexture(icon: UnitTexture): Texture = assets[icon.assetFile]

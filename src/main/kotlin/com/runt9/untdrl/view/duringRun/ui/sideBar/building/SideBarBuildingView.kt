@@ -5,6 +5,8 @@ import com.badlogic.gdx.utils.Align
 import com.kotcrab.vis.ui.VisUI
 import com.runt9.untdrl.model.attribute.definition.displayName
 import com.runt9.untdrl.model.attribute.definition.getDisplayValue
+import com.runt9.untdrl.model.building.BuildingType
+import com.runt9.untdrl.model.building.TargetingMode
 import com.runt9.untdrl.model.loot.LootItemType
 import com.runt9.untdrl.util.ext.ui.bindLabelText
 import com.runt9.untdrl.util.ext.ui.bindUpdatable
@@ -14,6 +16,7 @@ import com.runt9.untdrl.util.ext.ui.toDrawable
 import com.runt9.untdrl.util.framework.ui.view.TableView
 import ktx.actors.onChange
 import ktx.actors.onClick
+import ktx.collections.toGdxArray
 import ktx.scene2d.label
 import ktx.scene2d.progressBar
 import ktx.scene2d.stack
@@ -22,6 +25,7 @@ import ktx.scene2d.vis.flowGroup
 import ktx.scene2d.vis.visImage
 import ktx.scene2d.vis.visLabel
 import ktx.scene2d.vis.visScrollPane
+import ktx.scene2d.vis.visSelectBoxOf
 import ktx.scene2d.vis.visTable
 import ktx.style.progressBar
 
@@ -166,6 +170,21 @@ class SideBarBuildingView(override val controller: SideBarBuildingController, ov
                     }
                 }.cell(grow = true, row = true, pad = 4f)
             }.cell(grow = true, row = true)
+
+            if (vm.type.get() == BuildingType.TOWER) {
+                separator()
+
+                visTable {
+                    visLabel("Targeting Mode:").cell(growX = true, row = true, padBottom = 2f)
+
+                    val selectBox = visSelectBoxOf(TargetingMode.values().toGdxArray())
+                    selectBox.selected = vm.targetingMode.get()
+                    selectBox.onChange {
+                        vm.targetingMode(selectBox.selected)
+                        controller.targetingModeChange(selectBox.selected)
+                    }
+                }.cell(growX = true, row = true, pad = 4f)
+            }
         }.cell(row = true, grow = true, align = Align.top, pad = 4f)
     }
 }

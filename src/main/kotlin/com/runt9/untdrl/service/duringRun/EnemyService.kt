@@ -2,6 +2,7 @@ package com.runt9.untdrl.service.duringRun
 
 import com.badlogic.gdx.ai.steer.SteeringAcceleration
 import com.badlogic.gdx.math.Vector2
+import com.runt9.untdrl.model.building.TargetingMode
 import com.runt9.untdrl.model.enemy.Enemy
 import com.runt9.untdrl.model.event.EnemyRemovedEvent
 import com.runt9.untdrl.model.event.EnemySpawnedEvent
@@ -56,9 +57,9 @@ class EnemyService(private val grid: IndexedGridGraph, private val eventBus: Eve
         }
     }
 
-    fun getBuildingTarget(position: Vector2, range: Float) =
+    fun getBuildingTarget(position: Vector2, range: Float, targetingMode: TargetingMode) =
         enemies.toList()
-            .sortedBy { it.numNodesToHome() }
+            .sortByTargetingMode(targetingMode)
             .filter { it.isAlive }
             .find { enemy ->
                 position.dst(enemy.position) <= range
@@ -69,4 +70,15 @@ class EnemyService(private val grid: IndexedGridGraph, private val eventBus: Eve
     }
 
     fun collidesWithEnemy(position: Vector2, maxDistance: Float) = enemies.toList().firstOrNull { it.position.dst(position) <= maxDistance }
+
+    private fun List<Enemy>.sortByTargetingMode(targetingMode: TargetingMode) = when(targetingMode) {
+        TargetingMode.FRONT -> sortedBy { it.numNodesToHome() }
+        TargetingMode.BACK -> sortedByDescending { it.numNodesToHome() }
+        TargetingMode.STRONG -> sortedByDescending { it.maxHp }
+        TargetingMode.WEAK -> sortedBy { it.maxHp }
+        TargetingMode.FAST -> sortedByDescending { it.linearSpeedLimit }
+        TargetingMode.SLOW -> sortedBy { it.linearSpeedLimit }
+        TargetingMode.NEAR_DEATH -> sortedBy { it.currentHp }
+        TargetingMode.HEALTHIEST -> sortedByDescending { it.currentHp }
+    }
 }

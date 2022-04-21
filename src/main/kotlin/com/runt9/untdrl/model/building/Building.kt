@@ -37,6 +37,7 @@ class Building(val definition: BuildingDefinition, val texture: Texture) : BaseS
     val attrs = definition.attrs.mapValues { (type, _) -> Attribute(type) }.toMutableMap()
     val attrMods = mutableListOf<AttributeModifier>()
     val damageTypes = copyDefinitionDamageTypes()
+    var targetingMode = TargetingMode.FRONT
 
     private fun copyDefinitionDamageTypes() = definition.damageTypes.map { DamageMap(it.type, it.pctOfBase, it.penetration) }
 

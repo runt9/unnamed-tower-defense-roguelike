@@ -11,7 +11,6 @@ import com.runt9.untdrl.model.building.range
 import com.runt9.untdrl.model.enemy.Enemy
 import com.runt9.untdrl.model.event.ProjectileSpawnedEvent
 import com.runt9.untdrl.model.event.WaveCompleteEvent
-import com.runt9.untdrl.service.RandomizerService
 import com.runt9.untdrl.service.duringRun.EnemyService
 import com.runt9.untdrl.util.ext.Timer
 import com.runt9.untdrl.util.ext.degRad
@@ -26,8 +25,7 @@ class ProjectileAttackAction(
     private val building: Building,
     override val eventBus: EventBus,
     private val enemyService: EnemyService,
-    private val assets: AssetStorage,
-    private val randomizerService: RandomizerService
+    private val assets: AssetStorage
 ) : BuildingAction {
     private val logger = unTdRlLogger()
     private var target: Enemy? = null
@@ -49,7 +47,7 @@ class ProjectileAttackAction(
 
         attackTimer.tick(delta)
 
-        val target = enemyService.getBuildingTarget(building.position, building.range) ?: return
+        val target = enemyService.getBuildingTarget(building.position, building.range, building.targetingMode) ?: return
 
         setTarget(target)
 
