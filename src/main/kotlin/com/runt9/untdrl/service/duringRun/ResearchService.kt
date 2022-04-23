@@ -1,14 +1,16 @@
 package com.runt9.untdrl.service.duringRun
 
 import com.runt9.untdrl.model.RunState
-import com.runt9.untdrl.model.research.Research
+import com.runt9.untdrl.model.research.ResearchDefinition
+import com.runt9.untdrl.model.research.ResearchEffectDefinition
 import com.runt9.untdrl.model.research.allResearch
 import com.runt9.untdrl.service.RandomizerService
+import com.runt9.untdrl.util.ext.dynamicInject
+import com.runt9.untdrl.util.ext.dynamicInjectCheckInterfaceContains
 import com.runt9.untdrl.util.ext.removeIf
 import com.runt9.untdrl.util.ext.unTdRlLogger
 import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.view.duringRun.REROLL_COST
-import kotlinx.coroutines.runBlocking
 
 class ResearchService(
     eventBus: EventBus,
@@ -23,8 +25,16 @@ class ResearchService(
         runStateService.update { addResearch() }
     }
 
-    fun applyResearch(research: Research) {
+    fun applyResearch(research: ResearchDefinition) {
         logger.info { "Applying ${research.name}" }
+
+        val effect = dynamicInject(
+            research.effect.effectClass,
+            dynamicInjectCheckInterfaceContains(ResearchEffectDefinition::class.java) to research.effect
+        )
+        effect.init()
+        effect.apply()
+
         runStateService.update {
             researchAmount -= research.cost
             availableResearch -= research

@@ -6,7 +6,7 @@ import com.runt9.untdrl.model.loot.Consumable
 import com.runt9.untdrl.model.loot.Relic
 import com.runt9.untdrl.model.loot.Shop
 import com.runt9.untdrl.model.loot.TowerCore
-import com.runt9.untdrl.model.research.Research
+import com.runt9.untdrl.model.research.ResearchDefinition
 import com.runt9.untdrl.util.ext.randomString
 import com.runt9.untdrl.view.duringRun.REROLL_COST
 import kotlinx.serialization.Serializable
@@ -22,9 +22,9 @@ data class RunState(
     var shopRerollCost: Int = REROLL_COST,
     var researchRerollCost: Int = REROLL_COST,
     var currentShop: Shop = Shop(),
-    var availableResearch: List<Research> = listOf(),
-    var appliedResearch: List<Research> = listOf(),
-    var selectableResearch: List<Research> = listOf(),
+    var availableResearch: List<ResearchDefinition> = listOf(),
+    var appliedResearch: List<ResearchDefinition> = listOf(),
+    var selectableResearch: List<ResearchDefinition> = listOf(),
     var selectableResearchOptionCount: Int = 5,
     var researchAmount: Int = 0,
     var wave: Int = 1,

@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.Texture
 import com.runt9.untdrl.model.RunState
 import com.runt9.untdrl.model.UnitTexture
 import com.runt9.untdrl.model.event.RunStateUpdated
-import com.runt9.untdrl.model.research.Research
+import com.runt9.untdrl.model.research.ResearchDefinition
 import com.runt9.untdrl.service.duringRun.ResearchService
 import com.runt9.untdrl.service.duringRun.RunStateService
 import com.runt9.untdrl.util.framework.event.EventBus
@@ -51,7 +51,7 @@ class ResearchDialogController(
         researchService.rerollResearch()
     }
 
-    fun applyResearch(research: Research) {
+    fun applyResearch(research: ResearchDefinition) {
         if (vm.researchAmount.get() < research.cost) return
         researchService.applyResearch(research)
     }

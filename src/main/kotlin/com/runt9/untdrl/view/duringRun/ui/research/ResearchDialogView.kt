@@ -3,7 +3,7 @@ package com.runt9.untdrl.view.duringRun.ui.research
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.kotcrab.vis.ui.VisUI
-import com.runt9.untdrl.model.research.Research
+import com.runt9.untdrl.model.research.ResearchDefinition
 import com.runt9.untdrl.util.ext.ui.bindButtonDisabled
 import com.runt9.untdrl.util.ext.ui.bindLabelText
 import com.runt9.untdrl.util.ext.ui.bindUpdatable
@@ -84,7 +84,7 @@ class ResearchDialogView(
     }
 }
 
-fun Actor.researchTooltip(research: Research) = tooltip {
+fun Actor.researchTooltip(research: ResearchDefinition) = tooltip {
     it.setInstant(true)
     background(VisUI.getSkin().getDrawable("panel1"))
 

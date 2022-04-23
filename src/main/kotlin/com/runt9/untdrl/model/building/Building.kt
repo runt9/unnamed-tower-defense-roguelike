@@ -9,7 +9,8 @@ import com.runt9.untdrl.model.building.definition.BuildingDefinition
 import com.runt9.untdrl.model.building.intercept.BuildingInteraction
 import com.runt9.untdrl.model.building.intercept.BuildingInterceptor
 import com.runt9.untdrl.model.building.intercept.InterceptorHook
-import com.runt9.untdrl.model.building.upgrade.BuildingUpgrade
+import com.runt9.untdrl.model.building.proc.BuildingProc
+import com.runt9.untdrl.model.building.upgrade.BuildingUpgradeDefinition
 import com.runt9.untdrl.model.damage.DamageMap
 import com.runt9.untdrl.model.loot.TowerCore
 import com.runt9.untdrl.service.buildingAction.BuildingAction
@@ -22,8 +23,8 @@ class Building(val definition: BuildingDefinition, val texture: Texture) : BaseS
 
     override val linearSpeedLimit = 0f
     override val linearAccelerationLimit = 0f
-    override val angularSpeedLimit = 15f
-    override val angularAccelerationLimit = angularSpeedLimit * 2f
+    override val angularSpeedLimit = 10f
+    override val angularAccelerationLimit = angularSpeedLimit * 100f
     override val boundingBoxRadius = 0.5f
 
     private var onChangeCb: (suspend Building.() -> Unit)? = null
@@ -39,17 +40,18 @@ class Building(val definition: BuildingDefinition, val texture: Texture) : BaseS
 
     val attrs = definition.attrs.mapValues { (type, _) -> Attribute(type) }.toMutableMap()
     val attrMods = mutableListOf<AttributeModifier>()
-    val damageTypes = copyDefinitionDamageTypes()
+    var damageTypes = copyDefinitionDamageTypes()
     var targetingMode = TargetingMode.FRONT
 
     val cores = mutableListOf<TowerCore>()
-    val availableUpgrades = mutableListOf<BuildingUpgrade>()
-    val selectableUpgrades = mutableListOf<BuildingUpgrade>()
-    val appliedUpgrades = mutableListOf<BuildingUpgrade>()
+    val availableUpgrades = mutableListOf<BuildingUpgradeDefinition>()
+    val selectableUpgrades = mutableListOf<BuildingUpgradeDefinition>()
+    val appliedUpgrades = mutableListOf<BuildingUpgradeDefinition>()
 
     val localXpModifiers = mutableListOf<Float>()
 
     private val interceptors = mutableMapOf<InterceptorHook, MutableList<BuildingInterceptor<BuildingInteraction>>>()
+    val procs = mutableListOf<BuildingProc>()
 
     private fun copyDefinitionDamageTypes() = definition.damageTypes.map { DamageMap(it.type, it.pctOfBase, it.penetration) }
 

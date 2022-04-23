@@ -6,7 +6,7 @@ import com.badlogic.gdx.math.Vector2
 import com.runt9.untdrl.model.building.Building
 import com.runt9.untdrl.model.building.Projectile
 import com.runt9.untdrl.model.building.action.ProjectileAttackActionDefinition
-import com.runt9.untdrl.model.building.attackSpeed
+import com.runt9.untdrl.model.building.attackTime
 import com.runt9.untdrl.model.building.intercept.InterceptorHook
 import com.runt9.untdrl.model.building.intercept.OnAttack
 import com.runt9.untdrl.model.building.range
@@ -31,20 +31,23 @@ class ProjectileAttackAction(
 ) : BuildingAction {
     private val logger = unTdRlLogger()
     private var target: Enemy? = null
+    // TODO: Add a small bit of prediction, basically take the target, copy into another steerable, push it slightly further along the path, and then
+    //  keep it up-to-date each frame. Buildings then rotate towards that invisible bonus target instead of the enemy itself
 
-    private val attackTimer = Timer(building.attackSpeed)
+    private val attackTimer = Timer(building.attackTime)
     private val behavior = Face(building).apply {
-        timeToTarget = 0.1f
-        alignTolerance = 5f.degRad
-        decelerationRadius = 90f.degRad
+        timeToTarget = 0.01f
+        alignTolerance = 1f.degRad
+        decelerationRadius = 45f.degRad
     }
+    var pierce = definition.pierce
 
     override suspend fun act(delta: Float) {
         val steeringOutput = SteeringAcceleration(Vector2())
 
         // Easy way to avoid another callback, just check this every tick, it's not expensive
-        if (building.attackSpeed != attackTimer.targetTime) {
-            attackTimer.targetTime = building.attackSpeed
+        if (building.attackTime != attackTimer.targetTime) {
+            attackTimer.targetTime = building.attackTime
         }
 
         attackTimer.tick(delta)
@@ -66,7 +69,7 @@ class ProjectileAttackAction(
     }
 
     private fun spawnProjectile(): Projectile {
-        val projectile = Projectile(building, assets[definition.projectileTexture.assetFile], target!!)
+        val projectile = Projectile(building, assets[definition.projectileTexture.assetFile], target!!, pierce)
         eventBus.enqueueEventSync(ProjectileSpawnedEvent(projectile))
         return projectile
     }

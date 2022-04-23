@@ -7,7 +7,8 @@ import com.runt9.untdrl.model.attribute.AttributeModifier
 import com.runt9.untdrl.model.building.Building
 import com.runt9.untdrl.model.building.action.BuildingActionDefinition
 import com.runt9.untdrl.model.building.definition.BuildingDefinition
-import com.runt9.untdrl.model.building.upgrade.BuildingUpgrade
+import com.runt9.untdrl.model.building.upgrade.BuildingUpgradeDefinition
+import com.runt9.untdrl.model.building.upgrade.BuildingUpgradeEffectDefinition
 import com.runt9.untdrl.model.event.BuildingPlacedEvent
 import com.runt9.untdrl.model.loot.TowerCore
 import com.runt9.untdrl.model.loot.definition.LegendaryPassiveEffectDefinition
@@ -58,6 +59,8 @@ class BuildingService(
         buildingChangeCbs[id]?.remove(cb)
     }
 
+    fun forEachBuilding(fn: (Building) -> Unit) = buildings.toList().forEach(fn)
+
     override fun tick(delta: Float) {
         launchOnServiceThread {
             buildings.toList().forEach { building ->
@@ -84,6 +87,8 @@ class BuildingService(
 
     fun getBuildingAtPoint(clickPoint: Vector2) = buildings.find { it.position == clickPoint }
 
+    // TODO: This may not work in the long run. Faster attacking towers get to hit more enemies meaning they get more XP than slower attacking towers
+    //  that might do more damage. But some sort of "percent damage share" may not work since something like a "slow tower" does no damage.
     suspend fun gainXp(building: Building, xp: Int) {
         building.apply {
             if (level == MAX_BUILDING_LEVEL) {
@@ -165,9 +170,18 @@ class BuildingService(
         }
     }
 
-    suspend fun applyUpgradeToBuilding(id: Int, upgrade: BuildingUpgrade) {
+    suspend fun applyUpgradeToBuilding(id: Int, upgrade: BuildingUpgradeDefinition) {
         logger.info { "Applying ${upgrade.name} to $id" }
+
         withBuilding(id) {
+            val upgradeEffect = dynamicInject(
+                upgrade.effect.effectClass,
+                dynamicInjectCheckInterfaceContains(BuildingUpgradeEffectDefinition::class.java) to upgrade.effect,
+                dynamicInjectCheckAssignableFrom(Building::class.java) to this
+            )
+            upgradeEffect.init()
+            upgradeEffect.apply()
+
             upgradePoints--
             availableUpgrades -= upgrade
             appliedUpgrades += upgrade
@@ -177,7 +191,7 @@ class BuildingService(
             selectableUpgrades.removeIf { it.isExclusiveOf(upgrade) }
 
             addUpgrades()
-            changed()
+            recalculateAttrs(this)
         }
     }
 

@@ -42,6 +42,13 @@ class EnemyService(private val grid: IndexedGridGraph, private val eventBus: Eve
     override fun tick(delta: Float) {
         launchOnServiceThread {
             enemies.toList().filter { it.isAlive }.forEach { enemy ->
+                enemy.statusEffects.toList().forEach { se ->
+                    se.timer.tick(delta)
+                    if (se.timer.isReady) {
+                        enemy.statusEffects.remove(se)
+                    }
+                }
+
                 val steeringOutput = SteeringAcceleration(Vector2())
                 enemy.behavior.calculateSteering(steeringOutput)
                 if (!steeringOutput.isZero) {

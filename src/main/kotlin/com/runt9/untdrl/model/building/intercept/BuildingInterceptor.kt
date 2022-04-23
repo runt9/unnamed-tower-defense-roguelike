@@ -4,9 +4,13 @@ import com.runt9.untdrl.model.building.Building
 import com.runt9.untdrl.model.building.critChance
 import com.runt9.untdrl.model.building.critMulti
 import com.runt9.untdrl.model.building.damage
-import com.runt9.untdrl.model.building.intercept.InterceptorHook.AFTER_DAMAGE
-import com.runt9.untdrl.model.building.intercept.InterceptorHook.BEFORE_DAMAGE
+import com.runt9.untdrl.model.building.intercept.InterceptorHook.AFTER_DAMAGE_CALC
+import com.runt9.untdrl.model.building.intercept.InterceptorHook.BEFORE_DAMAGE_CALC
+import com.runt9.untdrl.model.building.intercept.InterceptorHook.BEFORE_RESISTS
 import com.runt9.untdrl.model.building.intercept.InterceptorHook.ON_ATTACK
+import com.runt9.untdrl.model.damage.DamageMap
+import com.runt9.untdrl.model.damage.DamageType
+import com.runt9.untdrl.util.ext.clamp
 import com.runt9.untdrl.util.ext.displayInt
 import com.runt9.untdrl.util.ext.displayMultiplier
 import com.runt9.untdrl.util.ext.displayPercent
@@ -14,8 +18,10 @@ import com.runt9.untdrl.util.ext.displayPercent
 enum class InterceptorHook {
     ON_ATTACK,
     ON_HIT,
-    BEFORE_DAMAGE,
-    AFTER_DAMAGE,
+    BEFORE_DAMAGE_CALC,
+    AFTER_DAMAGE_CALC,
+    BEFORE_RESISTS,
+    AFTER_DAMAGE_DEALT,
 
     BEFORE_GENERATE_GOLD,
     AFTER_GENERATE_GOLD,
@@ -69,6 +75,35 @@ data class DamageResult(val baseDamage: Float, val totalMulti: Float) : Building
         "[Base: ${baseDamage.displayInt()} | Multi: ${totalMulti.displayMultiplier()} | Total: ${totalDamage.displayInt()}]"
 }
 
+data class ResistanceRequest(private val damageTypes: List<DamageMap>, private val resistances: Map<DamageType, Float>, val damageResult: DamageResult) : BuildingInteraction {
+    private val additionalDamageTypes = mutableListOf<DamageMap>()
+    private var globalPenetration = 0f
+    private val specificPenetration = mutableMapOf<DamageType, Float>()
+
+    val finalDamage get() = (damageTypes + additionalDamageTypes).map { dt ->
+        val damage = damageResult.totalDamage * dt.pctOfBase
+        val resistance = getResistance(dt.type, dt.penetration)
+        return@map damage / resistance
+    }.sum()
+
+    private fun getResistance(type: DamageType, penetration: Float): Float {
+        val resist = resistances.getOrDefault(type, 1f)
+        // Resists are capped from -90% to +90%
+        return (resist - penetration - globalPenetration).clamp(0.1f, 1.9f)
+    }
+
+    fun addDamageType(type: DamageType, pctOfBase: Float = 1f, penetration: Float = 0f) {
+        additionalDamageTypes += DamageMap(type, pctOfBase, penetration)
+    }
+
+    fun addGlobalPenetration(pen: Float) {
+        globalPenetration += pen
+    }
+
+    fun addPenetration(type: DamageType, pen: Float) = specificPenetration.merge(type, pen) { old, value -> old + value }
+}
+
 fun onAttack(intercept: (Building, OnAttack) -> Unit) = intercept(ON_ATTACK, intercept)
-fun beforeDamage(intercept: (Building, DamageRequest) -> Unit) = intercept(BEFORE_DAMAGE, intercept)
-fun afterDamage(intercept: (Building, DamageResult) -> Unit) = intercept(AFTER_DAMAGE, intercept)
+fun beforeDamage(intercept: (Building, DamageRequest) -> Unit) = intercept(BEFORE_DAMAGE_CALC, intercept)
+fun afterDamage(intercept: (Building, DamageResult) -> Unit) = intercept(AFTER_DAMAGE_CALC, intercept)
+fun beforeResists(intercept: (Building, ResistanceRequest) -> Unit) = intercept(BEFORE_RESISTS, intercept)

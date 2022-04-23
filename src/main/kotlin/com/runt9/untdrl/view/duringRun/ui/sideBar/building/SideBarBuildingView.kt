@@ -8,7 +8,7 @@ import com.runt9.untdrl.model.attribute.definition.displayName
 import com.runt9.untdrl.model.attribute.definition.getDisplayValue
 import com.runt9.untdrl.model.building.BuildingType
 import com.runt9.untdrl.model.building.TargetingMode
-import com.runt9.untdrl.model.building.upgrade.BuildingUpgrade
+import com.runt9.untdrl.model.building.upgrade.BuildingUpgradeDefinition
 import com.runt9.untdrl.util.ext.ui.bindLabelText
 import com.runt9.untdrl.util.ext.ui.bindUpdatable
 import com.runt9.untdrl.util.ext.ui.rectPixmapTexture
@@ -191,7 +191,7 @@ class SideBarBuildingView(override val controller: SideBarBuildingController, ov
     }
 }
 
-fun Actor.upgradeTooltip(upgrade: BuildingUpgrade) = tooltip {
+fun Actor.upgradeTooltip(upgrade: BuildingUpgradeDefinition) = tooltip {
     it.setInstant(true)
     background(VisUI.getSkin().getDrawable("panel1"))
 

@@ -7,6 +7,7 @@ import com.runt9.untdrl.model.building.Projectile
 import com.runt9.untdrl.model.building.intercept.DamageRequest
 import com.runt9.untdrl.model.building.intercept.DamageResult
 import com.runt9.untdrl.model.building.intercept.InterceptorHook
+import com.runt9.untdrl.model.building.intercept.ResistanceRequest
 import com.runt9.untdrl.model.enemy.Enemy
 import com.runt9.untdrl.model.event.EnemyRemovedEvent
 import com.runt9.untdrl.model.event.WaveCompleteEvent
@@ -38,35 +39,38 @@ class ProjectileService(
     override fun tick(delta: Float) {
         launchOnServiceThread {
             projectiles.toList().forEach { projectile ->
-                // Projectiles move towards their target, but if they collide with another enemy first, they'll damage that enemy instead
-                val collidedEnemy = enemyService.collidesWithEnemy(projectile.position, 0.1f)
+                val collidedEnemy = enemyService.collidesWithEnemy(projectile.position, 0.25f)
 
                 // TODO: Handle AoE
-                if (collidedEnemy != null) {
-                    // TODO: Handle piercing projectiles
-                    despawnProjectile(projectile)
-
-                    if (!collidedEnemy.isAlive) return@forEach
-
-                    calculateDamage(projectile.owner, collidedEnemy)
-                    if (collidedEnemy.currentHp <= 0) {
-                        collidedEnemy.isAlive = false
-                        collidedEnemy.affectedByBuildings.forEach { t -> buildingService.gainXp(t, collidedEnemy.xpOnDeath) }
-                        eventBus.enqueueEvent(EnemyRemovedEvent(collidedEnemy))
+                if (collidedEnemy != null && !projectile.collidedWith.contains(collidedEnemy)) {
+                    projectile.collidedWith += collidedEnemy
+                    if (collidedEnemy.isAlive) {
+                        calculateDamage(projectile.owner, collidedEnemy)
+                        if (collidedEnemy.currentHp <= 0) {
+                            collidedEnemy.isAlive = false
+                            collidedEnemy.affectedByBuildings.forEach { t -> buildingService.gainXp(t, collidedEnemy.xpOnDeath) }
+                            eventBus.enqueueEvent(EnemyRemovedEvent(collidedEnemy))
+                        }
                     }
-                    return@forEach
-                }
 
-                // Reached the target without colliding with anything, so fizzle out
-                if (projectile.position.dst(projectile.target.position) <= 0.1f) {
-                    despawnProjectile(projectile)
-                    return@forEach
+                    if (projectile.remainingPierces-- == 0) {
+                        despawnProjectile(projectile)
+                        return@forEach
+                    }
                 }
 
                 val steeringOutput = SteeringAcceleration(Vector2())
                 projectile.behavior.calculateSteering(steeringOutput)
                 if (!steeringOutput.isZero) {
+                    val beforePosition = projectile.position.cpy()
                     projectile.applySteering(delta, steeringOutput)
+                    val distanceTravelled = projectile.position.dst(beforePosition)
+                    projectile.travelDistance += distanceTravelled
+                }
+
+                if (projectile.travelDistance >= projectile.maxTravelDistance) {
+                    despawnProjectile(projectile)
+                    return@forEach
                 }
             }
         }
@@ -75,13 +79,16 @@ class ProjectileService(
     // TODO: Move these somewhere else, they're not projectile-specific
     private fun calculateDamage(building: Building, enemy: Enemy) {
         val damageRequest = DamageRequest(building)
-        building.intercept(InterceptorHook.BEFORE_DAMAGE, damageRequest)
+        building.intercept(InterceptorHook.BEFORE_DAMAGE_CALC, damageRequest)
         logger.info { "Final Damage Request: $damageRequest" }
         val damageResult = rollForDamage(damageRequest)
-        building.intercept(InterceptorHook.AFTER_DAMAGE, damageResult)
+        building.intercept(InterceptorHook.AFTER_DAMAGE_CALC, damageResult)
         logger.info { "Final Damage Result: $damageResult" }
-        val totalDamage = building.damageTypes.map { dt -> (damageResult.totalDamage * dt.pctOfBase) / (enemy.getResistance(dt.type, dt.penetration)) }.sum()
-        enemy.takeDamage(building, totalDamage)
+        val resistanceRequest = ResistanceRequest(building.damageTypes.toList(), enemy.resistances.toMap(), damageResult)
+        building.intercept(InterceptorHook.BEFORE_RESISTS, resistanceRequest)
+        enemy.takeDamage(building, resistanceRequest.finalDamage)
+
+        building.procs.filter { randomizer.percentChance(it.chance) }.forEach { proc -> proc.applyToEnemy(enemy) }
     }
 
     private fun rollForDamage(request: DamageRequest): DamageResult {

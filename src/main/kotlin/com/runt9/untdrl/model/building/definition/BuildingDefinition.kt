@@ -5,7 +5,8 @@ import com.runt9.untdrl.model.attribute.AttributeModificationType
 import com.runt9.untdrl.model.attribute.AttributeType
 import com.runt9.untdrl.model.building.BuildingType
 import com.runt9.untdrl.model.building.action.BuildingActionDefinition
-import com.runt9.untdrl.model.building.upgrade.BuildingUpgrade
+import com.runt9.untdrl.model.building.upgrade.BuildingUpgradeDefinition
+import com.runt9.untdrl.model.building.upgrade.BuildingUpgradeEffectDefinition
 import com.runt9.untdrl.model.damage.DamageMap
 import com.runt9.untdrl.model.damage.DamageType
 
@@ -17,14 +18,14 @@ interface BuildingDefinition {
     val goldCost: Int
     val action: BuildingActionDefinition
     val attrs: Map<AttributeType, BuildingAttributeDefinition>
-    val upgrades: List<BuildingUpgrade>
+    val upgrades: List<BuildingUpgradeDefinition>
     val damageTypes: List<DamageMap>
 
     class Builder {
         lateinit var actionDefinition: BuildingActionDefinition
         var description = ""
         val attrs = mutableMapOf<AttributeType, BuildingAttributeDefinition>()
-        val upgrades = mutableListOf<BuildingUpgrade>()
+        val upgrades = mutableListOf<BuildingUpgradeDefinition>()
         val damageTypes = mutableListOf<DamageMap>()
 
         operator fun AttributeType.invoke(baseValue: Float) = invoke(baseValue, 0f, AttributeModificationType.FLAT)
@@ -36,14 +37,15 @@ interface BuildingDefinition {
             description = this
         }
 
-        fun upgrade(name: String, icon: UnitTexture, builder: UpgradeBuilder.() -> Unit = {}): BuildingUpgrade {
+        fun upgrade(name: String, icon: UnitTexture, builder: UpgradeBuilder.() -> Unit = {}): BuildingUpgradeDefinition {
             val upgradeBuilder = UpgradeBuilder()
             upgradeBuilder.builder()
 
-            val upgrade = object : BuildingUpgrade {
+            val upgrade = object : BuildingUpgradeDefinition {
                 override val icon = icon
                 override val name = name
                 override val description = upgradeBuilder.description
+                override val effect = upgradeBuilder.definition
                 override val dependsOn = upgradeBuilder.dependsOn.toList()
                 override val exclusiveOf = upgradeBuilder.exclusiveOf.toList()
             }
@@ -57,12 +59,13 @@ interface BuildingDefinition {
         }
 
         class UpgradeBuilder {
-            internal val dependsOn = mutableListOf<BuildingUpgrade>()
-            internal val exclusiveOf = mutableListOf<BuildingUpgrade>()
+            internal val dependsOn = mutableListOf<BuildingUpgradeDefinition>()
+            internal val exclusiveOf = mutableListOf<BuildingUpgradeDefinition>()
             internal var description = ""
+            internal lateinit var definition: BuildingUpgradeEffectDefinition
 
-            fun dependsOn(vararg upgrades: BuildingUpgrade) = dependsOn.addAll(upgrades)
-            fun exclusiveOf(vararg upgrades: BuildingUpgrade) = exclusiveOf.addAll(upgrades)
+            fun dependsOn(vararg upgrades: BuildingUpgradeDefinition) = dependsOn.addAll(upgrades)
+            fun exclusiveOf(vararg upgrades: BuildingUpgradeDefinition) = exclusiveOf.addAll(upgrades)
             operator fun String.unaryPlus() {
                 description = this
             }

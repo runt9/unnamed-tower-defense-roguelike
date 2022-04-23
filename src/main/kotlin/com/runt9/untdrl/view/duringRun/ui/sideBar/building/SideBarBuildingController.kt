@@ -3,7 +3,7 @@ package com.runt9.untdrl.view.duringRun.ui.sideBar.building
 import com.badlogic.gdx.graphics.Texture
 import com.runt9.untdrl.model.UnitTexture
 import com.runt9.untdrl.model.building.TargetingMode
-import com.runt9.untdrl.model.building.upgrade.BuildingUpgrade
+import com.runt9.untdrl.model.building.upgrade.BuildingUpgradeDefinition
 import com.runt9.untdrl.model.event.RunStateUpdated
 import com.runt9.untdrl.model.loot.TowerCore
 import com.runt9.untdrl.service.duringRun.BuildingService
@@ -12,10 +12,7 @@ import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.util.framework.event.HandlesEvent
 import com.runt9.untdrl.util.framework.ui.controller.Controller
 import com.runt9.untdrl.util.framework.ui.uiComponent
-import kotlinx.coroutines.launch
 import ktx.assets.async.AssetStorage
-import ktx.async.KtxAsync
-import ktx.async.MainDispatcher
 import ktx.async.onRenderingThread
 import ktx.scene2d.KWidget
 import ktx.scene2d.Scene2dDsl
@@ -70,7 +67,7 @@ class SideBarBuildingController(
         closeCoreInventory()
     }
 
-    fun targetingModeChange(targetingMode: TargetingMode) = KtxAsync.launch(MainDispatcher) {
+    fun targetingModeChange(targetingMode: TargetingMode) = launchOnRenderingThread {
         buildingService.update(vm.id.get()) {
             this.targetingMode = targetingMode
         }
@@ -78,10 +75,10 @@ class SideBarBuildingController(
 
     fun loadTexture(icon: UnitTexture): Texture = assets[icon.assetFile]
 
-    fun applyUpgrade(upgrade: BuildingUpgrade) {
+    fun applyUpgrade(upgrade: BuildingUpgradeDefinition) {
         if (vm.upgradePoints.get() == 0) return
 
-        KtxAsync.launch(MainDispatcher) {
+        launchOnRenderingThread {
             buildingService.applyUpgradeToBuilding(vm.id.get(), upgrade)
         }
     }

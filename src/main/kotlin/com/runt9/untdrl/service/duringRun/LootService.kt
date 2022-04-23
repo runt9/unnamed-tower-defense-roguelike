@@ -38,7 +38,7 @@ class LootService(
     private val lootWeights = mapOf(
         LootType.GOLD to 90,
         LootType.CONSUMABLE to 5,
-        LootType.CORE to 400,
+        LootType.CORE to 4,
         LootType.RELIC to 1
     )
 
@@ -46,7 +46,7 @@ class LootService(
         Rarity.COMMON to 50,
         Rarity.UNCOMMON to 30,
         Rarity.RARE to 15,
-        Rarity.LEGENDARY to 500
+        Rarity.LEGENDARY to 5
     )
 
     private val rarityTable = generateWeightedList(rarityWeights)
