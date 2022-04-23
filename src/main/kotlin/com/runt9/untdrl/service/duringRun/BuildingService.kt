@@ -13,6 +13,7 @@ import com.runt9.untdrl.model.loot.TowerCore
 import com.runt9.untdrl.service.RandomizerService
 import com.runt9.untdrl.service.buildingAction.BuildingAction
 import com.runt9.untdrl.util.ext.dynamicInject
+import com.runt9.untdrl.util.ext.dynamicInjectCheckInterfaceContains
 import com.runt9.untdrl.util.ext.unTdRlLogger
 import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.util.framework.event.HandlesEvent
@@ -29,6 +30,7 @@ class BuildingService(
     private val logger = unTdRlLogger()
     private val buildings = mutableListOf<Building>()
     private val buildingChangeCbs = mutableMapOf<Int, MutableList<suspend (Building) -> Unit>>()
+    private val globalXpModifiers = mutableListOf<Float>()
 
     fun add(building: Building) = launchOnServiceThread {
         buildings += building
@@ -40,6 +42,10 @@ class BuildingService(
     // TODO: Selling buildings
     fun remove(building: Building) {
         buildings -= building
+    }
+
+    fun addGlobalXpModifier(amt: Float) = launchOnServiceThread {
+        globalXpModifiers += amt
     }
 
     fun onBuildingChange(id: Int, cb: suspend (Building) -> Unit) {
@@ -61,7 +67,7 @@ class BuildingService(
     fun injectBuildingAction(building: Building): BuildingAction {
         val action = dynamicInject(
             building.definition.action.actionClass,
-            { c: Class<*> -> c.interfaces.contains(BuildingActionDefinition::class.java) } to building.definition.action,
+            dynamicInjectCheckInterfaceContains(BuildingActionDefinition::class.java) to building.definition.action,
             { c: Class<*> -> c.isAssignableFrom(Building::class.java) } to building
         )
         action.init()
@@ -82,7 +88,9 @@ class BuildingService(
                 return
             }
 
-            this.xp += xp
+            val totalXpModifier = 1 + globalXpModifiers.sum() + localXpModifiers.sum()
+
+            this.xp += (xp * totalXpModifier).roundToInt()
             if (this.xp < xpToLevel) {
                 building.changed()
                 return

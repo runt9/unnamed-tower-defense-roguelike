@@ -24,7 +24,7 @@ class FactionSelectController(
 
     fun back() = eventBus.enqueueChangeScreen<MainMenuScreenController>()
 
-    fun startRun() = launchOnRenderingThread {
+    fun startRun() {
         val faction = vm.selectedFaction
         val seed = vm.seed.get().ifBlank { Random.randomString(8) }
         runStateService.save(RunState(seed = seed, faction = faction))

@@ -39,12 +39,14 @@ class Building(val definition: BuildingDefinition, val texture: Texture) : BaseS
     val damageTypes = copyDefinitionDamageTypes()
     var targetingMode = TargetingMode.FRONT
 
-    private fun copyDefinitionDamageTypes() = definition.damageTypes.map { DamageMap(it.type, it.pctOfBase, it.penetration) }
-
     val cores = mutableListOf<TowerCore>()
     val availableUpgrades = mutableListOf<BuildingUpgrade>()
     val selectableUpgrades = mutableListOf<BuildingUpgrade>()
     val appliedUpgrades = mutableListOf<BuildingUpgrade>()
+
+    val localXpModifiers = mutableListOf<Float>()
+
+    private fun copyDefinitionDamageTypes() = definition.damageTypes.map { DamageMap(it.type, it.pctOfBase, it.penetration) }
 
     fun onChange(onChangeCb: suspend Building.() -> Unit) {
         this.onChangeCb = onChangeCb

@@ -13,3 +13,4 @@ const val GAME_HEIGHT = GAME_AREA_HEIGHT - GAME_HEIGHT_MARGIN
 val HOME_POINT = Vector2(7f, 4f)
 const val REROLL_COST = 50
 const val MAX_BUILDING_LEVEL = 20
+const val SHOP_ITEMS = 3

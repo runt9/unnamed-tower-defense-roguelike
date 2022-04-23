@@ -41,17 +41,15 @@ class SideBarConsumablesController(private val eventBus: EventBus, private val r
     fun useConsumable(consumable: Consumable) {
         if (!consumable.action.canApply()) return
 
-        launchOnRenderingThread {
-            logger.info { "Applying consumable action" }
-            consumable.action.apply()
+        logger.info { "Applying consumable action" }
+        consumable.action.apply()
 
-            logger.info { "Updating runState to remove consumable" }
-            runStateService.update {
-                consumables -= consumable
-                logger.info { "Inside update block removing consumable" }
-            }
-            logger.info { "Removing consumable from vm" }
-            vm.consumables -= consumable
+        logger.info { "Updating runState to remove consumable" }
+        runStateService.update {
+            consumables -= consumable
+            logger.info { "Inside update block removing consumable" }
         }
+        logger.info { "Removing consumable from vm" }
+        vm.consumables -= consumable
     }
 }

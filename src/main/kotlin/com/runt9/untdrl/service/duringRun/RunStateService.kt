@@ -18,7 +18,7 @@ class RunStateService(private val eventBus: EventBus, registry: RunServiceRegist
     // TODO: This should probably jump into the service thread to load
     fun load() = runState.copy()
 
-    suspend fun save(runState: RunState) = onServiceThread {
+    fun save(runState: RunState) {
         if (!this@RunStateService::runState.isInitialized || runState != this@RunStateService.runState) {
             logger.info { "Saving run state" }
             this@RunStateService.runState = runState

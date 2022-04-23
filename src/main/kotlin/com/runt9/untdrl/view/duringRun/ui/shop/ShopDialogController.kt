@@ -47,8 +47,8 @@ class ShopDialogController(
     }
 
     fun reroll() {
-        val newShop = lootService.generateShop()
         runStateService.update {
+            val newShop = lootService.generateShop(currentShop)
             currentShop = newShop
             gold -= vm.rerollCost.get()
             shopRerollCost += REROLL_COST
@@ -63,6 +63,7 @@ class ShopDialogController(
                 is Relic -> {
                     relics += item
                     currentShop.relics -= item
+                    item.effect.apply()
                 }
 
                 is Consumable -> {

@@ -37,14 +37,17 @@ class LootDialogController(private val eventBus: EventBus, graphics: Graphics, p
 
             vm.selectedItems.get().forEach { item ->
                 when (item) {
-                    is Relic -> relics += item
+                    is Relic -> {
+                        relics += item
+                        item.effect.apply()
+                    }
                     is Consumable -> consumables += item
                     is TowerCore -> cores += item
                 }
             }
         }
 
-        lootService.lootPool.clear()
+        lootService.clearRemainingLootPool()
         hide()
     }
 

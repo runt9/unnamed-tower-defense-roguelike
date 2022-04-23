@@ -12,12 +12,17 @@ import com.runt9.untdrl.model.loot.Relic
 import com.runt9.untdrl.model.loot.Shop
 import com.runt9.untdrl.model.loot.TowerCore
 import com.runt9.untdrl.model.loot.definition.ConsumableActionDefinition
+import com.runt9.untdrl.model.loot.definition.RelicDefinition
+import com.runt9.untdrl.model.loot.definition.RelicEffectDefinition
 import com.runt9.untdrl.model.loot.definition.availableConsumables
+import com.runt9.untdrl.model.loot.definition.availableRelics
 import com.runt9.untdrl.service.RandomizerService
 import com.runt9.untdrl.util.ext.dynamicInject
+import com.runt9.untdrl.util.ext.dynamicInjectCheckInterfaceContains
 import com.runt9.untdrl.util.ext.unTdRlLogger
 import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.util.framework.event.HandlesEvent
+import com.runt9.untdrl.view.duringRun.SHOP_ITEMS
 import kotlin.math.roundToInt
 
 class LootService(
@@ -30,13 +35,14 @@ class LootService(
 
     private val lootWeights = mapOf(
         LootType.GOLD to 90,
-        LootType.CONSUMABLE to 500,
+        LootType.CONSUMABLE to 5,
         LootType.CORE to 4,
-        LootType.RELIC to 1
+        LootType.RELIC to 100
     )
 
     private val lootTable = generateLootTable()
     val lootPool = LootPool()
+    val currentlyGeneratedRelics = mutableListOf<RelicDefinition>()
 
     override fun startInternal() {
         runStateService.update {
@@ -44,11 +50,17 @@ class LootService(
         }
     }
 
-    fun generateShop(): Shop {
+    fun generateShop(currentShop: Shop = Shop()): Shop {
+        currentlyGeneratedRelics -= currentShop.relics.keys.map(Relic::definition).toSet()
         val shop = Shop()
-        repeat(5) { shop.relics += generateShopItem { generateRelic() } }
-        repeat(5) { shop.consumables += generateShopItem { generateConsumable() } }
-        repeat(5) { shop.cores += generateShopItem { generateCore() } }
+        repeat(SHOP_ITEMS) {
+            generateRelic()?.also { relic ->
+                shop.relics += generateShopItem { relic }
+                currentlyGeneratedRelics += relic.definition
+            }
+        }
+        repeat(SHOP_ITEMS) { shop.consumables += generateShopItem { generateConsumable() } }
+        repeat(SHOP_ITEMS) { shop.cores += generateShopItem { generateCore() } }
         return shop
     }
 
@@ -71,16 +83,32 @@ class LootService(
         randomizer.randomize {
             when (lootTable.random(it)) {
                 LootType.GOLD -> generateGold()
-                LootType.RELIC -> lootPool.items += generateRelic()
+                LootType.RELIC -> generateRelic()?.also { relic ->
+                    lootPool.items += relic
+                    currentlyGeneratedRelics += relic.definition
+                }
                 LootType.CONSUMABLE -> lootPool.items += generateConsumable()
                 LootType.CORE -> lootPool.items += generateCore()
             }
         }
     }
 
-    private fun generateRelic(): Relic {
+    private fun generateRelic(): Relic? {
         logger.info { "Generating relic" }
-        return Relic(generateRarity())
+        val rarity = generateRarity()
+        val possibleRelics = availableRelics[rarity]!!.filter { !currentlyGeneratedRelics.contains(it) }
+        if (possibleRelics.isEmpty()) {
+            logger.info { "Could not generate relic, all relics have been generated" }
+            return null
+        }
+
+        val definition = possibleRelics.random()
+        val relic = Relic(rarity, definition)
+        relic.effect = dynamicInject(
+            relic.definition.effect.effectClass,
+            dynamicInjectCheckInterfaceContains(RelicEffectDefinition::class.java) to definition.effect
+        )
+        return relic
     }
 
     private fun generateConsumable(): Consumable {
@@ -90,7 +118,7 @@ class LootService(
         val consumable = Consumable(rarity, definition)
         consumable.action = dynamicInject(
             consumable.definition.action.actionClass,
-            { c: Class<*> -> c.interfaces.contains(ConsumableActionDefinition::class.java) } to definition.action
+            dynamicInjectCheckInterfaceContains(ConsumableActionDefinition::class.java) to definition.action
         )
         return consumable
     }
@@ -143,6 +171,11 @@ class LootService(
             roll >= 50 -> Rarity.UNCOMMON
             else -> Rarity.COMMON
         }
+    }
+
+    fun clearRemainingLootPool() {
+        currentlyGeneratedRelics -= lootPool.items.filterIsInstance<Relic>().map(Relic::definition).toSet()
+        lootPool.clear()
     }
 
     private val Rarity.numCoreAttrs: Int get() = when (this) {

@@ -26,3 +26,5 @@ fun <Type : Any> dynamicInject(clazz: KClass<out Type>, vararg additionalInjects
 
     return constructor.newInstance(*parameters) as Type
 }
+
+fun dynamicInjectCheckInterfaceContains(clazz: Class<*>) = { c: Class<*> -> c.interfaces.contains(clazz) }
