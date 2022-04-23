@@ -19,7 +19,7 @@ fun ClosedRange<Float>.random(rng: Random) = rng.nextFloat() * (endInclusive - s
 
 fun Float.displayInt() = roundToInt().toString()
 fun Float.displayDecimal(decimals: Int = 2) = "%.${decimals}f".format(this)
-fun Float.displayMultiplier() = "${displayDecimal()}x"
+fun Float.displayMultiplier(decimals: Int = 2) = "${displayDecimal(decimals)}x"
 fun Float.displayPercent(decimals: Int = 1) = "${displayDecimal(decimals)}%"
 
 fun Float.clamp(min: Float? = null, max: Float? = null) = when {

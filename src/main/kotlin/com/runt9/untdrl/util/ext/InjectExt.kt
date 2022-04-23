@@ -28,3 +28,4 @@ fun <Type : Any> dynamicInject(clazz: KClass<out Type>, vararg additionalInjects
 }
 
 fun dynamicInjectCheckInterfaceContains(clazz: Class<*>) = { c: Class<*> -> c.interfaces.contains(clazz) }
+fun dynamicInjectCheckAssignableFrom(clazz: Class<*>) = { c: Class<*> -> c.isAssignableFrom(clazz) }

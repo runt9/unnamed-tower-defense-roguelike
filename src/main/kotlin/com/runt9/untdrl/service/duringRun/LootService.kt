@@ -15,10 +15,12 @@ import com.runt9.untdrl.model.loot.definition.ConsumableActionDefinition
 import com.runt9.untdrl.model.loot.definition.RelicDefinition
 import com.runt9.untdrl.model.loot.definition.RelicEffectDefinition
 import com.runt9.untdrl.model.loot.definition.availableConsumables
+import com.runt9.untdrl.model.loot.definition.availableLegendaryPassives
 import com.runt9.untdrl.model.loot.definition.availableRelics
 import com.runt9.untdrl.service.RandomizerService
 import com.runt9.untdrl.util.ext.dynamicInject
 import com.runt9.untdrl.util.ext.dynamicInjectCheckInterfaceContains
+import com.runt9.untdrl.util.ext.generateWeightedList
 import com.runt9.untdrl.util.ext.unTdRlLogger
 import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.util.framework.event.HandlesEvent
@@ -36,13 +38,21 @@ class LootService(
     private val lootWeights = mapOf(
         LootType.GOLD to 90,
         LootType.CONSUMABLE to 5,
-        LootType.CORE to 4,
-        LootType.RELIC to 100
+        LootType.CORE to 400,
+        LootType.RELIC to 1
     )
 
-    private val lootTable = generateLootTable()
+    private val rarityWeights = mapOf(
+        Rarity.COMMON to 50,
+        Rarity.UNCOMMON to 30,
+        Rarity.RARE to 15,
+        Rarity.LEGENDARY to 500
+    )
+
+    private val rarityTable = generateWeightedList(rarityWeights)
+    private val lootTable = generateWeightedList(lootWeights)
     val lootPool = LootPool()
-    val currentlyGeneratedRelics = mutableListOf<RelicDefinition>()
+    private val currentlyGeneratedRelics = mutableListOf<RelicDefinition>()
 
     override fun startInternal() {
         runStateService.update {
@@ -138,22 +148,9 @@ class LootService(
             generatedSoFar += type
         }
 
-        // TODO: Legendary passives
-//        val passive = if (rarity == Rarity.LEGENDARY) passiveService.randomPassive(rarity) else null
+        val passive = if (rarity == Rarity.LEGENDARY) availableLegendaryPassives.random(randomizer.rng) else null
 
-        val core = TowerCore(rarity, modifiers)
-        logger.info { "Generated core:\n${core.description}" }
-        return core
-    }
-
-    private fun generateLootTable(): List<LootType> {
-        val lootTable = mutableListOf<LootType>()
-
-        lootWeights.forEach { (type, weight) ->
-            repeat(weight) { lootTable.add(type) }
-        }
-
-        return lootTable.toList()
+        return TowerCore(rarity, modifiers, passive)
     }
 
     private fun generateGold() {
@@ -162,16 +159,7 @@ class LootService(
         lootPool.gold += wave
     }
 
-    private fun generateRarity(): Rarity {
-        val roll = randomizer.rng.nextInt(0, 100)
-
-        return when {
-            roll >= 95 -> Rarity.LEGENDARY
-            roll >= 80 -> Rarity.RARE
-            roll >= 50 -> Rarity.UNCOMMON
-            else -> Rarity.COMMON
-        }
-    }
+    private fun generateRarity() = rarityTable.random(randomizer.rng)
 
     fun clearRemainingLootPool() {
         currentlyGeneratedRelics -= lootPool.items.filterIsInstance<Relic>().map(Relic::definition).toSet()

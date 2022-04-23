@@ -21,7 +21,7 @@ fun <S> KWidget<S>.lootItem(item: LootItem, init: KVisTable.() -> Unit = {}) = v
 
         separator(2f)
 
-        visLabel(item.description) { wrap = true }.cell(growX = true, row = true, pad = 5f)
+        visLabel(item.description) { wrap = true }.cell(growX = true, row = true, pad = 5f, minWidth = 300f)
     }
     init()
 }

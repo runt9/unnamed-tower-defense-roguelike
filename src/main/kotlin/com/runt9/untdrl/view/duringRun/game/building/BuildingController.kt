@@ -62,6 +62,7 @@ class BuildingController(private val eventBus: EventBus, private val buildingSer
 
             input.removeProcessor(this)
             eventBus.enqueueEventSync(BuildingPlacedEvent(vm.building))
+            vm.isSelected(false)
             return@InputMover true
         }) {
             input.removeProcessor(this)

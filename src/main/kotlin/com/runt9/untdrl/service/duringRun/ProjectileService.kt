@@ -4,9 +4,9 @@ import com.badlogic.gdx.ai.steer.SteeringAcceleration
 import com.badlogic.gdx.math.Vector2
 import com.runt9.untdrl.model.building.Building
 import com.runt9.untdrl.model.building.Projectile
-import com.runt9.untdrl.model.building.critChance
-import com.runt9.untdrl.model.building.critMulti
-import com.runt9.untdrl.model.building.damage
+import com.runt9.untdrl.model.building.intercept.DamageRequest
+import com.runt9.untdrl.model.building.intercept.DamageResult
+import com.runt9.untdrl.model.building.intercept.InterceptorHook
 import com.runt9.untdrl.model.enemy.Enemy
 import com.runt9.untdrl.model.event.EnemyRemovedEvent
 import com.runt9.untdrl.model.event.WaveCompleteEvent
@@ -72,18 +72,24 @@ class ProjectileService(
         }
     }
 
+    // TODO: Move these somewhere else, they're not projectile-specific
     private fun calculateDamage(building: Building, enemy: Enemy) {
-        val baseDamage = rollForDamage(building)
-        val totalDamage = building.damageTypes.map { dt -> (baseDamage * dt.pctOfBase) / (enemy.getResistance(dt.type, dt.penetration)) }.sum()
+        val damageRequest = DamageRequest(building)
+        building.intercept(InterceptorHook.BEFORE_DAMAGE, damageRequest)
+        logger.info { "Final Damage Request: $damageRequest" }
+        val damageResult = rollForDamage(damageRequest)
+        building.intercept(InterceptorHook.AFTER_DAMAGE, damageResult)
+        logger.info { "Final Damage Result: $damageResult" }
+        val totalDamage = building.damageTypes.map { dt -> (damageResult.totalDamage * dt.pctOfBase) / (enemy.getResistance(dt.type, dt.penetration)) }.sum()
         enemy.takeDamage(building, totalDamage)
     }
 
-    private fun rollForDamage(building: Building): Float {
-        val roll = randomizer.rng.nextInt(0, 100)
-        val isCrit = roll / 100f <= building.critChance
+    private fun rollForDamage(request: DamageRequest): DamageResult {
+        val isCrit = randomizer.percentChance(request.totalCritChance)
         var damageMulti = randomizer.rng.nextInt(90, 111).toFloat() / 100f
-        if (isCrit) damageMulti *= building.critMulti
-        return building.damage * damageMulti
+        if (isCrit) damageMulti *= request.totalCritMulti
+        damageMulti *= request.totalDamageMulti
+        return DamageResult(request.totalBaseDamage, damageMulti)
     }
 
     private suspend fun despawnProjectile(proj: Projectile) {

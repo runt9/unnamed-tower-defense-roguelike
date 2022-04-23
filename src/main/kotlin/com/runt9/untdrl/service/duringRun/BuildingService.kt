@@ -10,9 +10,11 @@ import com.runt9.untdrl.model.building.definition.BuildingDefinition
 import com.runt9.untdrl.model.building.upgrade.BuildingUpgrade
 import com.runt9.untdrl.model.event.BuildingPlacedEvent
 import com.runt9.untdrl.model.loot.TowerCore
+import com.runt9.untdrl.model.loot.definition.LegendaryPassiveEffectDefinition
 import com.runt9.untdrl.service.RandomizerService
 import com.runt9.untdrl.service.buildingAction.BuildingAction
 import com.runt9.untdrl.util.ext.dynamicInject
+import com.runt9.untdrl.util.ext.dynamicInjectCheckAssignableFrom
 import com.runt9.untdrl.util.ext.dynamicInjectCheckInterfaceContains
 import com.runt9.untdrl.util.ext.unTdRlLogger
 import com.runt9.untdrl.util.framework.event.EventBus
@@ -68,7 +70,7 @@ class BuildingService(
         val action = dynamicInject(
             building.definition.action.actionClass,
             dynamicInjectCheckInterfaceContains(BuildingActionDefinition::class.java) to building.definition.action,
-            { c: Class<*> -> c.isAssignableFrom(Building::class.java) } to building
+            dynamicInjectCheckAssignableFrom(Building::class.java) to building
         )
         action.init()
         return action
@@ -150,6 +152,15 @@ class BuildingService(
         withBuilding(id) {
             cores += core
             attrMods += core.modifiers
+            if (core.passive != null) {
+                val passiveEffect = dynamicInject(
+                    core.passive.effect.effectClass,
+                    dynamicInjectCheckInterfaceContains(LegendaryPassiveEffectDefinition::class.java) to core.passive.effect,
+                    dynamicInjectCheckAssignableFrom(Building::class.java) to this
+                )
+                passiveEffect.init()
+                passiveEffect.apply()
+            }
             recalculateAttrs(this)
         }
     }

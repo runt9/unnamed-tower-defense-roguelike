@@ -6,6 +6,9 @@ import com.runt9.untdrl.model.attribute.Attribute
 import com.runt9.untdrl.model.attribute.AttributeModifier
 import com.runt9.untdrl.model.attribute.AttributeType
 import com.runt9.untdrl.model.building.definition.BuildingDefinition
+import com.runt9.untdrl.model.building.intercept.BuildingInteraction
+import com.runt9.untdrl.model.building.intercept.BuildingInterceptor
+import com.runt9.untdrl.model.building.intercept.InterceptorHook
 import com.runt9.untdrl.model.building.upgrade.BuildingUpgrade
 import com.runt9.untdrl.model.damage.DamageMap
 import com.runt9.untdrl.model.loot.TowerCore
@@ -46,10 +49,21 @@ class Building(val definition: BuildingDefinition, val texture: Texture) : BaseS
 
     val localXpModifiers = mutableListOf<Float>()
 
+    private val interceptors = mutableMapOf<InterceptorHook, MutableList<BuildingInterceptor<BuildingInteraction>>>()
+
     private fun copyDefinitionDamageTypes() = definition.damageTypes.map { DamageMap(it.type, it.pctOfBase, it.penetration) }
 
     fun onChange(onChangeCb: suspend Building.() -> Unit) {
         this.onChangeCb = onChangeCb
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    fun addInterceptor(interceptor: BuildingInterceptor<out BuildingInteraction>) {
+        interceptors.computeIfAbsent(interceptor.hook) { mutableListOf() } += interceptor as BuildingInterceptor<BuildingInteraction>
+    }
+
+    fun intercept(hook: InterceptorHook, interaction: BuildingInteraction) {
+        interceptors[hook]?.forEach { it.intercept(this, interaction) }
     }
 }
 

@@ -7,6 +7,8 @@ import com.runt9.untdrl.model.building.Building
 import com.runt9.untdrl.model.building.Projectile
 import com.runt9.untdrl.model.building.action.ProjectileAttackActionDefinition
 import com.runt9.untdrl.model.building.attackSpeed
+import com.runt9.untdrl.model.building.intercept.InterceptorHook
+import com.runt9.untdrl.model.building.intercept.OnAttack
 import com.runt9.untdrl.model.building.range
 import com.runt9.untdrl.model.enemy.Enemy
 import com.runt9.untdrl.model.event.ProjectileSpawnedEvent
@@ -59,6 +61,7 @@ class ProjectileAttackAction(
         if (attackTimer.isReady && steeringOutput.isZero) {
             attackTimer.reset(false)
             spawnProjectile()
+            building.intercept(InterceptorHook.ON_ATTACK, OnAttack(building))
         }
     }
 
