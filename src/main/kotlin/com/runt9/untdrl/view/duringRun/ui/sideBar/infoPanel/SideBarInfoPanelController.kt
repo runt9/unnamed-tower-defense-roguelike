@@ -36,6 +36,7 @@ class SideBarInfoPanelController(private val eventBus: EventBus, private val run
     suspend fun runStateUpdated(event: RunStateUpdated) = onRenderingThread { event.newState.applyNewState() }
 
     private fun RunState.applyNewState() {
+        vm.maxHp(maxHp)
         vm.hp(hp)
         vm.gold(gold)
         vm.research(researchAmount)

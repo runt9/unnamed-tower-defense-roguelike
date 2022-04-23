@@ -3,6 +3,7 @@ package com.runt9.untdrl.model.loot
 import com.badlogic.gdx.graphics.Color
 
 sealed interface LootItem {
+    val name: String
     val type: LootItemType
     val rarity: Rarity
     val description: String

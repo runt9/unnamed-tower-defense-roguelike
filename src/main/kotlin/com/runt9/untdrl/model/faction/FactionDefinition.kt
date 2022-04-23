@@ -8,6 +8,7 @@ import com.runt9.untdrl.model.building.definition.researchLab
 interface FactionDefinition {
     val id: Int
     val name: String
+    val maxHp: Int
     val goldBuildings: List<BuildingDefinition>
     val researchBuildings: List<BuildingDefinition>
     val startingTowers: List<BuildingDefinition>
@@ -34,6 +35,7 @@ interface FactionDefinition {
 fun faction(
     id: Int,
     name: String,
+    maxHp: Int,
     init: FactionDefinition.Builder.() -> Unit
 ): FactionDefinition {
     val builder = FactionDefinition.Builder()
@@ -42,13 +44,14 @@ fun faction(
     return object : FactionDefinition {
         override val id = id
         override val name = name
+        override val maxHp = maxHp
         override val goldBuildings = builder.goldBuildings
         override val researchBuildings = builder.researchBuildings
         override val startingTowers = builder.startingTowers
     }
 }
 
-val baseFaction = faction(1, "Default") {
+val baseFaction = faction(1, "Default", 25) {
     goldBuildings(goldMine)
     researchBuildings(researchLab)
     startingTowers(prototypeTower)

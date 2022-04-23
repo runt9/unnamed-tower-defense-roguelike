@@ -16,7 +16,8 @@ import kotlin.random.Random
 data class RunState(
     val seed: String = Random.randomString(8),
     val faction: FactionDefinition,
-    var hp: Int = 25,
+    var maxHp: Int = faction.maxHp,
+    var hp: Int = faction.maxHp,
     var gold: Int = 100,
     var shopRerollCost: Int = REROLL_COST,
     var researchRerollCost: Int = REROLL_COST,

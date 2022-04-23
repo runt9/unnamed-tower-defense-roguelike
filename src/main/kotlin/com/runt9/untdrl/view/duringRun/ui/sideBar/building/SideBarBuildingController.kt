@@ -62,13 +62,11 @@ class SideBarBuildingController(
         vm.coreInventoryShown(false)
     }
 
-    fun placeCore(core: TowerCore) {
+    fun placeCore(core: TowerCore) = launchOnRenderingThread {
         runStateService.update {
             cores -= core
         }
-        KtxAsync.launch(MainDispatcher) {
-            buildingService.addCore(vm.id.get(), core)
-        }
+        buildingService.addCore(vm.id.get(), core)
         closeCoreInventory()
     }
 

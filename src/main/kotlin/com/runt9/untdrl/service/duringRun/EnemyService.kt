@@ -19,14 +19,14 @@ class EnemyService(private val grid: IndexedGridGraph, private val eventBus: Eve
     private var isSpawning = false
 
     @HandlesEvent
-    fun add(event: EnemySpawnedEvent) = runOnServiceThread {
+    fun add(event: EnemySpawnedEvent) = launchOnServiceThread {
         // TODO: Make sure this works and there's no weird race condition. Might want to use start wave event instead
         isSpawning = true
         enemies += event.enemy
     }
 
     @HandlesEvent
-    suspend fun remove(event: EnemyRemovedEvent) = runOnServiceThread {
+    suspend fun remove(event: EnemyRemovedEvent) = launchOnServiceThread {
         enemies -= event.enemy
 
         if (!isSpawning && enemies.isEmpty()) {
@@ -40,7 +40,7 @@ class EnemyService(private val grid: IndexedGridGraph, private val eventBus: Eve
     }
 
     override fun tick(delta: Float) {
-        runOnServiceThread {
+        launchOnServiceThread {
             enemies.toList().filter { it.isAlive }.forEach { enemy ->
                 val steeringOutput = SteeringAcceleration(Vector2())
                 enemy.behavior.calculateSteering(steeringOutput)

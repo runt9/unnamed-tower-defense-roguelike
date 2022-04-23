@@ -4,6 +4,7 @@ import com.badlogic.gdx.utils.Disposable
 import com.runt9.untdrl.util.framework.event.EventBus
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import ktx.async.KtxAsync
 import ktx.async.newSingleThreadAsyncContext
 
@@ -25,7 +26,8 @@ abstract class RunService(private val eventBus: EventBus, registry: RunServiceRe
         stopInternal()
     }
 
-    fun runOnServiceThread(block: suspend CoroutineScope.() -> Unit) = KtxAsync.launch(serviceContext, block = block)
+    fun launchOnServiceThread(block: suspend CoroutineScope.() -> Unit) = KtxAsync.launch(serviceContext, block = block)
+    suspend fun onServiceThread(block: suspend CoroutineScope.() -> Unit) = withContext(serviceContext, block = block)
 
     protected open fun startInternal() = Unit
     protected open fun stopInternal() = Unit

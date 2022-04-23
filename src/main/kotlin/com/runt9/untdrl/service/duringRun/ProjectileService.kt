@@ -25,18 +25,18 @@ class ProjectileService(
     private val logger = unTdRlLogger()
     private val projectiles = mutableListOf<Projectile>()
 
-    fun add(projectile: Projectile) = runOnServiceThread {
+    fun add(projectile: Projectile) = launchOnServiceThread {
         projectiles += projectile
     }
 
     @HandlesEvent(WaveCompleteEvent::class)
-    fun waveComplete() = runOnServiceThread {
+    fun waveComplete() = launchOnServiceThread {
         projectiles.forEach { it.die() }
         projectiles.clear()
     }
 
     override fun tick(delta: Float) {
-        runOnServiceThread {
+        launchOnServiceThread {
             projectiles.toList().forEach { projectile ->
                 // Projectiles move towards their target, but if they collide with another enemy first, they'll damage that enemy instead
                 val collidedEnemy = enemyService.collidesWithEnemy(projectile.position, 0.1f)

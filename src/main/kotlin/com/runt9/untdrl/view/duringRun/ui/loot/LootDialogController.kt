@@ -1,10 +1,10 @@
 package com.runt9.untdrl.view.duringRun.ui.loot
 
 import com.badlogic.gdx.Graphics
-import com.runt9.untdrl.model.loot.TowerCore
 import com.runt9.untdrl.model.loot.Consumable
 import com.runt9.untdrl.model.loot.LootItem
 import com.runt9.untdrl.model.loot.Relic
+import com.runt9.untdrl.model.loot.TowerCore
 import com.runt9.untdrl.service.duringRun.LootService
 import com.runt9.untdrl.service.duringRun.RunStateService
 import com.runt9.untdrl.util.framework.event.EventBus

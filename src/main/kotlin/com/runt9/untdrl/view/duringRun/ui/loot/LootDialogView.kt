@@ -18,7 +18,6 @@ import ktx.scene2d.vis.flowGroup
 import ktx.scene2d.vis.visLabel
 import ktx.scene2d.vis.visScrollPane
 import ktx.scene2d.vis.visTable
-import ktx.scene2d.vis.visTextTooltip
 
 class LootDialogView(
     override val controller: LootDialogController,
@@ -87,9 +86,7 @@ class LootDialogView(
                                 squarePixmap(60, Color.LIGHT_GRAY)
 
                                 vm.selectedItems.get().getOrNull(i)?.also { item ->
-                                    visTable {
-                                        squarePixmap(55, item.type.color)
-
+                                    lootItem(item) {
                                         onClick {
                                             controller.deselectItem(item)
                                         }

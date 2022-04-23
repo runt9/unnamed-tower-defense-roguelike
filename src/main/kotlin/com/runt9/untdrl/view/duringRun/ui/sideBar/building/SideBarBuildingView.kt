@@ -201,5 +201,5 @@ fun Actor.upgradeTooltip(upgrade: BuildingUpgrade) = tooltip {
 
     visLabel(upgrade.description) {
         wrap = true
-    }.cell(growX = true, row = true, pad = 5f, minWidth = 50f)
+    }.cell(growX = true, row = true, pad = 5f, minWidth = 250f)
 }

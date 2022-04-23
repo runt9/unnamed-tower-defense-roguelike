@@ -30,10 +30,7 @@ import com.runt9.untdrl.view.duringRun.game.building.BuildingViewModel
 import com.runt9.untdrl.view.duringRun.game.chunk.ChunkViewModel
 import com.runt9.untdrl.view.duringRun.game.enemy.EnemyViewModel
 import com.runt9.untdrl.view.duringRun.game.projectile.ProjectileViewModel
-import kotlinx.coroutines.launch
 import ktx.assets.async.AssetStorage
-import ktx.async.KtxAsync
-import ktx.async.MainDispatcher
 import ktx.async.onRenderingThread
 
 // TODO: Can probably break this into multiple controllers: enemies, buildings, projectiles, all floating groups
@@ -71,9 +68,9 @@ class DuringRunGameController(
     }
 
     private fun placeGoldAndResearchBuildings() {
-        val addBuilding = { def: BuildingDefinition, point: Vector2 ->
+        val addBuilding: suspend (BuildingDefinition, Vector2) -> Unit = { def: BuildingDefinition, point: Vector2 ->
             val building = Building(def, assets[def.texture.assetFile])
-            KtxAsync.launch(MainDispatcher) { buildingService.recalculateAttrs(building) }
+            buildingService.recalculateAttrs(building)
             building.action = buildingService.injectBuildingAction(building)
             building.position.set(point)
 
@@ -86,8 +83,10 @@ class DuringRunGameController(
         val emptyTiles = grid.emptyTiles().map { it.point }.shuffled(randomizer.rng).take(2)
         runStateService.load().apply {
             // TODO: Future: Allow player to select one of multiple instead of hard coded
-            addBuilding(faction.goldBuildings[0], emptyTiles[0])
-            addBuilding(faction.researchBuildings[0], emptyTiles[1])
+            launchOnRenderingThread {
+                addBuilding(faction.goldBuildings[0], emptyTiles[0])
+                addBuilding(faction.researchBuildings[0], emptyTiles[1])
+            }
         }
     }
 

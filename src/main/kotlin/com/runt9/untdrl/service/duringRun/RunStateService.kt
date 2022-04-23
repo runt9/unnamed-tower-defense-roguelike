@@ -15,9 +15,10 @@ class RunStateService(private val eventBus: EventBus, registry: RunServiceRegist
     private val logger = unTdRlLogger()
     private lateinit var runState: RunState
 
+    // TODO: This should probably jump into the service thread to load
     fun load() = runState.copy()
 
-    fun save(runState: RunState) = runOnServiceThread {
+    suspend fun save(runState: RunState) = onServiceThread {
         if (!this@RunStateService::runState.isInitialized || runState != this@RunStateService.runState) {
             logger.info { "Saving run state" }
             this@RunStateService.runState = runState
@@ -27,7 +28,7 @@ class RunStateService(private val eventBus: EventBus, registry: RunServiceRegist
     }
 
     @HandlesEvent(WaveCompleteEvent::class)
-    fun waveComplete() = runOnServiceThread {
+    fun waveComplete() = launchOnServiceThread {
         update { wave++ }
 
         // TODO: Maybe not the right way to handle this, will figure out later
@@ -35,8 +36,8 @@ class RunStateService(private val eventBus: EventBus, registry: RunServiceRegist
     }
 
     @HandlesEvent
-    fun enemyRemoved(event: EnemyRemovedEvent) = runOnServiceThread {
-        if (event.wasKilled) return@runOnServiceThread
+    fun enemyRemoved(event: EnemyRemovedEvent) = launchOnServiceThread {
+        if (event.wasKilled) return@launchOnServiceThread
 
         // TODO: This is where enemy damage goes if enemies can have different damage values. Boss probably does, for example
         update {
@@ -54,7 +55,7 @@ class RunStateService(private val eventBus: EventBus, registry: RunServiceRegist
         }
     }
 
-    fun update(update: RunState.() -> Unit) {
+    fun update(update: RunState.() -> Unit) = launchOnServiceThread {
         load().apply {
             update()
             save(this)

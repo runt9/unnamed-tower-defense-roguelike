@@ -8,6 +8,7 @@ import com.runt9.untdrl.util.ext.removeIf
 import com.runt9.untdrl.util.ext.unTdRlLogger
 import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.view.duringRun.REROLL_COST
+import kotlinx.coroutines.runBlocking
 
 class ResearchService(
     eventBus: EventBus,

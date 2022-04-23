@@ -27,7 +27,7 @@ class SpawnerService(
     private val spawners = mutableListOf<Spawner>()
 
     @HandlesEvent
-    fun addSpawner(event: SpawnerPlacedEvent) = runOnServiceThread {
+    fun addSpawner(event: SpawnerPlacedEvent) = launchOnServiceThread {
         val chunk = event.chunk
         val spawner = Spawner(event.node, assets[UnitTexture.ENEMY.assetFile], chunk.biome)
         grid.calculateSpawnerPath(spawner)
@@ -37,12 +37,12 @@ class SpawnerService(
     }
 
     @HandlesEvent(WaveStartedEvent::class)
-    fun startSpawning() = runOnServiceThread {
+    fun startSpawning() = launchOnServiceThread {
         isSpawning = true
     }
 
     @HandlesEvent(PrepareNextWaveEvent::class)
-    fun prepNextWave() = runOnServiceThread {  spawners.forEach(::recalculateSpawner) }
+    fun prepNextWave() = launchOnServiceThread {  spawners.forEach(::recalculateSpawner) }
 
     private fun recalculateSpawner(spawner: Spawner) {
         val waveNum = runStateService.load().wave
@@ -53,8 +53,8 @@ class SpawnerService(
     }
 
     override fun tick(delta: Float) {
-        runOnServiceThread {
-            if (!isSpawning) return@runOnServiceThread
+        launchOnServiceThread {
+            if (!isSpawning) return@launchOnServiceThread
 
             val runState = runStateService.load()
             var checkedSpawn = false

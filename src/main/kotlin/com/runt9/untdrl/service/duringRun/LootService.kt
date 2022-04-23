@@ -11,7 +11,10 @@ import com.runt9.untdrl.model.loot.Rarity
 import com.runt9.untdrl.model.loot.Relic
 import com.runt9.untdrl.model.loot.Shop
 import com.runt9.untdrl.model.loot.TowerCore
+import com.runt9.untdrl.model.loot.definition.ConsumableActionDefinition
+import com.runt9.untdrl.model.loot.definition.availableConsumables
 import com.runt9.untdrl.service.RandomizerService
+import com.runt9.untdrl.util.ext.dynamicInject
 import com.runt9.untdrl.util.ext.unTdRlLogger
 import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.util.framework.event.HandlesEvent
@@ -27,8 +30,8 @@ class LootService(
 
     private val lootWeights = mapOf(
         LootType.GOLD to 90,
-        LootType.CONSUMABLE to 5,
-        LootType.CORE to 400,
+        LootType.CONSUMABLE to 500,
+        LootType.CORE to 4,
         LootType.RELIC to 1
     )
 
@@ -57,14 +60,14 @@ class LootService(
     }
 
     @HandlesEvent
-    fun enemyKilled(event: EnemyRemovedEvent) = runOnServiceThread {
+    fun enemyKilled(event: EnemyRemovedEvent) = launchOnServiceThread {
         logger.info { "Enemy removed event" }
-        if (!event.wasKilled) return@runOnServiceThread
+        if (!event.wasKilled) return@launchOnServiceThread
 
         generateLoot()
     }
 
-    private fun generateLoot() = runOnServiceThread {
+    private fun generateLoot() = launchOnServiceThread {
         randomizer.randomize {
             when (lootTable.random(it)) {
                 LootType.GOLD -> generateGold()
@@ -82,7 +85,14 @@ class LootService(
 
     private fun generateConsumable(): Consumable {
         logger.info { "Generating consumable" }
-        return Consumable(generateRarity())
+        val rarity = generateRarity()
+        val definition = availableConsumables[rarity]!!.random()
+        val consumable = Consumable(rarity, definition)
+        consumable.action = dynamicInject(
+            consumable.definition.action.actionClass,
+            { c: Class<*> -> c.interfaces.contains(ConsumableActionDefinition::class.java) } to definition.action
+        )
+        return consumable
     }
 
     private fun generateCore(): TowerCore {

@@ -22,7 +22,7 @@ class SideBarInfoPanelView(override val controller: SideBarInfoPanelController, 
 
             visTable {
                 visLabel("") { bindLabelText { "Wave: ${vm.wave()}" } }.cell(row = true, pad = 2f, align = Align.left)
-                visLabel("") { bindLabelText { "HP: ${vm.hp()}" } }.cell(row = true, pad = 2f, align = Align.left)
+                visLabel("") { bindLabelText { "HP: ${vm.hp()} / ${vm.maxHp()}" } }.cell(row = true, pad = 2f, align = Align.left)
                 visLabel("") { bindLabelText { "Gold: ${vm.gold()}" } }.cell(row = true, pad = 2f, align = Align.left)
                 visLabel("") { bindLabelText { "Research: ${vm.research()}" } }.cell(row = true, pad = 2f, align = Align.left)
             }.cell(expandX = true, row = true, pad = 5f, align = Align.left)

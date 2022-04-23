@@ -1,7 +1,6 @@
 package com.runt9.untdrl.service.duringRun
 
 import com.badlogic.gdx.math.Vector2
-import com.runt9.untdrl.config.Injector
 import com.runt9.untdrl.model.attribute.AttributeModificationType.FLAT
 import com.runt9.untdrl.model.attribute.AttributeModificationType.PERCENT
 import com.runt9.untdrl.model.attribute.AttributeModifier
@@ -13,12 +12,12 @@ import com.runt9.untdrl.model.event.BuildingPlacedEvent
 import com.runt9.untdrl.model.loot.TowerCore
 import com.runt9.untdrl.service.RandomizerService
 import com.runt9.untdrl.service.buildingAction.BuildingAction
+import com.runt9.untdrl.util.ext.dynamicInject
 import com.runt9.untdrl.util.ext.unTdRlLogger
 import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.util.framework.event.HandlesEvent
 import com.runt9.untdrl.view.duringRun.MAX_BUILDING_LEVEL
 import ktx.assets.async.AssetStorage
-import ktx.reflect.reflect
 import kotlin.math.roundToInt
 
 class BuildingService(
@@ -31,13 +30,14 @@ class BuildingService(
     private val buildings = mutableListOf<Building>()
     private val buildingChangeCbs = mutableMapOf<Int, MutableList<suspend (Building) -> Unit>>()
 
-    fun add(building: Building) = runOnServiceThread {
+    fun add(building: Building) = launchOnServiceThread {
         buildings += building
     }
 
     @HandlesEvent
     fun add(event: BuildingPlacedEvent) = add(event.building)
 
+    // TODO: Selling buildings
     fun remove(building: Building) {
         buildings -= building
     }
@@ -51,7 +51,7 @@ class BuildingService(
     }
 
     override fun tick(delta: Float) {
-        runOnServiceThread {
+        launchOnServiceThread {
             buildings.toList().forEach { building ->
                 building.action.act(delta)
             }
@@ -59,16 +59,11 @@ class BuildingService(
     }
 
     fun injectBuildingAction(building: Building): BuildingAction {
-        val definition = building.definition.action
-        val constructor = reflect(definition.actionClass).constructor
-        val parameters = constructor.parameterTypes.map {
-            return@map when {
-                it.interfaces.contains(BuildingActionDefinition::class.java) -> definition
-                it.isAssignableFrom(Building::class.java) -> building
-                else -> Injector.getProvider(it).invoke()
-            }
-        }.toTypedArray()
-        val action = constructor.newInstance(*parameters) as BuildingAction
+        val action = dynamicInject(
+            building.definition.action.actionClass,
+            { c: Class<*> -> c.interfaces.contains(BuildingActionDefinition::class.java) } to building.definition.action,
+            { c: Class<*> -> c.isAssignableFrom(Building::class.java) } to building
+        )
         action.init()
         return action
     }
@@ -143,7 +138,7 @@ class BuildingService(
         building.changed()
     }
 
-    suspend fun addCore(id: Int, core: TowerCore) = runOnServiceThread {
+    suspend fun addCore(id: Int, core: TowerCore) = launchOnServiceThread {
         withBuilding(id) {
             cores += core
             attrMods += core.modifiers
