@@ -42,7 +42,7 @@ class SpawnerService(
     }
 
     @HandlesEvent(PrepareNextWaveEvent::class)
-    fun prepNextWave() = launchOnServiceThread {  spawners.forEach(::recalculateSpawner) }
+    fun prepNextWave() = launchOnServiceThread { spawners.forEach(::recalculateSpawner) }
 
     private fun recalculateSpawner(spawner: Spawner) {
         val waveNum = runStateService.load().wave

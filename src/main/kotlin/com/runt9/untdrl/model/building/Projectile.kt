@@ -11,7 +11,7 @@ import com.runt9.untdrl.util.ext.toVector
 
 private var idCounter = 0
 
-class Projectile(val owner: Building, val texture: Texture, val target: Enemy, pierce: Int) : BaseSteerable(owner.position, owner.rotation) {
+class Projectile(val owner: Building, val texture: Texture, pierce: Int) : BaseSteerable(owner.position, owner.rotation) {
     val id = idCounter++
     override val linearSpeedLimit = 10f
     override val linearAccelerationLimit = maxLinearSpeed * 100f

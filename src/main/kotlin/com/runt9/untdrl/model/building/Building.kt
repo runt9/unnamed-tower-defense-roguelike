@@ -23,8 +23,8 @@ class Building(val definition: BuildingDefinition, val texture: Texture) : BaseS
 
     override val linearSpeedLimit = 0f
     override val linearAccelerationLimit = 0f
-    override val angularSpeedLimit = 10f
-    override val angularAccelerationLimit = angularSpeedLimit * 100f
+    override val angularSpeedLimit = 8f
+    override val angularAccelerationLimit = angularSpeedLimit * 50f
     override val boundingBoxRadius = 0.5f
 
     private var onChangeCb: (suspend Building.() -> Unit)? = null

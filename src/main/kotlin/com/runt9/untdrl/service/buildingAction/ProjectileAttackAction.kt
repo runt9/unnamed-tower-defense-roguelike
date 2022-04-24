@@ -14,6 +14,7 @@ import com.runt9.untdrl.model.enemy.Enemy
 import com.runt9.untdrl.model.event.ProjectileSpawnedEvent
 import com.runt9.untdrl.model.event.WaveCompleteEvent
 import com.runt9.untdrl.service.duringRun.EnemyService
+import com.runt9.untdrl.util.ext.LocationAdapter
 import com.runt9.untdrl.util.ext.Timer
 import com.runt9.untdrl.util.ext.degRad
 import com.runt9.untdrl.util.ext.unTdRlLogger
@@ -31,8 +32,6 @@ class ProjectileAttackAction(
 ) : BuildingAction {
     private val logger = unTdRlLogger()
     private var target: Enemy? = null
-    // TODO: Add a small bit of prediction, basically take the target, copy into another steerable, push it slightly further along the path, and then
-    //  keep it up-to-date each frame. Buildings then rotate towards that invisible bonus target instead of the enemy itself
 
     private val attackTimer = Timer(building.attackTime)
     private val behavior = Face(building).apply {
@@ -69,14 +68,18 @@ class ProjectileAttackAction(
     }
 
     private fun spawnProjectile(): Projectile {
-        val projectile = Projectile(building, assets[definition.projectileTexture.assetFile], target!!, pierce)
+        val projectile = Projectile(building, assets[definition.projectileTexture.assetFile], pierce)
         eventBus.enqueueEventSync(ProjectileSpawnedEvent(projectile))
         return projectile
     }
 
     private fun setTarget(target: Enemy) {
         this.target = target
-        behavior.target = target
+        // TODO: Replace this with better prediction based off of the PathFollow
+        val predictedTarget = target.position.cpy().mulAdd(target.linearVelocity.cpy(), 0.35f)
+        behavior.target = object : LocationAdapter() {
+            override fun getPosition() = predictedTarget
+        }
     }
 
     @HandlesEvent(WaveCompleteEvent::class)
