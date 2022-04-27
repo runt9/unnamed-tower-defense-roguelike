@@ -6,7 +6,7 @@ import com.badlogic.gdx.ai.steer.behaviors.LookWhereYouAreGoing
 import com.badlogic.gdx.ai.steer.utils.paths.LinePath
 import com.badlogic.gdx.ai.steer.utils.paths.LinePath.LinePathParam
 import com.badlogic.gdx.math.Vector2
-import com.runt9.untdrl.model.building.Building
+import com.runt9.untdrl.model.tower.Tower
 import com.runt9.untdrl.model.enemy.definition.EnemyDefinition
 import com.runt9.untdrl.util.ext.BaseSteerable
 import com.runt9.untdrl.util.ext.degRad
@@ -35,7 +35,7 @@ class Enemy(val definition: EnemyDefinition, wave: Int, initialPosition: Vector2
     val xpOnDeath = wave
     var isAlive = true
 
-    val affectedByBuildings = mutableSetOf<Building>()
+    val affectedByTowers = mutableSetOf<Tower>()
 
     private val fullPath = LinePath(path, true)
     private val followPathBehavior = FollowPath(this, fullPath, 0.1f)
@@ -57,9 +57,9 @@ class Enemy(val definition: EnemyDefinition, wave: Int, initialPosition: Vector2
         this.onHpChangeCb = onHpChangeCb
     }
 
-    fun takeDamage(source: Building, damage: Float) {
+    fun takeDamage(source: Tower, damage: Float) {
         currentHp -= damage
-        affectedByBuildings += source
+        affectedByTowers += source
         onHpChangeCb()
     }
 

@@ -11,16 +11,13 @@ interface ResearchDefinition {
     val dependsOn: List<ResearchDefinition>
     val exclusiveOf: List<ResearchDefinition>
 
-    fun isExclusiveOf(upgrade: ResearchDefinition) = exclusiveOf.contains(upgrade) || upgrade.exclusiveOf.contains(this)
-
     class Builder {
         internal val dependsOn = mutableListOf<ResearchDefinition>()
         internal val exclusiveOf = mutableListOf<ResearchDefinition>()
         internal var description = ""
         lateinit var definition: ResearchEffectDefinition
 
-        fun dependsOn(vararg upgrades: ResearchDefinition) = dependsOn.addAll(upgrades)
-        fun exclusiveOf(vararg upgrades: ResearchDefinition) = exclusiveOf.addAll(upgrades)
+        fun dependsOn(vararg research: ResearchDefinition) = dependsOn.addAll(research)
         operator fun String.unaryPlus() {
             description = this
         }

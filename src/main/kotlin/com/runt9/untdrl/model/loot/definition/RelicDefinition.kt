@@ -12,7 +12,7 @@ interface RelicDefinition {
 val bookOfWonders = object : RelicDefinition {
     override val name = "Book of Wonders"
     override val rarity = Rarity.COMMON
-    override val description = "Buildings gain 25% increased XP"
+    override val description = "Towers gain 25% increased XP"
     override val effect = BonusXpPercentEffectDefinition(0.25f)
 }
 

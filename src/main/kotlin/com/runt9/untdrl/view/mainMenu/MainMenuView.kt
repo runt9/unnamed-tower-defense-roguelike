@@ -10,7 +10,7 @@ class MainMenuView(override val controller: MainMenuScreenController, override v
     override fun init() {
         super.init()
 
-        visLabel("Untitled Building Defense Roguelike", "title").cell(row = true, spaceBottom = 20f)
+        visLabel("Untitled Tower Defense Roguelike", "title").cell(row = true, spaceBottom = 20f)
 
         textButton("New Run", "round") {
             onClick { this@MainMenuView.controller.newRun() }

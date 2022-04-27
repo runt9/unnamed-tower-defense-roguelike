@@ -5,8 +5,8 @@ import com.runt9.untdrl.util.ext.ui.bindUpdatable
 import com.runt9.untdrl.util.ext.ui.bindVisible
 import com.runt9.untdrl.util.ext.ui.separator
 import com.runt9.untdrl.util.framework.ui.view.TableView
-import com.runt9.untdrl.view.duringRun.ui.sideBar.availableBuildings.availableBuildings
-import com.runt9.untdrl.view.duringRun.ui.sideBar.building.sideBarBuilding
+import com.runt9.untdrl.view.duringRun.ui.sideBar.availableTowers.availableTowers
+import com.runt9.untdrl.view.duringRun.ui.sideBar.tower.sideBarTower
 import com.runt9.untdrl.view.duringRun.ui.sideBar.consumables.consumables
 import com.runt9.untdrl.view.duringRun.ui.sideBar.infoPanel.infoPanel
 import ktx.actors.onChange
@@ -22,20 +22,20 @@ class SideBarView(override val controller: SideBarController, override val vm: S
         separator(4f)
 
         visTable {
-            bindUpdatable(vm.selectedBuilding) {
+            bindUpdatable(vm.selectedTower) {
                 clear()
                 controller.removeDynamicSidebarControllers()
 
-                if (vm.selectedBuilding.get().empty) {
-                    availableBuildings {
+                if (vm.selectedTower.get().empty) {
+                    availableTowers {
                         controller.addChild(this.controller)
                     }.cell(grow = true, row = true)
 
                     consumables {
                         controller.addChild(this.controller)
-                    }.cell(grow = true, row = true)
+                    }.cell(growX = true, row = true)
                 } else {
-                    sideBarBuilding(vm.selectedBuilding.get()) {
+                    sideBarTower(vm.selectedTower.get()) {
                         controller.addChild(this.controller)
                     }.cell(row = true, grow = true, align = Align.top)
                 }

@@ -1,33 +1,19 @@
 package com.runt9.untdrl.model.faction
 
-import com.runt9.untdrl.model.building.definition.BuildingDefinition
-import com.runt9.untdrl.model.building.definition.goldMine
-import com.runt9.untdrl.model.building.definition.prototypeTower
-import com.runt9.untdrl.model.building.definition.researchLab
+import com.runt9.untdrl.model.tower.definition.TowerDefinition
+import com.runt9.untdrl.model.tower.definition.prototypeTower
 
 interface FactionDefinition {
     val id: Int
     val name: String
     val maxHp: Int
-    val goldBuildings: List<BuildingDefinition>
-    val researchBuildings: List<BuildingDefinition>
-    val startingTowers: List<BuildingDefinition>
+    val startingTower: TowerDefinition
 
     class Builder {
-        internal val goldBuildings = mutableListOf<BuildingDefinition>()
-        internal val researchBuildings = mutableListOf<BuildingDefinition>()
-        internal val startingTowers = mutableListOf<BuildingDefinition>()
+        internal lateinit var startingTower: TowerDefinition
 
-        fun goldBuildings(vararg buildings: BuildingDefinition) {
-            goldBuildings += buildings
-        }
-
-        fun researchBuildings(vararg buildings: BuildingDefinition) {
-            researchBuildings += buildings
-        }
-
-        fun startingTowers(vararg buildings: BuildingDefinition) {
-            startingTowers += buildings
+        fun startingTower(tower: TowerDefinition) {
+            startingTower = tower
         }
     }
 }
@@ -45,14 +31,10 @@ fun faction(
         override val id = id
         override val name = name
         override val maxHp = maxHp
-        override val goldBuildings = builder.goldBuildings
-        override val researchBuildings = builder.researchBuildings
-        override val startingTowers = builder.startingTowers
+        override val startingTower = builder.startingTower
     }
 }
 
-val baseFaction = faction(1, "Default", 25) {
-    goldBuildings(goldMine)
-    researchBuildings(researchLab)
-    startingTowers(prototypeTower)
+val baseFaction = faction(1, "StarMerCorp", 25) {
+    startingTower(prototypeTower)
 }

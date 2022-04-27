@@ -15,8 +15,12 @@ interface EnemyDefinition {
     class Builder {
         internal val resistances = mutableMapOf<DamageType, Float>()
 
-        fun resist(type: DamageType, amt: Float) {
-            resistances[type] = amt
+        fun resists(vararg types: DamageType) {
+            types.forEach { type -> resistances[type] = 1.5f }
+        }
+
+        fun weakTo(vararg types: DamageType) {
+            types.forEach { type -> resistances[type] = 0.5f }
         }
     }
 }

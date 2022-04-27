@@ -1,16 +1,16 @@
 package com.runt9.untdrl.service.researchEffect
 
-import com.runt9.untdrl.model.building.intercept.beforeDamage
-import com.runt9.untdrl.model.building.intercept.beforeResists
+import com.runt9.untdrl.model.tower.intercept.beforeDamage
+import com.runt9.untdrl.model.tower.intercept.beforeResists
 import com.runt9.untdrl.model.research.AdvancedBallisticsEffectDefinition
-import com.runt9.untdrl.service.buildingAction.ProjectileAttackAction
-import com.runt9.untdrl.service.duringRun.BuildingService
+import com.runt9.untdrl.service.towerAction.ProjectileAttackAction
+import com.runt9.untdrl.service.duringRun.TowerService
 import com.runt9.untdrl.util.framework.event.EventBus
 
 class AdvancedBallisticsEffect(
     override val eventBus: EventBus,
     private val definition: AdvancedBallisticsEffectDefinition,
-    private val buildingService: BuildingService
+    private val towerService: TowerService
 ) : ResearchEffect {
     private val damageInterceptor = beforeDamage { _, request ->
         request.addDamageMultiplier(definition.damagePct)
@@ -21,11 +21,11 @@ class AdvancedBallisticsEffect(
     }
 
     override fun apply() {
-        buildingService.forEachBuilding { building ->
-            if (building.action !is ProjectileAttackAction) return@forEachBuilding
+        towerService.forEachTower { tower ->
+            if (tower.action !is ProjectileAttackAction) return@forEachTower
 
-            building.addInterceptor(damageInterceptor)
-            building.addInterceptor(resistInterceptor)
+            tower.addInterceptor(damageInterceptor)
+            tower.addInterceptor(resistInterceptor)
         }
     }
 }

@@ -8,7 +8,7 @@ import com.runt9.untdrl.service.ChunkGenerator
 import com.runt9.untdrl.service.RandomizerService
 import com.runt9.untdrl.service.asset.AssetLoader
 import com.runt9.untdrl.service.asset.SkinLoader
-import com.runt9.untdrl.service.duringRun.BuildingService
+import com.runt9.untdrl.service.duringRun.TowerService
 import com.runt9.untdrl.service.duringRun.EnemyService
 import com.runt9.untdrl.service.duringRun.IndexedGridGraph
 import com.runt9.untdrl.service.duringRun.LootService
@@ -68,7 +68,7 @@ object Injector : Context() {
         bindSingleton<IndexedGridGraph>()
         bindSingleton<RandomizerService>()
         bindSingleton<ChunkGenerator>()
-        bindSingleton<BuildingService>()
+        bindSingleton<TowerService>()
         bindSingleton<EnemyService>()
         bindSingleton<ProjectileService>()
         bindSingleton<SpawnerService>()

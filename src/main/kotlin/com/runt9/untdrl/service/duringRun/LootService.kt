@@ -136,7 +136,7 @@ class LootService(
     private fun generateCore(): TowerCore {
         val rarity = generateRarity()
         val count = rarity.numCoreAttrs
-        val allowedAttributeTypes = runStateService.load().availableBuildings.flatMap { it.attrs.keys }.distinct()
+        val allowedAttributeTypes = runStateService.load().availableTowers.flatMap { it.attrs.keys }.distinct()
 
         val generatedSoFar = mutableListOf<AttributeType>()
         val modifiers = mutableListOf<AttributeModifier>()

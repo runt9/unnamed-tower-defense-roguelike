@@ -2,7 +2,7 @@ package com.runt9.untdrl.service.duringRun
 
 import com.badlogic.gdx.ai.steer.SteeringAcceleration
 import com.badlogic.gdx.math.Vector2
-import com.runt9.untdrl.model.building.TargetingMode
+import com.runt9.untdrl.model.tower.TargetingMode
 import com.runt9.untdrl.model.enemy.Enemy
 import com.runt9.untdrl.model.event.EnemyRemovedEvent
 import com.runt9.untdrl.model.event.EnemySpawnedEvent
@@ -64,7 +64,7 @@ class EnemyService(private val grid: IndexedGridGraph, private val eventBus: Eve
         }
     }
 
-    fun getBuildingTarget(position: Vector2, range: Float, targetingMode: TargetingMode) =
+    fun getTowerTarget(position: Vector2, range: Float, targetingMode: TargetingMode) =
         enemies.toList()
             .sortByTargetingMode(targetingMode)
             .filter { it.isAlive }

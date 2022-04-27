@@ -8,7 +8,7 @@ import com.runt9.untdrl.util.ext.getMatching
 class ApplicationConfiguration(settingsConfig: PlayerSettingsConfig) : Lwjgl3ApplicationConfiguration() {
     init {
         val settings = settingsConfig.get()
-        setTitle("Untitled Building Defense Roguelike")
+        setTitle("Untitled Tower Defense Roguelike")
         handleResolution(settings.fullscreen, settings.resolution)
         useVsync(settings.vsync)
         setResizable(false)

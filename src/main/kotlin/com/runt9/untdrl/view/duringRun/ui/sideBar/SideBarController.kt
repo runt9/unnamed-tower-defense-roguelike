@@ -1,27 +1,27 @@
 package com.runt9.untdrl.view.duringRun.ui.sideBar
 
 import com.badlogic.gdx.utils.Disposable
-import com.runt9.untdrl.model.building.Building
-import com.runt9.untdrl.model.building.mapToFloats
-import com.runt9.untdrl.model.event.BuildingCancelledEvent
-import com.runt9.untdrl.model.event.BuildingPlacedEvent
-import com.runt9.untdrl.model.event.BuildingSelectedEvent
+import com.runt9.untdrl.model.tower.Tower
+import com.runt9.untdrl.model.tower.mapToFloats
+import com.runt9.untdrl.model.event.TowerCancelledEvent
+import com.runt9.untdrl.model.event.TowerPlacedEvent
+import com.runt9.untdrl.model.event.TowerSelectedEvent
 import com.runt9.untdrl.model.event.CancelOpenItemsEvent
 import com.runt9.untdrl.model.event.ChunkCancelledEvent
 import com.runt9.untdrl.model.event.ChunkPlacedEvent
 import com.runt9.untdrl.model.event.NewChunkEvent
 import com.runt9.untdrl.model.event.PrepareNextWaveEvent
 import com.runt9.untdrl.model.event.WaveStartedEvent
-import com.runt9.untdrl.service.duringRun.BuildingService
+import com.runt9.untdrl.service.duringRun.TowerService
 import com.runt9.untdrl.service.duringRun.RunStateService
 import com.runt9.untdrl.util.ext.unTdRlLogger
 import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.util.framework.event.HandlesEvent
 import com.runt9.untdrl.util.framework.ui.controller.Controller
 import com.runt9.untdrl.util.framework.ui.uiComponent
-import com.runt9.untdrl.view.duringRun.ui.sideBar.availableBuildings.SideBarAvailableBuildingsController
-import com.runt9.untdrl.view.duringRun.ui.sideBar.building.SideBarBuildingController
-import com.runt9.untdrl.view.duringRun.ui.sideBar.building.SideBarBuildingViewModel
+import com.runt9.untdrl.view.duringRun.ui.sideBar.availableTowers.SideBarAvailableTowersController
+import com.runt9.untdrl.view.duringRun.ui.sideBar.tower.SideBarTowerController
+import com.runt9.untdrl.view.duringRun.ui.sideBar.tower.SideBarTowerViewModel
 import com.runt9.untdrl.view.duringRun.ui.sideBar.consumables.SideBarConsumablesController
 import ktx.async.onRenderingThread
 import ktx.scene2d.KWidget
@@ -33,7 +33,7 @@ fun <S> KWidget<S>.sideBar(init: SideBarView.(S) -> Unit = {}) = uiComponent<S, 
 class SideBarController(
     private val eventBus: EventBus,
     private val runStateService: RunStateService,
-    private val buildingService: BuildingService
+    private val towerService: TowerService
 ) : Controller {
     private val logger = unTdRlLogger()
 
@@ -41,8 +41,8 @@ class SideBarController(
     override val view = SideBarView(this, vm)
     private val children = mutableListOf<Controller>()
 
-    private var selectedBuilding: Building? = null
-    private var buildingCb: (suspend (Building) -> Unit)? = null
+    private var selectedTower: Tower? = null
+    private var towerCb: (suspend (Tower) -> Unit)? = null
 
     override fun load() {
         eventBus.registerHandlers(this)
@@ -71,50 +71,49 @@ class SideBarController(
         }
     }
 
-    @HandlesEvent(BuildingPlacedEvent::class)
-    suspend fun buildingPlaced() = onRenderingThread {
+    @HandlesEvent(TowerPlacedEvent::class)
+    suspend fun towerPlaced() = onRenderingThread {
         vm.canInteract(true)
     }
 
-    @HandlesEvent(BuildingCancelledEvent::class)
-    suspend fun buildingCancelled() = onRenderingThread {
+    @HandlesEvent(TowerCancelledEvent::class)
+    suspend fun towerCancelled() = onRenderingThread {
         vm.canInteract(true)
     }
 
     @HandlesEvent
-    suspend fun buildingSelected(event: BuildingSelectedEvent) = onRenderingThread {
-        val building = event.building
-        val buildingVm = SideBarBuildingViewModel(false)
-        buildingCb = { b -> onRenderingThread {
-            buildingVm.apply {
+    suspend fun towerSelected(event: TowerSelectedEvent) = onRenderingThread {
+        val tower = event.tower
+        val towerVm = SideBarTowerViewModel(false)
+        towerCb = { b -> onRenderingThread {
+            towerVm.apply {
                 id(b.id)
                 name(b.definition.name)
-                type(b.definition.type)
                 xp(b.xp)
                 xpToLevel(b.xpToLevel)
                 level(b.level)
                 attrs(b.attrs.mapToFloats())
                 maxCores(b.maxCores)
                 cores(b.cores.toList())
-                upgradePoints(b.upgradePoints)
-                availableUpgrades(b.selectableUpgrades.toList())
+                specializationPoints(b.specializationPoints)
+                availableSpecializations(b.selectableSpecializations.toList())
                 targetingMode(b.targetingMode)
             }
         }}
 
-        buildingCb?.invoke(building)
-        buildingService.onBuildingChange(building.id, buildingCb!!)
-        vm.selectedBuilding(buildingVm)
-        selectedBuilding = building
+        towerCb?.invoke(tower)
+        towerService.onTowerChange(tower.id, towerCb!!)
+        vm.selectedTower(towerVm)
+        selectedTower = tower
     }
 
     @HandlesEvent(CancelOpenItemsEvent::class)
-    suspend fun deselectBuilding() = onRenderingThread {
-        if (vm.selectedBuilding.get().empty && selectedBuilding == null) return@onRenderingThread
+    suspend fun deselectTower() = onRenderingThread {
+        if (vm.selectedTower.get().empty && selectedTower == null) return@onRenderingThread
 
-        buildingCb?.also { buildingService.removeBuildingChangeCb(vm.selectedBuilding.get().id.get(), it) }
-        vm.selectedBuilding(SideBarBuildingViewModel())
-        selectedBuilding = null
+        towerCb?.also { towerService.removeTowerChangeCb(vm.selectedTower.get().id.get(), it) }
+        vm.selectedTower(SideBarTowerViewModel())
+        selectedTower = null
     }
 
     override fun dispose() {
@@ -135,7 +134,7 @@ class SideBarController(
 
     fun removeDynamicSidebarControllers() {
         val controllers = children.filter {
-            it is SideBarAvailableBuildingsController || it is SideBarConsumablesController || it is SideBarBuildingController
+            it is SideBarAvailableTowersController || it is SideBarConsumablesController || it is SideBarTowerController
         }
 
         controllers.forEach(Controller::dispose)

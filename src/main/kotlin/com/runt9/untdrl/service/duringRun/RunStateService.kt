@@ -1,7 +1,7 @@
 package com.runt9.untdrl.service.duringRun
 
 import com.runt9.untdrl.model.RunState
-import com.runt9.untdrl.model.event.BuildingPlacedEvent
+import com.runt9.untdrl.model.event.TowerPlacedEvent
 import com.runt9.untdrl.model.event.EnemyRemovedEvent
 import com.runt9.untdrl.model.event.PrepareNextWaveEvent
 import com.runt9.untdrl.model.event.RunEndEvent
@@ -48,8 +48,8 @@ class RunStateService(private val eventBus: EventBus, registry: RunServiceRegist
     }
 
     @HandlesEvent
-    fun buildingPlaced(event: BuildingPlacedEvent) {
-        val goldCost = event.building.definition.goldCost
+    fun towerPlaced(event: TowerPlacedEvent) {
+        val goldCost = event.tower.definition.goldCost
         update {
             gold -= goldCost
         }

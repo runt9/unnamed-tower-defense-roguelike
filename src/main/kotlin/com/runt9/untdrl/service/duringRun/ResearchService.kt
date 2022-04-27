@@ -7,7 +7,6 @@ import com.runt9.untdrl.model.research.allResearch
 import com.runt9.untdrl.service.RandomizerService
 import com.runt9.untdrl.util.ext.dynamicInject
 import com.runt9.untdrl.util.ext.dynamicInjectCheckInterfaceContains
-import com.runt9.untdrl.util.ext.removeIf
 import com.runt9.untdrl.util.ext.unTdRlLogger
 import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.view.duringRun.REROLL_COST
@@ -41,9 +40,6 @@ class ResearchService(
             appliedResearch += research
             selectableResearch -= research
 
-            availableResearch.removeIf { it.isExclusiveOf(research) }
-            selectableResearch.removeIf { it.isExclusiveOf(research) }
-
             addResearch()
         }
     }
@@ -62,9 +58,8 @@ class ResearchService(
             // Exclude research already made available, already applied, or anything made exclusive
             if (availableResearch.contains(up)) return@filter false
             if (appliedResearch.contains(up)) return@filter false
-            if (appliedResearch.any { it.isExclusiveOf(up) }) return@filter false
 
-            // Only include researchs with no dependencies or satisfied dependencies
+            // Only include researches with no dependencies or satisfied dependencies
             return@filter appliedResearch.containsAll(up.dependsOn)
         }
 

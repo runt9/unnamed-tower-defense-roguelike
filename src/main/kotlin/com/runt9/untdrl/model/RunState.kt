@@ -1,12 +1,12 @@
 package com.runt9.untdrl.model
 
-import com.runt9.untdrl.model.building.definition.BuildingDefinition
 import com.runt9.untdrl.model.faction.FactionDefinition
 import com.runt9.untdrl.model.loot.Consumable
 import com.runt9.untdrl.model.loot.Relic
 import com.runt9.untdrl.model.loot.Shop
 import com.runt9.untdrl.model.loot.TowerCore
 import com.runt9.untdrl.model.research.ResearchDefinition
+import com.runt9.untdrl.model.tower.definition.TowerDefinition
 import com.runt9.untdrl.util.ext.randomString
 import com.runt9.untdrl.view.duringRun.REROLL_COST
 import kotlinx.serialization.Serializable
@@ -28,8 +28,9 @@ data class RunState(
     var selectableResearchOptionCount: Int = 5,
     var researchAmount: Int = 0,
     var wave: Int = 1,
-    var availableBuildings: List<BuildingDefinition> = faction.startingTowers,
+    var availableTowers: List<TowerDefinition> = listOf(faction.startingTower),
     var relics: List<Relic> = listOf(),
+    var consumableSlots: Int = 3,
     var consumables: List<Consumable> = listOf(),
     var cores: List<TowerCore> = listOf()
 )

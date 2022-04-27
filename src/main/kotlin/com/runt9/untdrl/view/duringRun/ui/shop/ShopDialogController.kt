@@ -58,6 +58,7 @@ class ShopDialogController(
     fun <T : LootItem> buyItem(item: T, cost: Int): Boolean {
         if (cost > vm.gold.get()) return false
 
+        var didUpdate = false
         runStateService.update {
             when (item) {
                 is Relic -> {
@@ -67,6 +68,8 @@ class ShopDialogController(
                 }
 
                 is Consumable -> {
+                    if (consumables.size >= consumableSlots) return@update
+
                     consumables += item
                     currentShop.consumables -= item
                 }
@@ -78,8 +81,9 @@ class ShopDialogController(
             }
 
             gold -= cost
+            didUpdate = true
         }
 
-        return true
+        return didUpdate
     }
 }

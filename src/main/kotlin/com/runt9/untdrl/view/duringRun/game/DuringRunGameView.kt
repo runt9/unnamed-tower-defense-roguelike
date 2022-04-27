@@ -6,8 +6,8 @@ import com.runt9.untdrl.util.framework.ui.view.TableView
 import com.runt9.untdrl.util.framework.ui.viewModel.ViewModel
 import com.runt9.untdrl.view.duringRun.GAME_HEIGHT
 import com.runt9.untdrl.view.duringRun.GAME_WIDTH
-import com.runt9.untdrl.view.duringRun.game.building.BuildingController
-import com.runt9.untdrl.view.duringRun.game.building.building
+import com.runt9.untdrl.view.duringRun.game.tower.TowerController
+import com.runt9.untdrl.view.duringRun.game.tower.tower
 import com.runt9.untdrl.view.duringRun.game.chunk.ChunkController
 import com.runt9.untdrl.view.duringRun.game.chunk.chunk
 import com.runt9.untdrl.view.duringRun.game.enemy.EnemyController
@@ -23,7 +23,7 @@ class DuringRunGameView(
     private val logger = unTdRlLogger()
 
     private val chunks = mutableListOf<ChunkController>()
-    private val buildings = mutableListOf<BuildingController>()
+    private val towers = mutableListOf<TowerController>()
     private val enemies = mutableListOf<EnemyController>()
     private val projectiles = mutableListOf<ProjectileController>()
 
@@ -51,7 +51,7 @@ class DuringRunGameView(
         floatingGroup {
             bindList(vm.chunks, this@DuringRunGameView.chunks) { chunk -> chunk(chunk).controller }
             bindList(vm.enemies, this@DuringRunGameView.enemies) { enemy -> enemy(enemy).controller }
-            bindList(vm.buildings, this@DuringRunGameView.buildings) { building -> building(building).controller }
+            bindList(vm.towers, this@DuringRunGameView.towers) { tower -> tower(tower).controller }
             bindList(vm.projectiles, this@DuringRunGameView.projectiles) { projectile -> projectile(projectile).controller }
         }.cell(row = true, grow = true)
     }

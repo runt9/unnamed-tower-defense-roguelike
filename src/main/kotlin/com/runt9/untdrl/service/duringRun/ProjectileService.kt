@@ -2,12 +2,12 @@ package com.runt9.untdrl.service.duringRun
 
 import com.badlogic.gdx.ai.steer.SteeringAcceleration
 import com.badlogic.gdx.math.Vector2
-import com.runt9.untdrl.model.building.Building
-import com.runt9.untdrl.model.building.Projectile
-import com.runt9.untdrl.model.building.intercept.DamageRequest
-import com.runt9.untdrl.model.building.intercept.DamageResult
-import com.runt9.untdrl.model.building.intercept.InterceptorHook
-import com.runt9.untdrl.model.building.intercept.ResistanceRequest
+import com.runt9.untdrl.model.tower.Tower
+import com.runt9.untdrl.model.tower.Projectile
+import com.runt9.untdrl.model.tower.intercept.DamageRequest
+import com.runt9.untdrl.model.tower.intercept.DamageResult
+import com.runt9.untdrl.model.tower.intercept.InterceptorHook
+import com.runt9.untdrl.model.tower.intercept.ResistanceRequest
 import com.runt9.untdrl.model.enemy.Enemy
 import com.runt9.untdrl.model.event.EnemyRemovedEvent
 import com.runt9.untdrl.model.event.WaveCompleteEvent
@@ -19,7 +19,7 @@ import com.runt9.untdrl.util.framework.event.HandlesEvent
 class ProjectileService(
     private val eventBus: EventBus,
     registry: RunServiceRegistry,
-    private val buildingService: BuildingService,
+    private val towerService: TowerService,
     private val enemyService: EnemyService,
     private val randomizer: RandomizerService
 ) : RunService(eventBus, registry) {
@@ -48,7 +48,7 @@ class ProjectileService(
                         calculateDamage(projectile.owner, collidedEnemy)
                         if (collidedEnemy.currentHp <= 0) {
                             collidedEnemy.isAlive = false
-                            collidedEnemy.affectedByBuildings.forEach { t -> buildingService.gainXp(t, collidedEnemy.xpOnDeath) }
+                            collidedEnemy.affectedByTowers.forEach { t -> towerService.gainXp(t, collidedEnemy.xpOnDeath) }
                             eventBus.enqueueEvent(EnemyRemovedEvent(collidedEnemy))
                         }
                     }
@@ -77,18 +77,18 @@ class ProjectileService(
     }
 
     // TODO: Move these somewhere else, they're not projectile-specific
-    private fun calculateDamage(building: Building, enemy: Enemy) {
-        val damageRequest = DamageRequest(building)
-        building.intercept(InterceptorHook.BEFORE_DAMAGE_CALC, damageRequest)
+    private fun calculateDamage(tower: Tower, enemy: Enemy) {
+        val damageRequest = DamageRequest(tower)
+        tower.intercept(InterceptorHook.BEFORE_DAMAGE_CALC, damageRequest)
         logger.info { "Final Damage Request: $damageRequest" }
         val damageResult = rollForDamage(damageRequest)
-        building.intercept(InterceptorHook.AFTER_DAMAGE_CALC, damageResult)
+        tower.intercept(InterceptorHook.AFTER_DAMAGE_CALC, damageResult)
         logger.info { "Final Damage Result: $damageResult" }
-        val resistanceRequest = ResistanceRequest(building.damageTypes.toList(), enemy.resistances.toMap(), damageResult)
-        building.intercept(InterceptorHook.BEFORE_RESISTS, resistanceRequest)
-        enemy.takeDamage(building, resistanceRequest.finalDamage)
+        val resistanceRequest = ResistanceRequest(tower.damageTypes.toList(), enemy.resistances.toMap(), damageResult)
+        tower.intercept(InterceptorHook.BEFORE_RESISTS, resistanceRequest)
+        enemy.takeDamage(tower, resistanceRequest.finalDamage)
 
-        building.procs.filter { randomizer.percentChance(it.chance) }.forEach { proc -> proc.applyToEnemy(enemy) }
+        tower.procs.filter { randomizer.percentChance(it.chance) }.forEach { proc -> proc.applyToEnemy(enemy) }
     }
 
     private fun rollForDamage(request: DamageRequest): DamageResult {

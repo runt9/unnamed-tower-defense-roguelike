@@ -1,8 +1,8 @@
 package com.runt9.untdrl.service.passiveEffect
 
-import com.runt9.untdrl.model.building.Building
-import com.runt9.untdrl.model.building.intercept.beforeDamage
-import com.runt9.untdrl.model.building.intercept.onAttack
+import com.runt9.untdrl.model.tower.Tower
+import com.runt9.untdrl.model.tower.intercept.beforeDamage
+import com.runt9.untdrl.model.tower.intercept.onAttack
 import com.runt9.untdrl.model.event.WaveCompleteEvent
 import com.runt9.untdrl.model.loot.definition.EveryXShotGuaranteedCritPassiveDefinition
 import com.runt9.untdrl.util.ext.unTdRlLogger
@@ -11,7 +11,7 @@ import com.runt9.untdrl.util.framework.event.HandlesEvent
 
 // TODO: Needs eventBus cause we need to reset counter on wave end
 class EveryXShotGuaranteedCritPassive(
-    override val building: Building,
+    override val tower: Tower,
     val definition: EveryXShotGuaranteedCritPassiveDefinition,
     override val eventBus: EventBus
 ) : LegendaryPassiveEffect {
@@ -32,8 +32,8 @@ class EveryXShotGuaranteedCritPassive(
     }
 
     override fun apply() {
-        building.addInterceptor(attackInterceptor)
-        building.addInterceptor(damageInterceptor)
+        tower.addInterceptor(attackInterceptor)
+        tower.addInterceptor(damageInterceptor)
     }
 
     @HandlesEvent(WaveCompleteEvent::class)

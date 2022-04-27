@@ -35,6 +35,7 @@ class SideBarConsumablesController(private val eventBus: EventBus, private val r
     suspend fun runStateUpdated(event: RunStateUpdated) = onRenderingThread { event.newState.applyNewState() }
 
     private fun RunState.applyNewState() {
+        vm.maxConsumables(consumableSlots)
         vm.consumables(consumables)
     }
 

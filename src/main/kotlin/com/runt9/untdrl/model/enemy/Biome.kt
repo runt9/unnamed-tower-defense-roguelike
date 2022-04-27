@@ -3,9 +3,14 @@ package com.runt9.untdrl.model.enemy
 import com.badlogic.gdx.graphics.Color
 
 enum class Biome(val spawnerColor: Color) {
+    GRASSLAND(Color.GREEN),
+    FOREST(Color.FOREST),
     DESERT(Color.TAN),
-    VOLCANO(Color.FIREBRICK),
-    GRASSLAND(Color.FOREST),
+    LAVA(Color.FIREBRICK),
+    CORRUPTED(Color.BLACK),
     TUNDRA(Color.valueOf("CCFFFF")),
-    CLOUD(Color.valueOf("33AAFF"))
+    CLOUD(Color.valueOf("33AAFF")),
+    TECH(Color.DARK_GRAY),
+    MOUNTAIN(Color.LIGHT_GRAY),
+    ENCHANTED(Color.PINK)
 }
