@@ -1,28 +1,28 @@
 package com.runt9.untdrl.view.duringRun.ui.sideBar
 
 import com.badlogic.gdx.utils.Disposable
-import com.runt9.untdrl.model.tower.Tower
-import com.runt9.untdrl.model.tower.mapToFloats
-import com.runt9.untdrl.model.event.TowerCancelledEvent
-import com.runt9.untdrl.model.event.TowerPlacedEvent
-import com.runt9.untdrl.model.event.TowerSelectedEvent
 import com.runt9.untdrl.model.event.CancelOpenItemsEvent
 import com.runt9.untdrl.model.event.ChunkCancelledEvent
 import com.runt9.untdrl.model.event.ChunkPlacedEvent
 import com.runt9.untdrl.model.event.NewChunkEvent
 import com.runt9.untdrl.model.event.PrepareNextWaveEvent
+import com.runt9.untdrl.model.event.TowerCancelledEvent
+import com.runt9.untdrl.model.event.TowerPlacedEvent
+import com.runt9.untdrl.model.event.TowerSelectedEvent
 import com.runt9.untdrl.model.event.WaveStartedEvent
-import com.runt9.untdrl.service.duringRun.TowerService
+import com.runt9.untdrl.model.tower.Tower
+import com.runt9.untdrl.model.tower.mapToFloats
 import com.runt9.untdrl.service.duringRun.RunStateService
+import com.runt9.untdrl.service.duringRun.TowerService
 import com.runt9.untdrl.util.ext.unTdRlLogger
 import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.util.framework.event.HandlesEvent
 import com.runt9.untdrl.util.framework.ui.controller.Controller
 import com.runt9.untdrl.util.framework.ui.uiComponent
 import com.runt9.untdrl.view.duringRun.ui.sideBar.availableTowers.SideBarAvailableTowersController
+import com.runt9.untdrl.view.duringRun.ui.sideBar.consumables.SideBarConsumablesController
 import com.runt9.untdrl.view.duringRun.ui.sideBar.tower.SideBarTowerController
 import com.runt9.untdrl.view.duringRun.ui.sideBar.tower.SideBarTowerViewModel
-import com.runt9.untdrl.view.duringRun.ui.sideBar.consumables.SideBarConsumablesController
 import ktx.async.onRenderingThread
 import ktx.scene2d.KWidget
 import ktx.scene2d.Scene2dDsl
@@ -95,8 +95,10 @@ class SideBarController(
                 attrs(b.attrs.mapToFloats())
                 maxCores(b.maxCores)
                 cores(b.cores.toList())
-                specializationPoints(b.specializationPoints)
-                availableSpecializations(b.selectableSpecializations.toList())
+                canSpecialize(b.canSpecialize)
+                hasSelectedSpecialization(b.appliedSpecialization != null)
+                selectedSpecializationName(b.appliedSpecialization?.name ?: "")
+                specializations(b.specializations.toList())
                 targetingMode(b.targetingMode)
             }
         }}

@@ -1,9 +1,9 @@
 package com.runt9.untdrl.view.duringRun.ui.sideBar.tower
 
 import com.runt9.untdrl.model.attribute.AttributeType
+import com.runt9.untdrl.model.loot.TowerCore
 import com.runt9.untdrl.model.tower.TargetingMode
 import com.runt9.untdrl.model.tower.specialization.TowerSpecializationDefinition
-import com.runt9.untdrl.model.loot.TowerCore
 import com.runt9.untdrl.util.framework.ui.viewModel.ViewModel
 
 class SideBarTowerViewModel(val empty: Boolean = true) : ViewModel() {
@@ -17,7 +17,9 @@ class SideBarTowerViewModel(val empty: Boolean = true) : ViewModel() {
     val attrs = Binding(mapOf<AttributeType, Float>())
     val maxCores = Binding(1)
     val cores = ListBinding<TowerCore>()
-    val specializationPoints = Binding(0)
-    val availableSpecializations = ListBinding<TowerSpecializationDefinition>()
+    val canSpecialize = Binding(false)
+    val specializations = ListBinding<TowerSpecializationDefinition>()
+    val hasSelectedSpecialization = Binding(false)
+    val selectedSpecializationName = Binding("")
     val targetingMode = Binding(TargetingMode.FRONT)
 }

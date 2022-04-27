@@ -15,6 +15,7 @@ import com.runt9.untdrl.util.ext.ui.separator
 import com.runt9.untdrl.util.ext.ui.squarePixmap
 import com.runt9.untdrl.util.ext.ui.toDrawable
 import com.runt9.untdrl.util.framework.ui.view.TableView
+import com.runt9.untdrl.view.duringRun.TOWER_SPECIALIZATION_LEVEL
 import com.runt9.untdrl.view.duringRun.ui.util.lootItem
 import ktx.actors.onChange
 import ktx.actors.onClick
@@ -143,34 +144,38 @@ class SideBarTowerView(override val controller: SideBarTowerController, override
             separator(2f)
 
             visTable {
-                visLabel("") { bindLabelText { "Specialization Points: ${vm.specializationPoints()}" } }.cell(growX = true, row = true, padBottom = 2f)
-
-                visTable {
-                    bindUpdatable(vm.availableSpecializations) {
-                        clear()
-                        val specializations = vm.availableSpecializations.get()
-
-                        if (specializations.isEmpty()) {
-                            visLabel("No specializations available for this tower") {
-                                wrap = true
-                                setAlignment(Align.center)
-                            }.cell(grow = true, pad = 10f)
-                        } else {
-                            specializations.forEach { specialization ->
-                                visTable {
-                                    visImage(controller.loadTexture(specialization.icon)) {
-                                        setSize(50f, 50f)
-                                        onClick { controller.applySpecialization(specialization) }
-                                        specializationTooltip(specialization)
-                                    }.cell(grow = true)
+                bindUpdatable(vm.canSpecialize) {
+                    clear()
+                    if (vm.canSpecialize.get()) {
+                        bindUpdatable(vm.hasSelectedSpecialization) {
+                            clear()
+                            if (vm.hasSelectedSpecialization.get()) {
+                                visLabel("Selected Specialization: ${vm.selectedSpecializationName.get()}") {
+                                    wrap = true
+                                    setAlignment(Align.center)
+                                }.cell(grow = true, pad = 10f)
+                            } else {
+                                vm.specializations.get().forEach { specialization ->
+                                    visTable {
+                                        visImage(controller.loadTexture(specialization.icon)) {
+                                            setSize(50f, 50f)
+                                            onClick { controller.applySpecialization(specialization) }
+                                            specializationTooltip(specialization)
+                                        }.cell(grow = true)
 
 
-                                }.cell(expand = true, pad = 10f, height = 50f, width = 50f)
+                                    }.cell(expand = true, pad = 10f, height = 50f, width = 50f)
+                                }
                             }
                         }
+                    } else {
+                        visLabel("Specializations available at level $TOWER_SPECIALIZATION_LEVEL") {
+                            wrap = true
+                            setAlignment(Align.center)
+                        }.cell(grow = true, pad = 10f)
                     }
-                }.cell(grow = true, row = true, pad = 4f)
-            }.cell(grow = true, row = true)
+                }
+            }.cell(grow = true, row = true, pad = 4f)
 
             separator(2f)
 

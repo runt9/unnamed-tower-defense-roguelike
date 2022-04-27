@@ -2,12 +2,12 @@ package com.runt9.untdrl.view.duringRun.ui.sideBar.tower
 
 import com.badlogic.gdx.graphics.Texture
 import com.runt9.untdrl.model.UnitTexture
-import com.runt9.untdrl.model.tower.TargetingMode
-import com.runt9.untdrl.model.tower.specialization.TowerSpecializationDefinition
 import com.runt9.untdrl.model.event.RunStateUpdated
 import com.runt9.untdrl.model.loot.TowerCore
-import com.runt9.untdrl.service.duringRun.TowerService
+import com.runt9.untdrl.model.tower.TargetingMode
+import com.runt9.untdrl.model.tower.specialization.TowerSpecializationDefinition
 import com.runt9.untdrl.service.duringRun.RunStateService
+import com.runt9.untdrl.service.duringRun.TowerService
 import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.util.framework.event.HandlesEvent
 import com.runt9.untdrl.util.framework.ui.controller.Controller
@@ -76,7 +76,7 @@ class SideBarTowerController(
     fun loadTexture(icon: UnitTexture): Texture = assets[icon.assetFile]
 
     fun applySpecialization(specialization: TowerSpecializationDefinition) {
-        if (vm.specializationPoints.get() == 0) return
+        if (!vm.canSpecialize.get()) return
 
         launchOnRenderingThread {
             towerService.applySpecializationToTower(vm.id.get(), specialization)

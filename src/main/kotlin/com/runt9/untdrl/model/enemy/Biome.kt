@@ -10,7 +10,7 @@ enum class Biome(val spawnerColor: Color) {
     CORRUPTED(Color.BLACK),
     TUNDRA(Color.valueOf("CCFFFF")),
     CLOUD(Color.valueOf("33AAFF")),
-    TECH(Color.DARK_GRAY),
+    TECH(Color.SLATE),
     MOUNTAIN(Color.LIGHT_GRAY),
     ENCHANTED(Color.PINK)
 }
