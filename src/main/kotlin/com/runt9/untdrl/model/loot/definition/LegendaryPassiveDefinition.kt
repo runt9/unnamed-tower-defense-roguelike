@@ -1,8 +1,7 @@
 package com.runt9.untdrl.model.loot.definition
 
-import com.runt9.untdrl.service.passiveEffect.EveryXShotGuaranteedCritPassive
-import com.runt9.untdrl.service.passiveEffect.LegendaryPassiveEffect
-import kotlinx.serialization.Serializable
+import com.runt9.untdrl.service.corePassiveEffect.EveryXShotGuaranteedCritPassive
+import com.runt9.untdrl.service.corePassiveEffect.LegendaryPassiveEffect
 import kotlin.reflect.KClass
 
 interface LegendaryPassiveDefinition {

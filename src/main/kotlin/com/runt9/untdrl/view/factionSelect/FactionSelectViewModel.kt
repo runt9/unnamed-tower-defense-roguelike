@@ -3,8 +3,8 @@ package com.runt9.untdrl.view.factionSelect
 import com.runt9.untdrl.model.faction.FactionDefinition
 import com.runt9.untdrl.util.framework.ui.viewModel.ViewModel
 
-class FactionSelectViewModel : ViewModel() {
+class FactionSelectViewModel(options: List<FactionDefinition>) : ViewModel() {
     val seed = Binding("")
-    var factionOptions = listOf<FactionDefinition>()
-    lateinit var selectedFaction: FactionDefinition
+    val factionOptions = ListBinding(options)
+    val selectedFaction = Binding(options[0])
 }

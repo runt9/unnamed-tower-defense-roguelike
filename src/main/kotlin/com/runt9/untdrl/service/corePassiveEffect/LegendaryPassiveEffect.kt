@@ -1,4 +1,4 @@
-package com.runt9.untdrl.service.passiveEffect
+package com.runt9.untdrl.service.corePassiveEffect
 
 import com.badlogic.gdx.utils.Disposable
 import com.runt9.untdrl.model.tower.Tower
