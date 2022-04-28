@@ -83,7 +83,6 @@ class LootService(
 
     @HandlesEvent
     fun enemyKilled(event: EnemyRemovedEvent) = launchOnServiceThread {
-        logger.info { "Enemy removed event" }
         if (!event.wasKilled) return@launchOnServiceThread
 
         generateLoot()
@@ -104,7 +103,7 @@ class LootService(
     }
 
     private fun generateRelic(): Relic? {
-        logger.info { "Generating relic" }
+        logger.debug { "Generating relic" }
         val rarity = generateRarity()
         val possibleRelics = availableRelics[rarity]!!.filter { !currentlyGeneratedRelics.contains(it) }
         if (possibleRelics.isEmpty()) {
@@ -122,7 +121,7 @@ class LootService(
     }
 
     private fun generateConsumable(): Consumable {
-        logger.info { "Generating consumable" }
+        logger.debug { "Generating consumable" }
         val rarity = generateRarity()
         val definition = availableConsumables[rarity]!!.random()
         val consumable = Consumable(rarity, definition)
@@ -155,7 +154,7 @@ class LootService(
 
     private fun generateGold() {
         val wave = runStateService.load().wave
-        logger.info { "Generating $wave gold" }
+        logger.debug { "Generating $wave gold" }
         lootPool.gold += wave
     }
 

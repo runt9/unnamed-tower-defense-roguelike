@@ -2,15 +2,15 @@ package com.runt9.untdrl.service.duringRun
 
 import com.badlogic.gdx.ai.steer.SteeringAcceleration
 import com.badlogic.gdx.math.Vector2
-import com.runt9.untdrl.model.tower.Tower
+import com.runt9.untdrl.model.enemy.Enemy
+import com.runt9.untdrl.model.event.EnemyRemovedEvent
+import com.runt9.untdrl.model.event.WaveCompleteEvent
 import com.runt9.untdrl.model.tower.Projectile
+import com.runt9.untdrl.model.tower.Tower
 import com.runt9.untdrl.model.tower.intercept.DamageRequest
 import com.runt9.untdrl.model.tower.intercept.DamageResult
 import com.runt9.untdrl.model.tower.intercept.InterceptorHook
 import com.runt9.untdrl.model.tower.intercept.ResistanceRequest
-import com.runt9.untdrl.model.enemy.Enemy
-import com.runt9.untdrl.model.event.EnemyRemovedEvent
-import com.runt9.untdrl.model.event.WaveCompleteEvent
 import com.runt9.untdrl.service.RandomizerService
 import com.runt9.untdrl.util.ext.unTdRlLogger
 import com.runt9.untdrl.util.framework.event.EventBus
@@ -80,10 +80,10 @@ class ProjectileService(
     private fun calculateDamage(tower: Tower, enemy: Enemy) {
         val damageRequest = DamageRequest(tower)
         tower.intercept(InterceptorHook.BEFORE_DAMAGE_CALC, damageRequest)
-        logger.info { "Final Damage Request: $damageRequest" }
+        logger.debug { "Final Damage Request: $damageRequest" }
         val damageResult = rollForDamage(damageRequest)
         tower.intercept(InterceptorHook.AFTER_DAMAGE_CALC, damageResult)
-        logger.info { "Final Damage Result: $damageResult" }
+        logger.debug { "Final Damage Result: $damageResult" }
         val resistanceRequest = ResistanceRequest(tower.damageTypes.toList(), enemy.resistances.toMap(), damageResult)
         tower.intercept(InterceptorHook.BEFORE_RESISTS, resistanceRequest)
         enemy.takeDamage(tower, resistanceRequest.finalDamage)

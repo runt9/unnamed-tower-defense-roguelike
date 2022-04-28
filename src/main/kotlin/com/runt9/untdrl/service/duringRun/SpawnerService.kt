@@ -67,7 +67,7 @@ class SpawnerService(
                 spawner.enemyDelayTimer.also { timer ->
                     timer.tick(delta)
                     if (timer.isReady) {
-                        logger.info { "${spawner.id} Spawning enemy" }
+                        logger.debug { "${spawner.id} Spawning enemy" }
                         timer.reset()
                         spawner.enemiesToSpawn--
                         val enemy = spawner.spawnEnemy(runState.wave)
