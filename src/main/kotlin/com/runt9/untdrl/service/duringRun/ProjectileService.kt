@@ -2,16 +2,8 @@ package com.runt9.untdrl.service.duringRun
 
 import com.badlogic.gdx.ai.steer.SteeringAcceleration
 import com.badlogic.gdx.math.Vector2
-import com.runt9.untdrl.model.enemy.Enemy
-import com.runt9.untdrl.model.event.EnemyRemovedEvent
 import com.runt9.untdrl.model.event.WaveCompleteEvent
 import com.runt9.untdrl.model.tower.Projectile
-import com.runt9.untdrl.model.tower.Tower
-import com.runt9.untdrl.model.tower.intercept.DamageRequest
-import com.runt9.untdrl.model.tower.intercept.DamageResult
-import com.runt9.untdrl.model.tower.intercept.InterceptorHook
-import com.runt9.untdrl.model.tower.intercept.ResistanceRequest
-import com.runt9.untdrl.service.RandomizerService
 import com.runt9.untdrl.util.ext.unTdRlLogger
 import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.util.framework.event.HandlesEvent
@@ -50,6 +42,12 @@ class ProjectileService(
                         despawnProjectile(projectile)
                         return@forEach
                     }
+                }
+
+                // If the projectile is homing and the target is gone, we need to disable homing and just finish moving towards the edge of the range circle
+                if (projectile.homing && !projectile.target.isAlive) {
+                    projectile.homing = false
+                    projectile.behavior = projectile.calculateBehavior()
                 }
 
                 val steeringOutput = SteeringAcceleration(Vector2())

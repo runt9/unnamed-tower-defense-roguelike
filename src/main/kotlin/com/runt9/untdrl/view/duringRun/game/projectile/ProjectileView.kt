@@ -14,7 +14,7 @@ class ProjectileView(override val controller: ProjectileController, override val
         setOrigin(Align.center)
         bindUpdatable(vm.position) { vm.position.get().apply { setPosition(x, y, Align.center) } }
 
-        val image = visImage(vm.texture) {
+        visImage(controller.loadTexture(vm.texture.get())) {
             setSize(0.25f, 0.25f)
             setOrigin(Align.center)
             bindUpdatable(vm.rotation) { vm.rotation.get().apply { rotation = this } }

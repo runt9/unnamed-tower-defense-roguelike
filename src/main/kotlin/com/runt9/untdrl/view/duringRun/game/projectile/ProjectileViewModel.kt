@@ -4,7 +4,7 @@ import com.runt9.untdrl.model.tower.Projectile
 import com.runt9.untdrl.util.framework.ui.viewModel.ViewModel
 
 class ProjectileViewModel(val projectile: Projectile) : ViewModel() {
-    val texture = projectile.texture
+    val texture = Binding(projectile.texture)
     val position = Binding(projectile.position.cpy())
     val rotation = Binding(projectile.rotation)
 }

@@ -2,7 +2,9 @@ package com.runt9.untdrl.service.towerAction
 
 import com.badlogic.gdx.ai.steer.SteeringAcceleration
 import com.badlogic.gdx.ai.steer.behaviors.Face
+import com.badlogic.gdx.ai.utils.ArithmeticUtils
 import com.badlogic.gdx.math.Vector2
+import com.runt9.untdrl.model.attribute.AttributeType
 import com.runt9.untdrl.model.enemy.Enemy
 import com.runt9.untdrl.model.event.ProjectileSpawnedEvent
 import com.runt9.untdrl.model.event.WaveCompleteEvent
@@ -16,10 +18,12 @@ import com.runt9.untdrl.model.tower.range
 import com.runt9.untdrl.service.duringRun.EnemyService
 import com.runt9.untdrl.util.ext.Timer
 import com.runt9.untdrl.util.ext.degRad
+import com.runt9.untdrl.util.ext.toVector
 import com.runt9.untdrl.util.ext.unTdRlLogger
 import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.util.framework.event.HandlesEvent
 import ktx.assets.async.AssetStorage
+import kotlin.math.abs
 
 // TODO: Once more towers start getting created, figure out how we want to abstract away common stuff
 class ProjectileAttackAction(
@@ -39,6 +43,7 @@ class ProjectileAttackAction(
         decelerationRadius = 45f.degRad
     }
     var pierce = definition.pierce
+    var homing = true
 
     override suspend fun act(delta: Float) {
         val steeringOutput = SteeringAcceleration(Vector2())
@@ -59,17 +64,24 @@ class ProjectileAttackAction(
             tower.applySteering(delta, steeringOutput)
         }
 
-        if (attackTimer.isReady && steeringOutput.isZero) {
+        val rotationVector = ArithmeticUtils.wrapAngleAroundZero(tower.rotation.degRad).toVector(Vector2.Zero).angleDeg()
+        val positionVector = behavior.target.position.cpy().sub(tower.position.cpy()).nor().angleDeg()
+
+        if (attackTimer.isReady && abs(rotationVector - positionVector) <= 3f) {
             attackTimer.reset(false)
-            spawnProjectile()
+            spawnProjectiles()
             tower.intercept(InterceptorHook.ON_ATTACK, OnAttack(tower))
         }
     }
 
-    private fun spawnProjectile(): Projectile {
-        val projectile = Projectile(tower, assets[definition.projectileTexture.assetFile], target!!, pierce)
-        eventBus.enqueueEventSync(ProjectileSpawnedEvent(projectile))
-        return projectile
+    private fun spawnProjectiles() {
+        val projCount = tower.attrs[AttributeType.PROJECTILE_COUNT]?.invoke() ?: 1
+        repeat(projCount.toInt()) { i ->
+            var degreesFromCenter = ((i + 1) / 2) * 20
+            if (i % 2 == 0) degreesFromCenter *= -1
+            val projectile = Projectile(tower, definition.projectileTexture, target!!, pierce, homing, degreesFromCenter.toFloat())
+            eventBus.enqueueEventSync(ProjectileSpawnedEvent(projectile))
+        }
     }
 
     private fun setTarget(target: Enemy) {

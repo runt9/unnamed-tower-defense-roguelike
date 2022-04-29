@@ -1,13 +1,11 @@
 package com.runt9.untdrl.model.tower
 
 import com.runt9.untdrl.model.attribute.AttributeType
-import com.runt9.untdrl.model.attribute.AttributeType.AMOUNT_PER_INTERVAL
 import com.runt9.untdrl.model.attribute.AttributeType.ATTACK_SPEED
-import com.runt9.untdrl.model.attribute.AttributeType.COST_PER_INTERVAL
 import com.runt9.untdrl.model.attribute.AttributeType.CRIT_CHANCE
 import com.runt9.untdrl.model.attribute.AttributeType.CRIT_MULTI
 import com.runt9.untdrl.model.attribute.AttributeType.DAMAGE
-import com.runt9.untdrl.model.attribute.AttributeType.GAIN_INTERVAL
+import com.runt9.untdrl.model.attribute.AttributeType.PROJECTILE_COUNT
 import com.runt9.untdrl.model.attribute.AttributeType.RANGE
 
 // If something is requesting an attribute, it better be there, otherwise some definition went wrong along the way, so force not null
@@ -18,6 +16,4 @@ val Tower.attackSpeed get() = attr(ATTACK_SPEED)
 val Tower.attackTime get() = 1f / attr(ATTACK_SPEED)
 val Tower.critChance get() = attr(CRIT_CHANCE)
 val Tower.critMulti get() = attr(CRIT_MULTI)
-val Tower.gainInterval get() = attr(GAIN_INTERVAL)
-val Tower.amountPerInterval get() = attr(AMOUNT_PER_INTERVAL)
-val Tower.costPerInterval get() = attr(COST_PER_INTERVAL)
+val Tower.projCount get() = attr(PROJECTILE_COUNT)

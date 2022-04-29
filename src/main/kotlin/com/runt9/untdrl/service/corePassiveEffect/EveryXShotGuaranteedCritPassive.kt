@@ -9,7 +9,6 @@ import com.runt9.untdrl.util.ext.unTdRlLogger
 import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.util.framework.event.HandlesEvent
 
-// TODO: Needs eventBus cause we need to reset counter on wave end
 class EveryXShotGuaranteedCritPassive(
     override val tower: Tower,
     val definition: EveryXShotGuaranteedCritPassiveDefinition,

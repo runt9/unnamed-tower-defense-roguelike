@@ -18,6 +18,7 @@ import com.runt9.untdrl.service.duringRun.RunInitializer
 import com.runt9.untdrl.service.duringRun.RunServiceRegistry
 import com.runt9.untdrl.service.duringRun.RunStateService
 import com.runt9.untdrl.service.duringRun.SpawnerService
+import com.runt9.untdrl.service.duringRun.TickerRegistry
 import com.runt9.untdrl.service.duringRun.TowerService
 import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.util.framework.ui.DialogManager
@@ -72,6 +73,7 @@ object Injector : Context() {
         bindSingleton<ChunkGenerator>()
         bindSingleton<TowerService>()
         bindSingleton<AttackService>()
+        bindSingleton<TickerRegistry>()
         bindSingleton<EnemyService>()
         bindSingleton<ProjectileService>()
         bindSingleton<SpawnerService>()

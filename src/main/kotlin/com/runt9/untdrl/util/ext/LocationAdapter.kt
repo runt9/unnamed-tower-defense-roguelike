@@ -17,3 +17,7 @@ abstract class LocationAdapter : Location<Vector2> {
         TODO("Not yet implemented")
     }
 }
+
+fun positionToLocation(position: Vector2) = object : LocationAdapter() {
+    override fun getPosition() = position
+}

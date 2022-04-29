@@ -120,6 +120,7 @@ class TowerService(
             xpToLevel = (xpToLevel * 1.5f).roundToInt()
 
             definition.attrs.forEach { (type, def) ->
+                // TODO: This is wrong, tower growth needs to modify the base value directly, not stack with other modifiers
                 attrMods += AttributeModifier(
                     type,
                     flatModifier = if (def.growthType == FLAT) def.growthPerLevel else 0f,
@@ -135,10 +136,14 @@ class TowerService(
         }
     }
 
+    fun recalculateAttrsSync(tower: Tower) = launchOnServiceThread {
+        recalculateAttrs(tower)
+    }
+
     suspend fun recalculateAttrs(tower: Tower) {
         tower.apply {
             attrs.forEach { (type, attr) ->
-                val baseValue = definition.attrs[type]!!.baseValue
+                val baseValue = attrBase[type] ?: 0f
                 var totalFlat = 0f
                 var totalPercent = 0f
 
