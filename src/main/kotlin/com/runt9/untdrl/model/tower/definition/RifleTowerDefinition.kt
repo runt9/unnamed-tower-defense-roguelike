@@ -1,7 +1,6 @@
 package com.runt9.untdrl.model.tower.definition
 
 import com.runt9.untdrl.model.UnitTexture.GOLD_MINE
-import com.runt9.untdrl.model.UnitTexture.PROJECTILE
 import com.runt9.untdrl.model.UnitTexture.PROTOTYPE_TOWER
 import com.runt9.untdrl.model.attribute.AttributeModificationType.FLAT
 import com.runt9.untdrl.model.attribute.AttributeModificationType.PERCENT
@@ -12,13 +11,13 @@ import com.runt9.untdrl.model.attribute.AttributeType.CRIT_MULTI
 import com.runt9.untdrl.model.attribute.AttributeType.DAMAGE
 import com.runt9.untdrl.model.attribute.AttributeType.RANGE
 import com.runt9.untdrl.model.damage.DamageType
-import com.runt9.untdrl.model.tower.action.projectileAttack
+import com.runt9.untdrl.model.tower.action.instantAttack
 import com.runt9.untdrl.model.tower.specialization.sniperEffect
 
-val prototypeTower = tower("Bullet Tower", PROTOTYPE_TOWER, 30) {
+val rifleTower = tower("Rifle Tower", PROTOTYPE_TOWER, 30) {
     +"A simple tower that shoots a single bullet at an enemy."
 
-    projectileAttack(PROJECTILE)
+    instantAttack()
 
     RANGE(4f, 0.25f, FLAT)
     ATTACK_SPEED(1f, 0.05f, FLAT)

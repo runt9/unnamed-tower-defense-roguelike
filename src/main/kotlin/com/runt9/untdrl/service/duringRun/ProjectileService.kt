@@ -21,7 +21,7 @@ class ProjectileService(
     registry: RunServiceRegistry,
     private val towerService: TowerService,
     private val enemyService: EnemyService,
-    private val randomizer: RandomizerService
+    private val attackService: AttackService
 ) : RunService(eventBus, registry) {
     private val logger = unTdRlLogger()
     private val projectiles = mutableListOf<Projectile>()
@@ -44,14 +44,7 @@ class ProjectileService(
                 // TODO: Handle AoE
                 if (collidedEnemy != null && !projectile.collidedWith.contains(collidedEnemy)) {
                     projectile.collidedWith += collidedEnemy
-                    if (collidedEnemy.isAlive) {
-                        calculateDamage(projectile.owner, collidedEnemy)
-                        if (collidedEnemy.currentHp <= 0) {
-                            collidedEnemy.isAlive = false
-                            collidedEnemy.affectedByTowers.forEach { t -> towerService.gainXp(t, collidedEnemy.xpOnDeath) }
-                            eventBus.enqueueEvent(EnemyRemovedEvent(collidedEnemy))
-                        }
-                    }
+                    attackService.attackEnemy(projectile.owner, collidedEnemy)
 
                     if (projectile.remainingPierces-- == 0) {
                         despawnProjectile(projectile)
@@ -74,29 +67,6 @@ class ProjectileService(
                 }
             }
         }
-    }
-
-    // TODO: Move these somewhere else, they're not projectile-specific
-    private fun calculateDamage(tower: Tower, enemy: Enemy) {
-        val damageRequest = DamageRequest(tower)
-        tower.intercept(InterceptorHook.BEFORE_DAMAGE_CALC, damageRequest)
-        logger.debug { "Final Damage Request: $damageRequest" }
-        val damageResult = rollForDamage(damageRequest)
-        tower.intercept(InterceptorHook.AFTER_DAMAGE_CALC, damageResult)
-        logger.debug { "Final Damage Result: $damageResult" }
-        val resistanceRequest = ResistanceRequest(tower.damageTypes.toList(), enemy.resistances.toMap(), damageResult)
-        tower.intercept(InterceptorHook.BEFORE_RESISTS, resistanceRequest)
-        enemy.takeDamage(tower, resistanceRequest.finalDamage)
-
-        tower.procs.filter { randomizer.percentChance(it.chance) }.forEach { proc -> proc.applyToEnemy(enemy) }
-    }
-
-    private fun rollForDamage(request: DamageRequest): DamageResult {
-        val isCrit = randomizer.percentChance(request.totalCritChance)
-        var damageMulti = randomizer.rng.nextInt(90, 111).toFloat() / 100f
-        if (isCrit) damageMulti *= request.totalCritMulti
-        damageMulti *= request.totalDamageMulti
-        return DamageResult(request.totalBaseDamage, damageMulti)
     }
 
     private suspend fun despawnProjectile(proj: Projectile) {

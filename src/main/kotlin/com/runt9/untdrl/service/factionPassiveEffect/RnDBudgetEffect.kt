@@ -1,35 +1,27 @@
 package com.runt9.untdrl.service.factionPassiveEffect
 
-import com.runt9.untdrl.service.duringRun.RunStatePreSaveCallback
-import com.runt9.untdrl.service.duringRun.RunStateService
-import com.runt9.untdrl.util.ext.unTdRlLogger
+import com.runt9.untdrl.config.Injector
 import com.runt9.untdrl.util.framework.event.EventBus
-import kotlin.math.roundToInt
+import kotlin.math.ceil
+import kotlin.math.floor
 
-class RnDBudgetEffect(
-    override val eventBus: EventBus,
-    private val runStateService: RunStateService
-) : FactionPassiveEffect {
-    private val logger = unTdRlLogger()
-    var incomePct = 0.1f
+class RnDBudgetEffect(override val eventBus: EventBus) : FactionPassiveEffect {
+    var profitPct = 0.1f
+    var minProfitPct = 0.1f
+    var maxProfitPct = 0.5f
 
-    private val preSaveCallback: RunStatePreSaveCallback = { old, new ->
-        if (new.gold > old.gold) {
-            val research = ((new.gold - old.gold) * incomePct).roundToInt()
-            logger.info { "Turning ${research}g into research" }
-            new.gold -= research
-            new.researchAmount += research
-        }
-
-        new
-    }
-
-    override fun apply() {
-        runStateService.beforeSave(preSaveCallback)
+    override fun init() {
+        Injector.bindSingleton(this)
     }
 
     override fun dispose() {
-        runStateService.removeBeforeSave(preSaveCallback)
+        Injector.removeProvider(RnDBudgetEffect::class.java)
         super.dispose()
+    }
+
+    fun getResearchFromProfit(profit: Int): Pair<Int, Int> {
+        val research = profit * profitPct
+        val remainingProfit = profit * (1 - profitPct)
+        return Pair(ceil(remainingProfit).toInt(), floor(research).toInt())
     }
 }

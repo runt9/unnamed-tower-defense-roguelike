@@ -8,6 +8,7 @@ import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.util.framework.event.HandlesEvent
 import com.runt9.untdrl.util.framework.ui.controller.Controller
 import com.runt9.untdrl.util.framework.ui.uiComponent
+import com.runt9.untdrl.view.duringRun.ui.faction.ManageFactionDialogController
 import com.runt9.untdrl.view.duringRun.ui.menu.MenuDialogController
 import com.runt9.untdrl.view.duringRun.ui.research.ResearchDialogController
 import com.runt9.untdrl.view.duringRun.ui.shop.ShopDialogController
@@ -46,4 +47,5 @@ class SideBarInfoPanelController(private val eventBus: EventBus, private val run
     fun menuButtonClicked() = eventBus.enqueueShowDialog<MenuDialogController>()
     fun shopButtonClicked() = eventBus.enqueueShowDialog<ShopDialogController>()
     fun researchButtonClicked() = eventBus.enqueueShowDialog<ResearchDialogController>()
+    fun manageFactionButtonClicked() = eventBus.enqueueShowDialog<ManageFactionDialogController>()
 }

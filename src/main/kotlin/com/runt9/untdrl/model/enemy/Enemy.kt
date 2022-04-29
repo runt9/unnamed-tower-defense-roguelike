@@ -6,8 +6,8 @@ import com.badlogic.gdx.ai.steer.behaviors.LookWhereYouAreGoing
 import com.badlogic.gdx.ai.steer.utils.paths.LinePath
 import com.badlogic.gdx.ai.steer.utils.paths.LinePath.LinePathParam
 import com.badlogic.gdx.math.Vector2
-import com.runt9.untdrl.model.tower.Tower
 import com.runt9.untdrl.model.enemy.definition.EnemyDefinition
+import com.runt9.untdrl.model.tower.Tower
 import com.runt9.untdrl.util.ext.BaseSteerable
 import com.runt9.untdrl.util.ext.degRad
 import ktx.collections.GdxArray
@@ -37,8 +37,8 @@ class Enemy(val definition: EnemyDefinition, wave: Int, initialPosition: Vector2
 
     val affectedByTowers = mutableSetOf<Tower>()
 
-    private val fullPath = LinePath(path, true)
-    private val followPathBehavior = FollowPath(this, fullPath, 0.1f)
+    val fullPath = LinePath(path, true)
+    val followPathBehavior = FollowPath(this, fullPath, 0.1f)
     private val lookBehavior = LookWhereYouAreGoing(this).apply {
         timeToTarget = 0.01f
         alignTolerance = 0f.degRad

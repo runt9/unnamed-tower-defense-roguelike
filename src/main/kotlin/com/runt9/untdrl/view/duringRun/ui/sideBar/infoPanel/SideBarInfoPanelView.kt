@@ -15,9 +15,12 @@ class SideBarInfoPanelView(override val controller: SideBarInfoPanelController, 
 
         visTable {
             visTable {
+                textButton("Manage Faction") { onChange { controller.manageFactionButtonClicked() } }.cell(expandX = true)
+                textButton("Menu") { onChange { controller.menuButtonClicked() } }.cell(expandX = true, row = true)
+            }.cell(expandX = true, row = true)
+            visTable {
                 textButton("Shop") { onChange { controller.shopButtonClicked() } }.cell(expandX = true)
                 textButton("Research") { onChange { controller.researchButtonClicked() } }.cell(expandX = true)
-                textButton("Menu") { onChange { controller.menuButtonClicked() } }.cell(expandX = true)
             }.cell(expandX = true, row = true)
 
             visTable {

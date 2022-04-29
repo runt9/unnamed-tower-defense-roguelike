@@ -199,7 +199,7 @@ class TowerService(
         return tower
     }
 
-    private suspend fun Tower.changed() = towerChangeCbs[id]?.forEach { it(this) }
+    private suspend fun Tower.changed() = towerChangeCbs[id]?.toList()?.forEach { it(this) }
     private suspend fun withTower(id: Int, fn: suspend Tower.() -> Unit) = towers.find { it.id == id }?.fn()
     suspend fun update(id: Int, fn: suspend Tower.() -> Unit) = withTower(id) {
         fn()

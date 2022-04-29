@@ -7,11 +7,10 @@ import com.runt9.untdrl.model.loot.Relic
 import com.runt9.untdrl.model.loot.TowerCore
 import com.runt9.untdrl.service.duringRun.LootService
 import com.runt9.untdrl.service.duringRun.RunStateService
-import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.util.framework.ui.controller.DialogController
 import kotlin.math.min
 
-class LootDialogController(private val eventBus: EventBus, graphics: Graphics, private val lootService: LootService, private val runStateService: RunStateService) : DialogController() {
+class LootDialogController(graphics: Graphics, private val lootService: LootService, private val runStateService: RunStateService) : DialogController() {
     override val vm = LootDialogViewModel()
     override val view = LootDialogView(this, vm, graphics.width, graphics.height)
 
@@ -54,7 +53,7 @@ class LootDialogController(private val eventBus: EventBus, graphics: Graphics, p
     fun lootItem(item: LootItem) {
         if (vm.selectedItems.get().size >= vm.maxItemSelections.get()) return
         val runState = runStateService.load()
-        if (runState.consumables.size >= runState.consumableSlots) return
+        if (item is Consumable && runState.consumables.size >= runState.consumableSlots) return
 
         vm.lootedItems -= item
         vm.selectedItems += item

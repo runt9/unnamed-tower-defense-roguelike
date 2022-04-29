@@ -153,9 +153,9 @@ class LootService(
     }
 
     private fun generateGold() {
-        val wave = runStateService.load().wave
-        logger.debug { "Generating $wave gold" }
-        lootPool.gold += wave
+        val generatedGold = (2..5).random(randomizer.rng)
+        lootPool.gold += generatedGold
+        logger.debug { "Generated $generatedGold gold" }
     }
 
     private fun generateRarity() = rarityTable.random(randomizer.rng)

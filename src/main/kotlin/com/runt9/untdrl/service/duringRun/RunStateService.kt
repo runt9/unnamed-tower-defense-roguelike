@@ -11,12 +11,9 @@ import com.runt9.untdrl.util.ext.unTdRlLogger
 import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.util.framework.event.HandlesEvent
 
-typealias RunStatePreSaveCallback = (old: RunState, new: RunState) -> RunState
-
 class RunStateService(private val eventBus: EventBus, registry: RunServiceRegistry) : RunService(eventBus, registry) {
     private val logger = unTdRlLogger()
     private lateinit var runState: RunState
-    private val preSaveCallbacks = mutableListOf<RunStatePreSaveCallback>()
 
     // TODO: This should probably jump into the service thread to load
     fun load() = runState.copy()
@@ -24,14 +21,8 @@ class RunStateService(private val eventBus: EventBus, registry: RunServiceRegist
     fun save(runState: RunState) {
         if (!this@RunStateService::runState.isInitialized || runState != this@RunStateService.runState) {
             logger.debug { "Saving run state" }
-            var finalRunState = runState.copy()
-
-            preSaveCallbacks.forEach { cb ->
-                finalRunState = cb(load(), finalRunState.copy())
-            }
-
-            this@RunStateService.runState = finalRunState
-            eventBus.enqueueEventSync(RunStateUpdated(finalRunState.copy()))
+            this@RunStateService.runState = runState
+            eventBus.enqueueEventSync(RunStateUpdated(runState.copy()))
             // TODO: This should also flush the current state to disk
         }
     }
@@ -69,13 +60,5 @@ class RunStateService(private val eventBus: EventBus, registry: RunServiceRegist
             update()
             save(this)
         }
-    }
-
-    fun beforeSave(preSaveCallback: RunStatePreSaveCallback) {
-        preSaveCallbacks += preSaveCallback
-    }
-
-    fun removeBeforeSave(preSaveCallback: RunStatePreSaveCallback) {
-        preSaveCallbacks -= preSaveCallback
     }
 }

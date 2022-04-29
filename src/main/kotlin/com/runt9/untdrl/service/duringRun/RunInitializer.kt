@@ -11,12 +11,10 @@ class RunInitializer(private val runServiceRegistry: RunServiceRegistry, private
 
         dynamicInject(faction.goldPassive.effect).apply {
             init()
-            apply()
         }
 
         dynamicInject(faction.researchPassive.effect).apply {
             init()
-            apply()
         }
     }
 
