@@ -4,16 +4,15 @@ import com.badlogic.gdx.ai.steer.SteeringAcceleration
 import com.badlogic.gdx.math.Vector2
 import com.runt9.untdrl.model.event.WaveCompleteEvent
 import com.runt9.untdrl.model.tower.Projectile
+import com.runt9.untdrl.model.tower.intercept.DamageSource
 import com.runt9.untdrl.util.ext.unTdRlLogger
 import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.util.framework.event.HandlesEvent
 
 class ProjectileService(
-    private val eventBus: EventBus,
+    eventBus: EventBus,
     registry: RunServiceRegistry,
-    private val towerService: TowerService,
-    private val enemyService: EnemyService,
-    private val attackService: AttackService
+    private val enemyService: EnemyService
 ) : RunService(eventBus, registry) {
     private val logger = unTdRlLogger()
     private val projectiles = mutableListOf<Projectile>()
@@ -36,7 +35,7 @@ class ProjectileService(
                 // TODO: Handle AoE
                 if (collidedEnemy != null && !projectile.collidedWith.contains(collidedEnemy)) {
                     projectile.collidedWith += collidedEnemy
-                    attackService.attackEnemy(projectile.owner, collidedEnemy, projectile.position)
+                    enemyService.attackEnemy(DamageSource.PROJECTILE, projectile.owner, collidedEnemy, projectile.position)
 
                     if (projectile.remainingPierces-- == 0) {
                         despawnProjectile(projectile)

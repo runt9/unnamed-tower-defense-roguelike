@@ -36,10 +36,10 @@ class Tower(val definition: TowerDefinition, val texture: Texture) : BaseSteerab
     var level = 1
     var maxCores = 1
 
-    val attrBase = definition.attrs.mapValues { (type, def) -> def.baseValue }.toMutableMap()
+    val attrBase = definition.attrs.mapValues { (_, def) -> def.baseValue }.toMutableMap()
     val attrs = definition.attrs.mapValues { (type, _) -> Attribute(type) }.toMutableMap()
     val attrMods = mutableListOf<AttributeModifier>()
-    var damageTypes = copyDefinitionDamageTypes()
+    val damageTypes = copyDefinitionDamageTypes().toMutableList()
     var targetingMode = TargetingMode.FRONT
 
     val cores = mutableListOf<TowerCore>()

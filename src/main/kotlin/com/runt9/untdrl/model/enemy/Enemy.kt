@@ -51,16 +51,10 @@ class Enemy(val definition: EnemyDefinition, wave: Int, initialPosition: Vector2
         add(BlendedSteering.BehaviorAndWeight(lookBehavior, 1f))
     }
 
-    private lateinit var onHpChangeCb: Enemy.() -> Unit
+    lateinit var onHpChangeCb: Enemy.() -> Unit
 
     fun onHpChange(onHpChangeCb: Enemy.() -> Unit) {
         this.onHpChangeCb = onHpChangeCb
-    }
-
-    fun takeDamage(source: Tower, damage: Float) {
-        currentHp -= damage
-        affectedByTowers += source
-        onHpChangeCb()
     }
 
     fun numNodesToHome() = fullPath.segments.size - (followPathBehavior.pathParam as LinePathParam).segmentIndex
@@ -74,6 +68,14 @@ class Enemy(val definition: EnemyDefinition, wave: Int, initialPosition: Vector2
 
         if (effect.refreshes) {
             existingEffect.timer.targetTime = effect.duration
+        }
+
+        if (effect is DamagingStatusEffect) {
+            val existingDamage = (existingEffect as DamagingStatusEffect).totalDamage
+            if (effect.totalDamage >= existingDamage) {
+                statusEffects -= existingEffect
+                statusEffects += effect
+            }
         }
     }
 }

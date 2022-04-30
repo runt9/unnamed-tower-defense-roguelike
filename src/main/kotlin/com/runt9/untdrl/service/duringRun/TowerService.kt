@@ -12,7 +12,6 @@ import com.runt9.untdrl.model.tower.action.TowerActionDefinition
 import com.runt9.untdrl.model.tower.definition.TowerDefinition
 import com.runt9.untdrl.model.tower.specialization.TowerSpecializationDefinition
 import com.runt9.untdrl.model.tower.specialization.TowerSpecializationEffectDefinition
-import com.runt9.untdrl.service.RandomizerService
 import com.runt9.untdrl.service.towerAction.TowerAction
 import com.runt9.untdrl.util.ext.dynamicInject
 import com.runt9.untdrl.util.ext.dynamicInjectCheckAssignableFrom
@@ -26,10 +25,9 @@ import ktx.assets.async.AssetStorage
 import kotlin.math.roundToInt
 
 class TowerService(
-    private val eventBus: EventBus,
+    eventBus: EventBus,
     registry: RunServiceRegistry,
-    private val assets: AssetStorage,
-    private val randomizer: RandomizerService
+    private val assets: AssetStorage
 ) : RunService(eventBus, registry) {
     private val logger = unTdRlLogger()
     private val towers = mutableListOf<Tower>()

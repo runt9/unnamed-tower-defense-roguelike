@@ -5,14 +5,13 @@ import com.runt9.untdrl.model.damage.DamageType
 import com.runt9.untdrl.model.tower.Tower
 import com.runt9.untdrl.model.tower.critChance
 import com.runt9.untdrl.model.tower.critMulti
-import com.runt9.untdrl.model.tower.damage
 import com.runt9.untdrl.model.tower.intercept.InterceptorHook.AFTER_DAMAGE_CALC
 import com.runt9.untdrl.model.tower.intercept.InterceptorHook.BEFORE_DAMAGE_CALC
 import com.runt9.untdrl.model.tower.intercept.InterceptorHook.BEFORE_RESISTS
 import com.runt9.untdrl.model.tower.intercept.InterceptorHook.CRIT_CHECK
 import com.runt9.untdrl.model.tower.intercept.InterceptorHook.ON_ATTACK
 import com.runt9.untdrl.util.ext.clamp
-import com.runt9.untdrl.util.ext.displayInt
+import com.runt9.untdrl.util.ext.displayDecimal
 import com.runt9.untdrl.util.ext.displayMultiplier
 import com.runt9.untdrl.util.ext.displayPercent
 
@@ -63,9 +62,11 @@ data class CritRequest(private val tower: Tower) : TowerInteraction {
     override fun toString() = "[Total Crit: ${(totalCritChance * 100f).displayPercent(1)} | Total Crit Multi: ${totalCritMulti.displayMultiplier()}]"
 }
 
-data class DamageRequest(private val tower: Tower, val damageMultiplier: Float) : TowerInteraction {
-    private val baseDamage = tower.damage
+enum class DamageSource {
+    TOWER, PROJECTILE, BURN, BLEED, POISON
+}
 
+data class DamageRequest(val source: DamageSource, private val baseDamage: Float, val damageMultiplier: Float = 1f) : TowerInteraction {
     private var additionalBaseDamage = 0f
     private var additionalDamageMultiplier = 1f
 
@@ -76,26 +77,33 @@ data class DamageRequest(private val tower: Tower, val damageMultiplier: Float) 
     fun addDamageMultiplier(multi: Float) { additionalDamageMultiplier += multi }
 
     override fun toString() =
-        "[Total Base: ${totalBaseDamage.displayInt()} | Total Multi: ${totalDamageMulti.displayMultiplier()}]"
+        "[Total Base: ${totalBaseDamage.displayDecimal()} | Total Multi: ${totalDamageMulti.displayMultiplier()}]"
 }
 
 data class DamageResult(val baseDamage: Float, val totalMulti: Float) : TowerInteraction {
     val totalDamage get() = baseDamage * totalMulti
 
     override fun toString() =
-        "[Base: ${baseDamage.displayInt()} | Multi: ${totalMulti.displayMultiplier()} | Total: ${totalDamage.displayInt()}]"
+        "[Base: ${baseDamage.displayDecimal()} | Multi: ${totalMulti.displayMultiplier()} | Total: ${totalDamage.displayDecimal()}]"
 }
 
-data class ResistanceRequest(private val damageTypes: List<DamageMap>, private val resistances: Map<DamageType, Float>, val damageResult: DamageResult) : TowerInteraction {
+data class ResistanceRequest(
+    val source: DamageSource,
+    private val damageTypes: List<DamageMap>,
+    private val resistances: Map<DamageType, Float>,
+    val damageResult: DamageResult
+) : TowerInteraction {
     private val additionalDamageTypes = mutableListOf<DamageMap>()
     private var globalPenetration = 0f
     private val specificPenetration = mutableMapOf<DamageType, Float>()
 
-    val finalDamage get() = (damageTypes + additionalDamageTypes).map { dt ->
-        val damage = damageResult.totalDamage * dt.pctOfBase
-        val resistance = getResistance(dt.type, dt.penetration)
-        return@map damage / resistance
-    }.sum()
+    val finalDamage by lazy {
+        (damageTypes + additionalDamageTypes).map { dt ->
+            val damage = damageResult.totalDamage * dt.pctOfBase
+            val resistance = getResistance(dt.type, dt.penetration)
+            return@map damage / resistance
+        }.sum()
+    }
 
     private fun getResistance(type: DamageType, penetration: Float): Float {
         val resist = resistances.getOrDefault(type, 1f)
@@ -116,6 +124,14 @@ data class ResistanceRequest(private val damageTypes: List<DamageMap>, private v
 
 fun onAttack(intercept: (Tower, OnAttack) -> Unit) = intercept(ON_ATTACK, intercept)
 fun critCheck(intercept: (Tower, CritRequest) -> Unit) = intercept(CRIT_CHECK, intercept)
-fun beforeDamage(intercept: (Tower, DamageRequest) -> Unit) = intercept(BEFORE_DAMAGE_CALC, intercept)
+fun beforeDamage(vararg filterSource: DamageSource = DamageSource.values(), intercept: (Tower, DamageRequest) -> Unit) =
+    intercept<DamageRequest>(BEFORE_DAMAGE_CALC) { tower, request ->
+        if (!filterSource.contains(request.source)) return@intercept
+        intercept(tower, request)
+    }
 fun afterDamage(intercept: (Tower, DamageResult) -> Unit) = intercept(AFTER_DAMAGE_CALC, intercept)
-fun beforeResists(intercept: (Tower, ResistanceRequest) -> Unit) = intercept(BEFORE_RESISTS, intercept)
+fun beforeResists(vararg filterSource: DamageSource = DamageSource.values(), intercept: (Tower, ResistanceRequest) -> Unit) =
+    intercept<ResistanceRequest>(BEFORE_RESISTS) { tower, request ->
+        if (!filterSource.contains(request.source)) return@intercept
+        intercept(tower, request)
+    }
