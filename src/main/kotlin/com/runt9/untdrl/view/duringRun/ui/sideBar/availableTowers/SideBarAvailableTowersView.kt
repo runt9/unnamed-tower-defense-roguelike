@@ -6,11 +6,13 @@ import com.kotcrab.vis.ui.VisUI
 import com.runt9.untdrl.model.attribute.definition.displayName
 import com.runt9.untdrl.model.attribute.definition.getDisplayValue
 import com.runt9.untdrl.model.tower.definition.TowerDefinition
+import com.runt9.untdrl.util.ext.loadTexture
 import com.runt9.untdrl.util.ext.ui.bindUpdatable
 import com.runt9.untdrl.util.ext.ui.separator
 import com.runt9.untdrl.util.ext.ui.squarePixmap
 import com.runt9.untdrl.util.framework.ui.view.TableView
 import ktx.actors.onClick
+import ktx.assets.async.AssetStorage
 import ktx.scene2d.KStack
 import ktx.scene2d.stack
 import ktx.scene2d.tooltip
@@ -20,10 +22,15 @@ import ktx.scene2d.vis.visLabel
 import ktx.scene2d.vis.visScrollPane
 import ktx.scene2d.vis.visTable
 
-class SideBarAvailableTowersView(override val controller: SideBarAvailableTowersController, override val vm: SideBarAvailableTowersViewModel) : TableView(controller, vm) {
+class SideBarAvailableTowersView(
+    override val controller: SideBarAvailableTowersController,
+    override val vm: SideBarAvailableTowersViewModel,
+    val assets: AssetStorage
+) : TableView() {
     override fun init() {
         val vm = vm
         val controller = controller
+        val assets = assets
 
         visScrollPane {
             setScrollingDisabled(true, false)
@@ -34,7 +41,7 @@ class SideBarAvailableTowersView(override val controller: SideBarAvailableTowers
                     vm.availableTowers.get().forEach { tower ->
                         stack {
                             squarePixmap(60, Color.LIGHT_GRAY)
-                            visImage(controller.loadTexture(tower.texture))
+                            visImage(assets.loadTexture(tower.texture))
                             towerTooltip(tower)
                             visTable {
                                 visLabel(tower.goldCost.toString()) {

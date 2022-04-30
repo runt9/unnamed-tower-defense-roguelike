@@ -8,6 +8,7 @@ import com.runt9.untdrl.model.attribute.definition.displayName
 import com.runt9.untdrl.model.attribute.definition.getDisplayValue
 import com.runt9.untdrl.model.tower.TargetingMode
 import com.runt9.untdrl.model.tower.specialization.TowerSpecializationDefinition
+import com.runt9.untdrl.util.ext.loadTexture
 import com.runt9.untdrl.util.ext.ui.bindLabelText
 import com.runt9.untdrl.util.ext.ui.bindUpdatable
 import com.runt9.untdrl.util.ext.ui.rectPixmapTexture
@@ -19,6 +20,7 @@ import com.runt9.untdrl.view.duringRun.TOWER_SPECIALIZATION_LEVEL
 import com.runt9.untdrl.view.duringRun.ui.util.lootItem
 import ktx.actors.onChange
 import ktx.actors.onClick
+import ktx.assets.async.AssetStorage
 import ktx.collections.toGdxArray
 import ktx.scene2d.label
 import ktx.scene2d.progressBar
@@ -33,10 +35,15 @@ import ktx.scene2d.vis.visSelectBoxOf
 import ktx.scene2d.vis.visTable
 import ktx.style.progressBar
 
-class SideBarTowerView(override val controller: SideBarTowerController, override val vm: SideBarTowerViewModel) : TableView(controller, vm) {
+class SideBarTowerView(
+    override val controller: SideBarTowerController,
+    override val vm: SideBarTowerViewModel,
+    val assets: AssetStorage
+) : TableView() {
     override fun init() {
         val controller = controller
         val vm = vm
+        val assets = assets
 
         visTable {
             visLabel(vm.name.get()).cell(row = true, pad = 2f)
@@ -157,7 +164,7 @@ class SideBarTowerView(override val controller: SideBarTowerController, override
                             } else {
                                 vm.specializations.get().forEach { specialization ->
                                     visTable {
-                                        visImage(controller.loadTexture(specialization.icon)) {
+                                        visImage(assets.loadTexture(specialization.icon)) {
                                             setSize(50f, 50f)
                                             onClick { controller.applySpecialization(specialization) }
                                             specializationTooltip(specialization)

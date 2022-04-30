@@ -1,20 +1,21 @@
 package com.runt9.untdrl.view.loading
 
-import ktx.assets.async.AssetStorage
-import ktx.async.onRenderingThread
 import com.runt9.untdrl.model.event.AssetsLoadedEvent
 import com.runt9.untdrl.model.event.enqueueChangeScreen
-import com.runt9.untdrl.util.ext.unTdRlLogger
 import com.runt9.untdrl.util.ext.percent
+import com.runt9.untdrl.util.ext.unTdRlLogger
 import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.util.framework.event.HandlesEvent
 import com.runt9.untdrl.util.framework.ui.controller.UiScreenController
+import com.runt9.untdrl.util.framework.ui.controller.injectView
 import com.runt9.untdrl.view.mainMenu.MainMenuScreenController
+import ktx.assets.async.AssetStorage
+import ktx.async.onRenderingThread
 
 class LoadingScreenController(private val assets: AssetStorage, private val eventBus: EventBus) : UiScreenController() {
     private val logger = unTdRlLogger()
     override val vm = LoadingScreenViewModel()
-    override val view = LoadingScreenView(this, vm)
+    override val view = injectView<LoadingScreenView>()
 
     override fun show() {
         super.show()

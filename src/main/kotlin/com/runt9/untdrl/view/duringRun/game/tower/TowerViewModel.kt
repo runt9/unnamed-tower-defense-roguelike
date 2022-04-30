@@ -10,5 +10,5 @@ class TowerViewModel(val tower: Tower) : ViewModel() {
     val isSelected = Binding(false)
     val attrs = Binding(tower.attrs.mapToFloats())
     val isValidPlacement = Binding(false)
-    val texture = tower.texture
+    val texture = Binding(tower.definition.texture)
 }

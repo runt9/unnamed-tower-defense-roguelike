@@ -3,16 +3,22 @@ package com.runt9.untdrl.view.duringRun.game.enemy
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.utils.Align
 import com.kotcrab.vis.ui.VisUI
+import com.runt9.untdrl.util.ext.loadTexture
 import com.runt9.untdrl.util.ext.ui.bindUpdatable
 import com.runt9.untdrl.util.ext.ui.rectPixmapTexture
 import com.runt9.untdrl.util.ext.ui.toDrawable
 import com.runt9.untdrl.util.framework.ui.view.GroupView
+import ktx.assets.async.AssetStorage
 import ktx.scene2d.progressBar
 import ktx.scene2d.vis.visImage
 import ktx.scene2d.vis.visTable
 import ktx.style.progressBar
 
-class EnemyView(override val controller: EnemyController, override val vm: EnemyViewModel) : GroupView(controller, vm) {
+class EnemyView(
+    override val controller: EnemyController,
+    override val vm: EnemyViewModel,
+    val assets: AssetStorage
+) : GroupView() {
     override fun init() {
         val vm = vm
 
@@ -29,7 +35,6 @@ class EnemyView(override val controller: EnemyController, override val vm: Enemy
             progressBar {
                 style = this@EnemyView.unitBarStyle(Color.GREEN)
 
-                // TODO: This is NPE'ing sometimes
                 bindUpdatable(vm.hpPercent) { value = vm.hpPercent.get() }
 
                 setAnimateDuration(0.15f)
@@ -39,7 +44,7 @@ class EnemyView(override val controller: EnemyController, override val vm: Enemy
             }.cell(height = 0.2f, width = 0.5f, row = true)
         }
 
-        visImage(controller.loadTexture(vm.texture)) {
+        visImage(assets.loadTexture(vm.texture)) {
             setSize(0.5f, 0.5f)
             setOrigin(Align.center)
             bindUpdatable(vm.rotation) { vm.rotation.get().apply { rotation = this } }

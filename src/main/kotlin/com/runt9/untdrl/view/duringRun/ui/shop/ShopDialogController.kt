@@ -1,6 +1,5 @@
 package com.runt9.untdrl.view.duringRun.ui.shop
 
-import com.badlogic.gdx.Graphics
 import com.runt9.untdrl.model.RunState
 import com.runt9.untdrl.model.event.RunStateUpdated
 import com.runt9.untdrl.model.loot.Consumable
@@ -12,17 +11,17 @@ import com.runt9.untdrl.service.duringRun.RunStateService
 import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.util.framework.event.HandlesEvent
 import com.runt9.untdrl.util.framework.ui.controller.DialogController
+import com.runt9.untdrl.util.framework.ui.controller.injectView
 import com.runt9.untdrl.view.duringRun.REROLL_COST
 import ktx.async.onRenderingThread
 
 class ShopDialogController(
-    graphics: Graphics,
     private val runStateService: RunStateService,
     private val eventBus: EventBus,
     private val lootService: LootService
 ) : DialogController() {
     override val vm = ShopDialogViewModel()
-    override val view = ShopDialogView(this, vm, graphics.width, graphics.height)
+    override val view = injectView<ShopDialogView>()
 
     override fun load() {
         eventBus.registerHandlers(this)

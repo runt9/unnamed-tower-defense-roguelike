@@ -9,10 +9,8 @@ import ktx.scene2d.vis.visLabel
 
 class RunEndDialogView(
     override val controller: RunEndDialogController,
-    override val vm: RunEndDialogViewModel,
-    screenWidth: Int,
-    screenHeight: Int
-) : DialogView(controller, vm, "Run Over", screenWidth, screenHeight) {
+    override val vm: RunEndDialogViewModel
+) : DialogView(controller, "Run Over") {
     override val widthScale: Float = 0.5f
     override val heightScale: Float = 0.5f
 

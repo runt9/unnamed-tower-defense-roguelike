@@ -1,7 +1,5 @@
 package com.runt9.untdrl.view.duringRun.ui.sideBar.tower
 
-import com.badlogic.gdx.graphics.Texture
-import com.runt9.untdrl.model.UnitTexture
 import com.runt9.untdrl.model.event.RunStateUpdated
 import com.runt9.untdrl.model.loot.TowerCore
 import com.runt9.untdrl.model.tower.TargetingMode
@@ -11,8 +9,8 @@ import com.runt9.untdrl.service.duringRun.TowerService
 import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.util.framework.event.HandlesEvent
 import com.runt9.untdrl.util.framework.ui.controller.Controller
+import com.runt9.untdrl.util.framework.ui.controller.lazyInjectView
 import com.runt9.untdrl.util.framework.ui.uiComponent
-import ktx.assets.async.AssetStorage
 import ktx.async.onRenderingThread
 import ktx.scene2d.KWidget
 import ktx.scene2d.Scene2dDsl
@@ -25,11 +23,10 @@ fun <S> KWidget<S>.sideBarTower(tower: SideBarTowerViewModel, init: SideBarTower
 class SideBarTowerController(
     private val runStateService: RunStateService,
     private val eventBus: EventBus,
-    private val towerService: TowerService,
-    private val assets: AssetStorage
+    private val towerService: TowerService
 ) : Controller {
     override lateinit var vm: SideBarTowerViewModel
-    override val view by lazy { SideBarTowerView(this, vm) }
+    override val view by lazyInjectView<SideBarTowerView>()
 
     override fun load() {
         eventBus.registerHandlers(this)
@@ -72,8 +69,6 @@ class SideBarTowerController(
             this.targetingMode = targetingMode
         }
     }
-
-    fun loadTexture(icon: UnitTexture): Texture = assets[icon.assetFile]
 
     fun applySpecialization(specialization: TowerSpecializationDefinition) {
         if (!vm.canSpecialize.get()) return

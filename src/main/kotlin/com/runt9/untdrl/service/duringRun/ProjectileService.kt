@@ -32,7 +32,6 @@ class ProjectileService(
             projectiles.toList().forEach { projectile ->
                 val collidedEnemy = enemyService.collidesWithEnemy(projectile.position, 0.25f)
 
-                // TODO: Handle AoE
                 if (collidedEnemy != null && !projectile.collidedWith.contains(collidedEnemy)) {
                     projectile.collidedWith += collidedEnemy
                     enemyService.attackEnemy(DamageSource.PROJECTILE, projectile.owner, collidedEnemy, projectile.position)

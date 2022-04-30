@@ -2,12 +2,13 @@ package com.runt9.untdrl.view.duringRun.game.chunk
 
 import com.badlogic.gdx.InputMultiplexer
 import com.badlogic.gdx.graphics.OrthographicCamera
-import com.runt9.untdrl.util.ext.lazyInject
 import com.runt9.untdrl.model.event.ChunkCancelledEvent
 import com.runt9.untdrl.model.event.ChunkPlacedEvent
 import com.runt9.untdrl.service.duringRun.IndexedGridGraph
+import com.runt9.untdrl.util.ext.lazyInject
 import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.util.framework.ui.controller.Controller
+import com.runt9.untdrl.util.framework.ui.controller.lazyInjectView
 import com.runt9.untdrl.util.framework.ui.uiComponent
 import ktx.scene2d.KWidget
 import ktx.scene2d.Scene2dDsl
@@ -20,7 +21,7 @@ fun <S> KWidget<S>.chunk(chunk: ChunkViewModel, init: ChunkView.(S) -> Unit = {}
 
 class ChunkController(private val eventBus: EventBus, private val grid: IndexedGridGraph) : Controller {
     override lateinit var vm: ChunkViewModel
-    override val view by lazy { ChunkView(this, vm) }
+    override val view by lazyInjectView<ChunkView>()
     private val input by lazyInject<InputMultiplexer>()
     private val camera by lazyInject<OrthographicCamera>()
 

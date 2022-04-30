@@ -7,12 +7,13 @@ import com.runt9.untdrl.model.event.enqueueShowDialog
 import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.util.framework.event.HandlesEvent
 import com.runt9.untdrl.util.framework.ui.controller.Controller
+import com.runt9.untdrl.util.framework.ui.controller.injectView
 import com.runt9.untdrl.view.duringRun.ui.loot.LootDialogController
 import ktx.async.onRenderingThread
 
 class DuringRunUiController(private val eventBus: EventBus) : Controller {
     override val vm = DuringRunUiViewModel()
-    override val view = DuringRunUiView(this, vm)
+    override val view = injectView<DuringRunUiView>()
     private val children = mutableListOf<Controller>()
 
     override fun load() {

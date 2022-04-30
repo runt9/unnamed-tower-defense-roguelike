@@ -8,7 +8,10 @@ import ktx.scene2d.textButton
 import ktx.scene2d.vis.visLabel
 import ktx.scene2d.vis.visTable
 
-class SideBarInfoPanelView(override val controller: SideBarInfoPanelController, override val vm: SideBarInfoPanelViewModel) : TableView(controller, vm) {
+class SideBarInfoPanelView(
+    override val controller: SideBarInfoPanelController,
+    override val vm: SideBarInfoPanelViewModel
+) : TableView() {
     override fun init() {
         val vm = vm
         val controller = controller

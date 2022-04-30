@@ -1,6 +1,8 @@
 package com.runt9.untdrl.util.framework.ui.controller
 
 import com.badlogic.gdx.utils.Disposable
+import com.runt9.untdrl.util.ext.dynamicInject
+import com.runt9.untdrl.util.ext.dynamicInjectCheckIsSubclassOf
 import com.runt9.untdrl.util.framework.ui.view.View
 import com.runt9.untdrl.util.framework.ui.viewModel.ViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -21,3 +23,11 @@ interface Controller : Disposable {
 
     fun launchOnRenderingThread(block: suspend CoroutineScope.() -> Unit) = KtxAsync.launch(MainDispatcher, block = block)
 }
+
+inline fun <reified V : View> Controller.injectView() = dynamicInject(
+    V::class,
+    dynamicInjectCheckIsSubclassOf(Controller::class.java) to this,
+    dynamicInjectCheckIsSubclassOf(ViewModel::class.java) to vm
+)
+
+inline fun <reified V : View> Controller.lazyInjectView() = lazy { injectView<V>() }

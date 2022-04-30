@@ -1,12 +1,15 @@
 package com.runt9.untdrl.view.mainMenu
 
+import com.runt9.untdrl.util.framework.ui.view.ScreenView
+import com.runt9.untdrl.util.framework.ui.viewModel.ViewModel
 import ktx.actors.onClick
 import ktx.scene2d.textButton
 import ktx.scene2d.vis.visLabel
-import com.runt9.untdrl.util.framework.ui.viewModel.ViewModel
-import com.runt9.untdrl.util.framework.ui.view.ScreenView
 
-class MainMenuView(override val controller: MainMenuScreenController, override val vm: ViewModel) : ScreenView(controller, vm) {
+class MainMenuView(
+    override val controller: MainMenuScreenController,
+    override val vm: ViewModel
+) : ScreenView() {
     override fun init() {
         super.init()
 

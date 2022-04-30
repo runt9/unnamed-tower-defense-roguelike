@@ -17,10 +17,8 @@ import ktx.scene2d.vis.visTable
 
 class ShopDialogView(
     override val controller: ShopDialogController,
-    override val vm: ShopDialogViewModel,
-    screenWidth: Int,
-    screenHeight: Int
-) : DialogView(controller, vm, "Shop", screenWidth, screenHeight) {
+    override val vm: ShopDialogViewModel
+) : DialogView(controller, "Shop") {
     override val widthScale: Float = 0.75f
     override val heightScale: Float = 0.75f
 

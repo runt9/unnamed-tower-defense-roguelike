@@ -8,6 +8,7 @@ import com.runt9.untdrl.util.ext.unTdRlLogger
 import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.util.framework.event.HandlesEvent
 import com.runt9.untdrl.util.framework.ui.controller.Controller
+import com.runt9.untdrl.util.framework.ui.controller.injectView
 import com.runt9.untdrl.util.framework.ui.uiComponent
 import ktx.async.onRenderingThread
 import ktx.scene2d.KWidget
@@ -19,7 +20,7 @@ fun <S> KWidget<S>.consumables(init: SideBarConsumablesView.(S) -> Unit = {}) = 
 class SideBarConsumablesController(private val eventBus: EventBus, private val runStateService: RunStateService) : Controller {
     private val logger = unTdRlLogger()
     override val vm = SideBarConsumablesViewModel()
-    override val view = SideBarConsumablesView(this, vm)
+    override val view = injectView<SideBarConsumablesView>()
 
     override fun load() {
         eventBus.registerHandlers(this)

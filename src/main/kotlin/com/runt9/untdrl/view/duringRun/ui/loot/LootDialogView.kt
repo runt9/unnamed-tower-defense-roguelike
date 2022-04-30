@@ -21,10 +21,8 @@ import ktx.scene2d.vis.visTable
 
 class LootDialogView(
     override val controller: LootDialogController,
-    override val vm: LootDialogViewModel,
-    screenWidth: Int,
-    screenHeight: Int
-) : DialogView(controller, vm, "Loot", screenWidth, screenHeight) {
+    override val vm: LootDialogViewModel
+) : DialogView(controller, "Loot") {
     override val widthScale: Float = 0.6f
     override val heightScale: Float = 0.6f
 

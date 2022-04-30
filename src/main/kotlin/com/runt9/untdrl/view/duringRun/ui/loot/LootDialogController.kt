@@ -1,6 +1,5 @@
 package com.runt9.untdrl.view.duringRun.ui.loot
 
-import com.badlogic.gdx.Graphics
 import com.runt9.untdrl.model.loot.Consumable
 import com.runt9.untdrl.model.loot.LootItem
 import com.runt9.untdrl.model.loot.Relic
@@ -8,11 +7,12 @@ import com.runt9.untdrl.model.loot.TowerCore
 import com.runt9.untdrl.service.duringRun.LootService
 import com.runt9.untdrl.service.duringRun.RunStateService
 import com.runt9.untdrl.util.framework.ui.controller.DialogController
+import com.runt9.untdrl.util.framework.ui.controller.injectView
 import kotlin.math.min
 
-class LootDialogController(graphics: Graphics, private val lootService: LootService, private val runStateService: RunStateService) : DialogController() {
+class LootDialogController(private val lootService: LootService, private val runStateService: RunStateService) : DialogController() {
     override val vm = LootDialogViewModel()
-    override val view = LootDialogView(this, vm, graphics.width, graphics.height)
+    override val view = injectView<LootDialogView>()
 
     override fun load() {
         // TODO: Determine if doing a copy is needed

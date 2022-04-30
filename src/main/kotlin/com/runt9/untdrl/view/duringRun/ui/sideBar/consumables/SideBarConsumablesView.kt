@@ -11,7 +11,10 @@ import ktx.scene2d.vis.flowGroup
 import ktx.scene2d.vis.visLabel
 import ktx.scene2d.vis.visTable
 
-class SideBarConsumablesView(override val controller: SideBarConsumablesController, override val vm: SideBarConsumablesViewModel) : TableView(controller, vm) {
+class SideBarConsumablesView(
+    override val controller: SideBarConsumablesController,
+    override val vm: SideBarConsumablesViewModel
+) : TableView() {
     override fun init() {
         val vm = vm
         val controller = controller

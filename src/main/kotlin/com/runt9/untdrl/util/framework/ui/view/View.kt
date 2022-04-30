@@ -8,6 +8,7 @@ import com.runt9.untdrl.util.framework.ui.viewModel.ViewModel
 interface View : Disposable, Updatable {
     val controller: Controller
     val vm: ViewModel
+
     fun init()
     override fun update() = Unit
 }

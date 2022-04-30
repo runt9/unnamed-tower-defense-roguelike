@@ -27,5 +27,16 @@ fun <Type : Any> dynamicInject(clazz: KClass<out Type>, vararg additionalInjects
     return constructor.newInstance(*parameters) as Type
 }
 
-fun dynamicInjectCheckInterfaceContains(clazz: Class<*>) = { c: Class<*> -> c.interfaces.contains(clazz) }
+fun dynamicInjectCheckIsSubclassOf(clazz: Class<*>) = { classToCheck: Class<*> ->
+    val matchFinder = { c: Class<*> -> c == clazz || c.superclass == clazz || c.interfaces.contains(clazz) }
+    var foundMatch = matchFinder(classToCheck)
+    var currentClazz = classToCheck
+
+    while (currentClazz.superclass != null && !foundMatch) {
+        currentClazz = currentClazz.superclass
+        foundMatch = matchFinder(currentClazz)
+    }
+
+    foundMatch
+}
 fun dynamicInjectCheckAssignableFrom(clazz: Class<*>) = { c: Class<*> -> c.isAssignableFrom(clazz) }

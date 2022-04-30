@@ -1,6 +1,5 @@
 package com.runt9.untdrl.model.tower
 
-import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.math.Vector2
 import com.runt9.untdrl.model.attribute.Attribute
 import com.runt9.untdrl.model.attribute.AttributeModificationType
@@ -20,7 +19,7 @@ import kotlin.math.max
 
 private var idCounter = 0
 
-class Tower(val definition: TowerDefinition, val texture: Texture) : BaseSteerable(Vector2.Zero, 0f) {
+class Tower(val definition: TowerDefinition) : BaseSteerable(Vector2.Zero, 0f) {
     val id = idCounter++
 
     override val linearSpeedLimit = 0f

@@ -12,6 +12,5 @@ enum class TargetingMode {
     NEAR_DEATH,
     HEALTHIEST;
 
-    // TODO: This is kinda hacky but I'd need to override LibGDX SelectBox to change how the toString is called on an item
     override fun toString() = displayName()
 }

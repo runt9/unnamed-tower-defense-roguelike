@@ -12,10 +12,7 @@ abstract class LocationAdapter : Location<Vector2> {
     override fun setOrientation(orientation: Float) { rotation = orientation.radDeg }
     override fun vectorToAngle(vector: Vector2) = vector.toAngle()
     override fun angleToVector(outVector: Vector2, angle: Float) = angle.toVector(outVector)
-
-    override fun newLocation(): Location<Vector2> {
-        TODO("Not yet implemented")
-    }
+    override fun newLocation() = positionToLocation(position)
 }
 
 fun positionToLocation(position: Vector2) = object : LocationAdapter() {

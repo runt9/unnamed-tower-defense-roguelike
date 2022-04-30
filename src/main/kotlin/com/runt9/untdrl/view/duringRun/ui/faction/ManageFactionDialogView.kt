@@ -14,10 +14,8 @@ import ktx.scene2d.vis.visTable
 
 class ManageFactionDialogView(
     override val controller: ManageFactionDialogController,
-    override val vm: ManageFactionDialogViewModel,
-    screenWidth: Int,
-    screenHeight: Int
-) : DialogView(controller, vm, "Manage Faction", screenWidth, screenHeight) {
+    override val vm: ManageFactionDialogViewModel
+) : DialogView(controller, "Manage Faction") {
     override val widthScale = 0.5f
     override val heightScale = 0.5f
 

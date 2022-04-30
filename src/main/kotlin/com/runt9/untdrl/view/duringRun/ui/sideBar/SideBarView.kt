@@ -6,14 +6,17 @@ import com.runt9.untdrl.util.ext.ui.bindVisible
 import com.runt9.untdrl.util.ext.ui.separator
 import com.runt9.untdrl.util.framework.ui.view.TableView
 import com.runt9.untdrl.view.duringRun.ui.sideBar.availableTowers.availableTowers
-import com.runt9.untdrl.view.duringRun.ui.sideBar.tower.sideBarTower
 import com.runt9.untdrl.view.duringRun.ui.sideBar.consumables.consumables
 import com.runt9.untdrl.view.duringRun.ui.sideBar.infoPanel.infoPanel
+import com.runt9.untdrl.view.duringRun.ui.sideBar.tower.sideBarTower
 import ktx.actors.onChange
 import ktx.scene2d.textButton
 import ktx.scene2d.vis.visTable
 
-class SideBarView(override val controller: SideBarController, override val vm: SideBarViewModel) : TableView(controller, vm) {
+class SideBarView(
+    override val controller: SideBarController,
+    override val vm: SideBarViewModel
+) : TableView() {
     override fun init() {
         val vm = vm
         val controller = controller

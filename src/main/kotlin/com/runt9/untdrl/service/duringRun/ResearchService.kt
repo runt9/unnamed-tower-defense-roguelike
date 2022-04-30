@@ -6,7 +6,7 @@ import com.runt9.untdrl.model.research.ResearchEffectDefinition
 import com.runt9.untdrl.model.research.allResearch
 import com.runt9.untdrl.service.RandomizerService
 import com.runt9.untdrl.util.ext.dynamicInject
-import com.runt9.untdrl.util.ext.dynamicInjectCheckInterfaceContains
+import com.runt9.untdrl.util.ext.dynamicInjectCheckIsSubclassOf
 import com.runt9.untdrl.util.ext.unTdRlLogger
 import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.view.duringRun.REROLL_COST
@@ -29,7 +29,7 @@ class ResearchService(
 
         val effect = dynamicInject(
             research.effect.effectClass,
-            dynamicInjectCheckInterfaceContains(ResearchEffectDefinition::class.java) to research.effect
+            dynamicInjectCheckIsSubclassOf(ResearchEffectDefinition::class.java) to research.effect
         )
         effect.init()
         effect.apply()

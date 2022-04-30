@@ -9,10 +9,8 @@ import ktx.scene2d.vis.visLabel
 
 class MenuDialogView(
     override val controller: MenuDialogController,
-    override val vm: MenuDialogViewModel,
-    screenWidth: Int,
-    screenHeight: Int
-) : DialogView(controller, vm, "Menu", screenWidth, screenHeight) {
+    override val vm: MenuDialogViewModel
+) : DialogView(controller, "Menu") {
     override val widthScale: Float = 0.33f
     override val heightScale: Float = 0.5f
 

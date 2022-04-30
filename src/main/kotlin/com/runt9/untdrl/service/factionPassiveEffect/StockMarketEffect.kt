@@ -79,6 +79,5 @@ enum class RiskTolerance(min: Float, max: Float) {
 
     val riskRange = min..max
 
-    // TODO: This is kinda hacky but I'd need to override LibGDX SelectBox to change how the toString is called on an item
     override fun toString() = displayName()
 }

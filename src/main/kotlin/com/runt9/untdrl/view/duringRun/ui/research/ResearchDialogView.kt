@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.kotcrab.vis.ui.VisUI
 import com.runt9.untdrl.model.research.ResearchDefinition
+import com.runt9.untdrl.util.ext.loadTexture
 import com.runt9.untdrl.util.ext.ui.bindButtonDisabled
 import com.runt9.untdrl.util.ext.ui.bindLabelText
 import com.runt9.untdrl.util.ext.ui.bindUpdatable
@@ -11,6 +12,7 @@ import com.runt9.untdrl.util.ext.ui.separator
 import com.runt9.untdrl.util.framework.ui.view.DialogView
 import ktx.actors.onChange
 import ktx.actors.onClick
+import ktx.assets.async.AssetStorage
 import ktx.scene2d.KTable
 import ktx.scene2d.textButton
 import ktx.scene2d.tooltip
@@ -21,9 +23,8 @@ import ktx.scene2d.vis.visTable
 class ResearchDialogView(
     override val controller: ResearchDialogController,
     override val vm: ResearchDialogViewModel,
-    screenWidth: Int,
-    screenHeight: Int
-) : DialogView(controller, vm, "Research", screenWidth, screenHeight) {
+    private val assets: AssetStorage
+) : DialogView(controller, "Research") {
     override val widthScale: Float = 0.75f
     override val heightScale: Float = 0.45f
 
@@ -40,7 +41,7 @@ class ResearchDialogView(
                 } else {
                     research.forEach { r ->
                         visTable {
-                            visImage(controller.loadTexture(r.icon)).cell(row = true)
+                            visImage(assets.loadTexture(r.icon)).cell(row = true)
                             researchTooltip(r)
                             visLabel("R ${r.cost}") {
                                 bindUpdatable(vm.researchAmount) {

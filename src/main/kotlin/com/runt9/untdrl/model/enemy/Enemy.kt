@@ -21,7 +21,6 @@ class Enemy(val definition: EnemyDefinition, wave: Int, initialPosition: Vector2
     val statusEffects = mutableListOf<StatusEffect>()
 
     override val linearSpeedLimit: Float get() {
-        // TODO: Determine if this is really how we wanna handle stun
         if (statusEffects.any { it is Stun }) return 0f
         return definition.baseSpeed * difficultyModifier
     }

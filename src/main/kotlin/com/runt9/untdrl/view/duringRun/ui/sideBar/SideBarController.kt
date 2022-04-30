@@ -18,6 +18,7 @@ import com.runt9.untdrl.util.ext.unTdRlLogger
 import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.util.framework.event.HandlesEvent
 import com.runt9.untdrl.util.framework.ui.controller.Controller
+import com.runt9.untdrl.util.framework.ui.controller.injectView
 import com.runt9.untdrl.util.framework.ui.uiComponent
 import com.runt9.untdrl.view.duringRun.ui.sideBar.availableTowers.SideBarAvailableTowersController
 import com.runt9.untdrl.view.duringRun.ui.sideBar.consumables.SideBarConsumablesController
@@ -38,7 +39,7 @@ class SideBarController(
     private val logger = unTdRlLogger()
 
     override val vm = SideBarViewModel()
-    override val view = SideBarView(this, vm)
+    override val view = injectView<SideBarView>()
     private val children = mutableListOf<Controller>()
 
     private var selectedTower: Tower? = null

@@ -1,20 +1,18 @@
 package com.runt9.untdrl.view.settings
 
 import com.badlogic.gdx.utils.Align
+import com.runt9.untdrl.util.ext.ui.bindButtonDisabledToVmDirty
+import com.runt9.untdrl.util.ext.ui.bindChecked
+import com.runt9.untdrl.util.framework.ui.view.DialogView
 import ktx.actors.onChange
 import ktx.scene2d.KTable
 import ktx.scene2d.checkBox
 import ktx.scene2d.textButton
-import com.runt9.untdrl.util.ext.ui.bindButtonDisabledToVmDirty
-import com.runt9.untdrl.util.ext.ui.bindChecked
-import com.runt9.untdrl.util.framework.ui.view.DialogView
 
 class SettingsDialogView(
     override val controller: SettingsDialogController,
-    override val vm: SettingsDialogViewModel,
-    screenWidth: Int,
-    screenHeight: Int
-) : DialogView(controller, vm, "Settings", screenWidth, screenHeight) {
+    override val vm: SettingsDialogViewModel
+) : DialogView(controller, "Settings") {
     override val widthScale = 0.33f
     override val heightScale = 0.5f
 

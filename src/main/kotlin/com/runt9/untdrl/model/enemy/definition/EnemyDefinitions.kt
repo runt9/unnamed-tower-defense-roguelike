@@ -1,6 +1,6 @@
 package com.runt9.untdrl.model.enemy.definition
 
-import com.runt9.untdrl.model.UnitTexture
+import com.runt9.untdrl.model.TextureDefinition
 import com.runt9.untdrl.model.damage.DamageType.COLD
 import com.runt9.untdrl.model.damage.DamageType.ENERGY
 import com.runt9.untdrl.model.damage.DamageType.HEAT
@@ -18,52 +18,52 @@ import com.runt9.untdrl.model.enemy.Biome.MOUNTAIN
 import com.runt9.untdrl.model.enemy.Biome.TECH
 import com.runt9.untdrl.model.enemy.Biome.TUNDRA
 
-val grasslandEnemy = enemy("Grassland Enemy", GRASSLAND, UnitTexture.ENEMY, 90, 1.1f) {
+val grasslandEnemy = enemy("Grassland Enemy", GRASSLAND, TextureDefinition.ENEMY, 90, 1.1f) {
     resists(NATURE, COLD)
     weakTo(HEAT, ENERGY, MYSTIC)
 }
 
-val forestEnemy = enemy("Forest Enemy", FOREST, UnitTexture.ENEMY, 100, 0.75f) {
+val forestEnemy = enemy("Forest Enemy", FOREST, TextureDefinition.ENEMY, 100, 0.75f) {
     resists(NATURE, MYSTIC)
     weakTo(PHYSICAL, HEAT)
 }
 
-val desertEnemy = enemy("Desert Enemy", DESERT, UnitTexture.ENEMY, 115, 0.8f) {
+val desertEnemy = enemy("Desert Enemy", DESERT, TextureDefinition.ENEMY, 115, 0.8f) {
     resists(PHYSICAL, HEAT, ENERGY)
     weakTo(COLD)
 }
 
-val lavaEnemy = enemy("Volcano Enemy", LAVA, UnitTexture.ENEMY, 130, 0.7f) {
+val lavaEnemy = enemy("Volcano Enemy", LAVA, TextureDefinition.ENEMY, 130, 0.7f) {
     resists(HEAT, NATURE, ENERGY, PHYSICAL)
     weakTo(COLD)
 }
 
-val corruptedEnemy = enemy("Corrupted Enemy", CORRUPTED, UnitTexture.ENEMY, 95, 0.9f) {
+val corruptedEnemy = enemy("Corrupted Enemy", CORRUPTED, TextureDefinition.ENEMY, 95, 0.9f) {
     resists(MYSTIC)
     weakTo(NATURE, ENERGY)
 }
 
-val tundraEnemy = enemy("Tundra Enemy", TUNDRA, UnitTexture.ENEMY, 110, 1f) {
+val tundraEnemy = enemy("Tundra Enemy", TUNDRA, TextureDefinition.ENEMY, 110, 1f) {
     resists(COLD, NATURE)
     weakTo(ENERGY, HEAT, PHYSICAL)
 }
 
-val cloudEnemy = enemy("Cloud Enemy", CLOUD, UnitTexture.ENEMY, 75, 1.25f) {
+val cloudEnemy = enemy("Cloud Enemy", CLOUD, TextureDefinition.ENEMY, 75, 1.25f) {
     resists(COLD, PHYSICAL, ENERGY)
     weakTo(MYSTIC, HEAT)
 }
 
-val techEnemy = enemy("Tech Enemy", TECH, UnitTexture.ENEMY, 105, 0.95f) {
+val techEnemy = enemy("Tech Enemy", TECH, TextureDefinition.ENEMY, 105, 0.95f) {
     resists(MYSTIC, PHYSICAL, NATURE, COLD)
     weakTo(ENERGY)
 }
 
-val mountainEnemy = enemy("Mountain Enemy", MOUNTAIN, UnitTexture.ENEMY, 115, 0.8f) {
+val mountainEnemy = enemy("Mountain Enemy", MOUNTAIN, TextureDefinition.ENEMY, 115, 0.8f) {
     resists(PHYSICAL, HEAT, ENERGY)
     weakTo(COLD, NATURE)
 }
 
-val enchantedEnemy = enemy("Enchanted Enemy", ENCHANTED, UnitTexture.ENEMY, 60, 1.2f) {
+val enchantedEnemy = enemy("Enchanted Enemy", ENCHANTED, TextureDefinition.ENEMY, 60, 1.2f) {
     resists(ENERGY, COLD, NATURE)
     weakTo(MYSTIC)
 }

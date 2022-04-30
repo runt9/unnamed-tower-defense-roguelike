@@ -13,20 +13,15 @@ import com.runt9.untdrl.model.tower.specialization.TowerSpecializationEffectDefi
 import com.runt9.untdrl.service.towerAction.TowerAction
 import com.runt9.untdrl.util.ext.dynamicInject
 import com.runt9.untdrl.util.ext.dynamicInjectCheckAssignableFrom
-import com.runt9.untdrl.util.ext.dynamicInjectCheckInterfaceContains
+import com.runt9.untdrl.util.ext.dynamicInjectCheckIsSubclassOf
 import com.runt9.untdrl.util.ext.unTdRlLogger
 import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.util.framework.event.HandlesEvent
 import com.runt9.untdrl.view.duringRun.MAX_TOWER_LEVEL
 import com.runt9.untdrl.view.duringRun.TOWER_SPECIALIZATION_LEVEL
-import ktx.assets.async.AssetStorage
 import kotlin.math.roundToInt
 
-class TowerService(
-    eventBus: EventBus,
-    registry: RunServiceRegistry,
-    private val assets: AssetStorage
-) : RunService(eventBus, registry) {
+class TowerService(eventBus: EventBus, registry: RunServiceRegistry) : RunService(eventBus, registry) {
     private val logger = unTdRlLogger()
     private val towers = mutableListOf<Tower>()
     private val towerChangeCbs = mutableMapOf<Int, MutableList<suspend (Tower) -> Unit>>()
@@ -69,7 +64,7 @@ class TowerService(
     private fun injectTowerAction(tower: Tower): TowerAction {
         val action = dynamicInject(
             tower.definition.action.actionClass,
-            dynamicInjectCheckInterfaceContains(TowerActionDefinition::class.java) to tower.definition.action,
+            dynamicInjectCheckIsSubclassOf(TowerActionDefinition::class.java) to tower.definition.action,
             dynamicInjectCheckAssignableFrom(Tower::class.java) to tower
         )
         action.init()
@@ -161,7 +156,7 @@ class TowerService(
             if (core.passive != null) {
                 val passiveEffect = dynamicInject(
                     core.passive.effect.effectClass,
-                    dynamicInjectCheckInterfaceContains(LegendaryPassiveEffectDefinition::class.java) to core.passive.effect,
+                    dynamicInjectCheckIsSubclassOf(LegendaryPassiveEffectDefinition::class.java) to core.passive.effect,
                     dynamicInjectCheckAssignableFrom(Tower::class.java) to this
                 )
                 passiveEffect.init()
@@ -177,7 +172,7 @@ class TowerService(
         withTower(id) {
             val specializationEffect = dynamicInject(
                 specialization.effect.effectClass,
-                dynamicInjectCheckInterfaceContains(TowerSpecializationEffectDefinition::class.java) to specialization.effect,
+                dynamicInjectCheckIsSubclassOf(TowerSpecializationEffectDefinition::class.java) to specialization.effect,
                 dynamicInjectCheckAssignableFrom(Tower::class.java) to this
             )
             specializationEffect.init()
@@ -190,7 +185,7 @@ class TowerService(
     }
 
     suspend fun newTower(towerDef: TowerDefinition): Tower {
-        val tower = Tower(towerDef, assets[towerDef.texture.assetFile])
+        val tower = Tower(towerDef)
         recalculateAttrs(tower)
         tower.action = injectTowerAction(tower)
         return tower

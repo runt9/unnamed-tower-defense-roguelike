@@ -1,9 +1,9 @@
 package com.runt9.untdrl.model.research
 
-import com.runt9.untdrl.model.UnitTexture
+import com.runt9.untdrl.model.TextureDefinition
 
 interface ResearchDefinition {
-    val icon: UnitTexture
+    val icon: TextureDefinition
     val name: String
     val description: String
     val cost: Int
@@ -24,7 +24,7 @@ interface ResearchDefinition {
     }
 }
 
-fun research(name: String, icon: UnitTexture, cost: Int, builder: ResearchDefinition.Builder.() -> Unit = {}): ResearchDefinition {
+fun research(name: String, icon: TextureDefinition, cost: Int, builder: ResearchDefinition.Builder.() -> Unit = {}): ResearchDefinition {
     val researchBuilder = ResearchDefinition.Builder()
     researchBuilder.builder()
 

@@ -1,8 +1,8 @@
 package com.runt9.untdrl.model.tower.definition
 
-import com.runt9.untdrl.model.UnitTexture.GOLD_MINE
-import com.runt9.untdrl.model.UnitTexture.PROJECTILE
-import com.runt9.untdrl.model.UnitTexture.PROTOTYPE_TOWER
+import com.runt9.untdrl.model.TextureDefinition.GOLD_MINE
+import com.runt9.untdrl.model.TextureDefinition.PROJECTILE
+import com.runt9.untdrl.model.TextureDefinition.PROTOTYPE_TOWER
 import com.runt9.untdrl.model.attribute.AttributeModificationType.FLAT
 import com.runt9.untdrl.model.attribute.AttributeModificationType.PERCENT
 import com.runt9.untdrl.model.attribute.AttributeModifier

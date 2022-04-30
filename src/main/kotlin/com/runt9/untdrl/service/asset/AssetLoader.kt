@@ -3,7 +3,7 @@ package com.runt9.untdrl.service.asset
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.utils.Disposable
 import com.runt9.untdrl.config.AssetConfig
-import com.runt9.untdrl.model.UnitTexture
+import com.runt9.untdrl.model.TextureDefinition
 import com.runt9.untdrl.model.event.AssetsLoadedEvent
 import com.runt9.untdrl.util.ext.unTdRlLogger
 import com.runt9.untdrl.util.framework.event.EventBus
@@ -21,7 +21,7 @@ class AssetLoader(
 
     fun load() = KtxAsync.launch(assetConfig.asyncContext) {
         logger.info { "Loading assets" }
-        val assetsToLoad = UnitTexture.values().map { assets.loadAsync<Texture>(it.assetFile) }
+        val assetsToLoad = TextureDefinition.values().map { assets.loadAsync<Texture>(it.assetFile) }
         assetsToLoad.joinAll()
         logger.info { "Asset loading complete" }
         eventBus.enqueueEvent(AssetsLoadedEvent())

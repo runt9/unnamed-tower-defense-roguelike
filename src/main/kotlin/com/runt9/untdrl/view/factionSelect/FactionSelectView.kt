@@ -5,6 +5,7 @@ import com.runt9.untdrl.util.ext.ui.bindUpdatable
 import com.runt9.untdrl.util.framework.ui.view.ScreenView
 import ktx.actors.onChange
 import ktx.actors.onClick
+import ktx.assets.async.AssetStorage
 import ktx.scene2d.button
 import ktx.scene2d.buttonGroup
 import ktx.scene2d.textButton
@@ -13,7 +14,11 @@ import ktx.scene2d.vis.visLabel
 import ktx.scene2d.vis.visScrollPane
 import ktx.scene2d.vis.visTable
 
-class FactionSelectView(override val controller: FactionSelectController, override val vm: FactionSelectViewModel) : ScreenView(controller, vm) {
+class FactionSelectView(
+    override val controller: FactionSelectController,
+    override val vm: FactionSelectViewModel,
+    val assets: AssetStorage
+) : ScreenView() {
     override fun init() {
         super.init()
         val vm = vm

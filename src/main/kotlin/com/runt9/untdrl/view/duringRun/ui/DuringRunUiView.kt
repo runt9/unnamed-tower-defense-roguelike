@@ -11,7 +11,10 @@ import com.runt9.untdrl.view.duringRun.ui.util.lootItem
 import ktx.scene2d.vis.flowGroup
 import ktx.scene2d.vis.visTable
 
-class DuringRunUiView(override val controller: DuringRunUiController, override val vm: DuringRunUiViewModel) : ScreenView(controller, vm) {
+class DuringRunUiView(
+    override val controller: DuringRunUiController,
+    override val vm: DuringRunUiViewModel
+) : ScreenView() {
     override fun init() {
         super.init()
 

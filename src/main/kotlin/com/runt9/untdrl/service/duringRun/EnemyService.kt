@@ -40,7 +40,6 @@ class EnemyService(
 
     @HandlesEvent
     fun add(event: EnemySpawnedEvent) = launchOnServiceThread {
-        // TODO: Make sure this works and there's no weird race condition. Might want to use start wave event instead
         isSpawning = true
         enemies += event.enemy
     }

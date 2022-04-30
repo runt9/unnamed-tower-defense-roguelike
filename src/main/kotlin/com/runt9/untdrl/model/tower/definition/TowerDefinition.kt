@@ -1,6 +1,6 @@
 package com.runt9.untdrl.model.tower.definition
 
-import com.runt9.untdrl.model.UnitTexture
+import com.runt9.untdrl.model.TextureDefinition
 import com.runt9.untdrl.model.attribute.AttributeModificationType
 import com.runt9.untdrl.model.attribute.AttributeType
 import com.runt9.untdrl.model.damage.DamageMap
@@ -12,7 +12,7 @@ import com.runt9.untdrl.model.tower.specialization.TowerSpecializationEffectDefi
 interface TowerDefinition {
     val name: String
     val description: String
-    val texture: UnitTexture
+    val texture: TextureDefinition
     val goldCost: Int
     val action: TowerActionDefinition
     val attrs: Map<AttributeType, TowerAttributeDefinition>
@@ -35,7 +35,7 @@ interface TowerDefinition {
             description = this
         }
 
-        fun specialization(name: String, icon: UnitTexture, builder: SpecializationBuilder.() -> Unit = {}): TowerSpecializationDefinition {
+        fun specialization(name: String, icon: TextureDefinition, builder: SpecializationBuilder.() -> Unit = {}): TowerSpecializationDefinition {
             val specializationBuilder = SpecializationBuilder()
             specializationBuilder.builder()
 
@@ -69,7 +69,7 @@ interface TowerDefinition {
 
 fun tower(
     name: String,
-    texture: UnitTexture,
+    texture: TextureDefinition,
     goldCost: Int,
     init: TowerDefinition.Builder.() -> Unit
 ): TowerDefinition {

@@ -19,7 +19,7 @@ import com.runt9.untdrl.model.loot.definition.availableLegendaryPassives
 import com.runt9.untdrl.model.loot.definition.availableRelics
 import com.runt9.untdrl.service.RandomizerService
 import com.runt9.untdrl.util.ext.dynamicInject
-import com.runt9.untdrl.util.ext.dynamicInjectCheckInterfaceContains
+import com.runt9.untdrl.util.ext.dynamicInjectCheckIsSubclassOf
 import com.runt9.untdrl.util.ext.generateWeightedList
 import com.runt9.untdrl.util.ext.unTdRlLogger
 import com.runt9.untdrl.util.framework.event.EventBus
@@ -115,7 +115,7 @@ class LootService(
         val relic = Relic(rarity, definition)
         relic.effect = dynamicInject(
             relic.definition.effect.effectClass,
-            dynamicInjectCheckInterfaceContains(RelicEffectDefinition::class.java) to definition.effect
+            dynamicInjectCheckIsSubclassOf(RelicEffectDefinition::class.java) to definition.effect
         )
         return relic
     }
@@ -127,7 +127,7 @@ class LootService(
         val consumable = Consumable(rarity, definition)
         consumable.action = dynamicInject(
             consumable.definition.action.actionClass,
-            dynamicInjectCheckInterfaceContains(ConsumableActionDefinition::class.java) to definition.action
+            dynamicInjectCheckIsSubclassOf(ConsumableActionDefinition::class.java) to definition.action
         )
         return consumable
     }

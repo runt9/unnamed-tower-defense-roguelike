@@ -5,7 +5,7 @@ import com.badlogic.gdx.ai.steer.behaviors.LookWhereYouAreGoing
 import com.badlogic.gdx.ai.steer.behaviors.Pursue
 import com.badlogic.gdx.ai.steer.behaviors.Seek
 import com.badlogic.gdx.math.Vector2
-import com.runt9.untdrl.model.UnitTexture
+import com.runt9.untdrl.model.TextureDefinition
 import com.runt9.untdrl.model.enemy.Enemy
 import com.runt9.untdrl.util.ext.BaseSteerable
 import com.runt9.untdrl.util.ext.degRad
@@ -16,7 +16,7 @@ private var idCounter = 0
 
 class Projectile(
     val owner: Tower,
-    val texture: UnitTexture,
+    val texture: TextureDefinition,
     val target: Enemy,
     pierce: Int = 0,
     var homing: Boolean = true,

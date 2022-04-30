@@ -2,19 +2,20 @@ package com.runt9.untdrl.view.duringRun.game.tower
 
 import com.badlogic.gdx.InputMultiplexer
 import com.badlogic.gdx.graphics.OrthographicCamera
-import com.runt9.untdrl.model.tower.Tower
-import com.runt9.untdrl.model.tower.mapToFloats
+import com.runt9.untdrl.model.event.CancelOpenItemsEvent
 import com.runt9.untdrl.model.event.TowerCancelledEvent
 import com.runt9.untdrl.model.event.TowerPlacedEvent
 import com.runt9.untdrl.model.event.TowerSelectedEvent
-import com.runt9.untdrl.model.event.CancelOpenItemsEvent
-import com.runt9.untdrl.service.duringRun.TowerService
+import com.runt9.untdrl.model.tower.Tower
+import com.runt9.untdrl.model.tower.mapToFloats
 import com.runt9.untdrl.service.duringRun.IndexedGridGraph
+import com.runt9.untdrl.service.duringRun.TowerService
 import com.runt9.untdrl.util.ext.lazyInject
 import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.util.framework.event.HandlesEvent
 import com.runt9.untdrl.util.framework.ui.InputMover
 import com.runt9.untdrl.util.framework.ui.controller.Controller
+import com.runt9.untdrl.util.framework.ui.controller.lazyInjectView
 import com.runt9.untdrl.util.framework.ui.uiComponent
 import ktx.async.onRenderingThread
 import ktx.scene2d.KWidget
@@ -28,7 +29,7 @@ fun <S> KWidget<S>.tower(tower: TowerViewModel, init: TowerView.(S) -> Unit = {}
 
 class TowerController(private val eventBus: EventBus, private val towerService: TowerService, private val grid: IndexedGridGraph) : Controller {
     override lateinit var vm: TowerViewModel
-    override val view by lazy { TowerView(this, vm) }
+    override val view by lazyInjectView<TowerView>()
     private val input by lazyInject<InputMultiplexer>()
     private val camera by lazyInject<OrthographicCamera>()
 

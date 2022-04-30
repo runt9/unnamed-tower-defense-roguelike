@@ -3,15 +3,21 @@ package com.runt9.untdrl.view.duringRun.game.tower
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.utils.Align
 import com.runt9.untdrl.model.attribute.AttributeType
+import com.runt9.untdrl.util.ext.loadTexture
 import com.runt9.untdrl.util.ext.ui.bindUpdatable
 import com.runt9.untdrl.util.ext.ui.bindVisible
 import com.runt9.untdrl.util.ext.ui.circlePixmapTexture
 import com.runt9.untdrl.util.ext.unTdRlLogger
 import com.runt9.untdrl.util.framework.ui.view.GroupView
 import ktx.actors.alpha
+import ktx.assets.async.AssetStorage
 import ktx.scene2d.vis.visImage
 
-class TowerView(override val controller: TowerController, override val vm: TowerViewModel) : GroupView(controller, vm) {
+class TowerView(
+    override val controller: TowerController,
+    override val vm: TowerViewModel,
+    val assets: AssetStorage
+) : GroupView() {
     private val logger = unTdRlLogger()
 
     override fun init() {
@@ -27,7 +33,7 @@ class TowerView(override val controller: TowerController, override val vm: Tower
             alpha = if (vm.isValidPlacement.get()) 1f else 0.5f
         }
 
-        visImage(vm.texture) {
+        visImage(assets.loadTexture(vm.texture.get())) {
             setSize(towerSize, towerSize)
             setOrigin(Align.center)
             bindUpdatable(vm.rotation) { vm.rotation.get().apply { rotation = this } }

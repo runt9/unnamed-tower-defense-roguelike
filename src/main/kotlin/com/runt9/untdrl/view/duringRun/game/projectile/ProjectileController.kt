@@ -1,10 +1,8 @@
 package com.runt9.untdrl.view.duringRun.game.projectile
 
-import com.badlogic.gdx.graphics.Texture
-import com.runt9.untdrl.model.UnitTexture
 import com.runt9.untdrl.util.framework.ui.controller.Controller
+import com.runt9.untdrl.util.framework.ui.controller.lazyInjectView
 import com.runt9.untdrl.util.framework.ui.uiComponent
-import ktx.assets.async.AssetStorage
 import ktx.scene2d.KWidget
 import ktx.scene2d.Scene2dDsl
 
@@ -13,9 +11,7 @@ fun <S> KWidget<S>.projectile(projectile: ProjectileViewModel, init: ProjectileV
     this.vm = projectile
 }, init)
 
-class ProjectileController(private val assets: AssetStorage) : Controller {
+class ProjectileController : Controller {
     override lateinit var vm: ProjectileViewModel
-    override val view by lazy { ProjectileView(this, vm) }
-
-    fun loadTexture(texture: UnitTexture): Texture = assets[texture.assetFile]
+    override val view by lazyInjectView<ProjectileView>()
 }

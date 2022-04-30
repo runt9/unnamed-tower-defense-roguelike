@@ -7,6 +7,7 @@ import com.runt9.untdrl.service.duringRun.RunStateService
 import com.runt9.untdrl.util.ext.randomString
 import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.util.framework.ui.controller.UiScreenController
+import com.runt9.untdrl.util.framework.ui.controller.injectView
 import com.runt9.untdrl.view.duringRun.DuringRunScreen
 import com.runt9.untdrl.view.mainMenu.MainMenuScreenController
 import kotlin.random.Random
@@ -16,7 +17,7 @@ class FactionSelectController(
     private val runStateService: RunStateService
 ) : UiScreenController() {
     override val vm = FactionSelectViewModel(listOf(baseFaction))
-    override val view = FactionSelectView(this, vm)
+    override val view = injectView<FactionSelectView>()
 
     fun back() = eventBus.enqueueChangeScreen<MainMenuScreenController>()
 

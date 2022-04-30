@@ -1,6 +1,6 @@
 package com.runt9.untdrl.service.duringRun
 
-import com.runt9.untdrl.model.UnitTexture
+import com.runt9.untdrl.model.TextureDefinition
 import com.runt9.untdrl.model.enemy.Spawner
 import com.runt9.untdrl.model.event.EnemySpawnedEvent
 import com.runt9.untdrl.model.event.PrepareNextWaveEvent
@@ -29,7 +29,7 @@ class SpawnerService(
     @HandlesEvent
     fun addSpawner(event: SpawnerPlacedEvent) = launchOnServiceThread {
         val chunk = event.chunk
-        val spawner = Spawner(event.node, assets[UnitTexture.ENEMY.assetFile], chunk.biome)
+        val spawner = Spawner(event.node, assets[TextureDefinition.ENEMY.assetFile], chunk.biome)
         grid.calculateSpawnerPath(spawner)
         spawners += spawner
         recalculateSpawner(spawner)
@@ -49,7 +49,6 @@ class SpawnerService(
         spawner.enemiesToSpawn = waveNum * 2
         spawner.enemyDelayTimer.reset(false)
         spawner.currentEnemySpawnType = spawner.enemyTypesToSpawn.random(randomizer.rng)
-        // TODO: Recalculate time between spawns
     }
 
     override fun tick(delta: Float) {
@@ -59,7 +58,6 @@ class SpawnerService(
             val runState = runStateService.load()
             var checkedSpawn = false
             spawners.forEach { spawner ->
-                // TODO: Somehow a spawner can double spawn
                 if (spawner.enemiesToSpawn <= 0) return@forEach
 
                 checkedSpawn = true

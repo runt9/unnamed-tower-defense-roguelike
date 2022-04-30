@@ -1,13 +1,13 @@
 package com.runt9.untdrl.model.enemy.definition
 
-import com.runt9.untdrl.model.UnitTexture
+import com.runt9.untdrl.model.TextureDefinition
 import com.runt9.untdrl.model.damage.DamageType
 import com.runt9.untdrl.model.enemy.Biome
 
 interface EnemyDefinition {
     val name: String
     val biome: Biome
-    val texture: UnitTexture
+    val texture: TextureDefinition
     val baseHp: Int
     val baseSpeed: Float
     val resistances: Map<DamageType, Float>
@@ -28,7 +28,7 @@ interface EnemyDefinition {
 fun enemy(
     name: String,
     biome: Biome,
-    texture: UnitTexture,
+    texture: TextureDefinition,
     baseHp: Int,
     baseSpeed: Float,
     init: EnemyDefinition.Builder.() -> Unit

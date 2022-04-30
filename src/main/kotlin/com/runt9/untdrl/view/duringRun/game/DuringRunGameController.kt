@@ -3,47 +3,44 @@ package com.runt9.untdrl.view.duringRun.game
 import com.badlogic.gdx.utils.Disposable
 import com.runt9.untdrl.model.enemy.Biome
 import com.runt9.untdrl.model.enemy.Chunk
-import com.runt9.untdrl.model.event.TowerCancelledEvent
 import com.runt9.untdrl.model.event.ChunkCancelledEvent
 import com.runt9.untdrl.model.event.ChunkPlacedEvent
 import com.runt9.untdrl.model.event.EnemyRemovedEvent
 import com.runt9.untdrl.model.event.EnemySpawnedEvent
-import com.runt9.untdrl.model.event.NewTowerEvent
 import com.runt9.untdrl.model.event.NewChunkEvent
+import com.runt9.untdrl.model.event.NewTowerEvent
 import com.runt9.untdrl.model.event.PrepareNextWaveEvent
 import com.runt9.untdrl.model.event.ProjectileSpawnedEvent
+import com.runt9.untdrl.model.event.TowerCancelledEvent
 import com.runt9.untdrl.service.ChunkGenerator
 import com.runt9.untdrl.service.RandomizerService
-import com.runt9.untdrl.service.duringRun.TowerService
 import com.runt9.untdrl.service.duringRun.IndexedGridGraph
 import com.runt9.untdrl.service.duringRun.ProjectileService
-import com.runt9.untdrl.service.duringRun.RunStateService
+import com.runt9.untdrl.service.duringRun.TowerService
 import com.runt9.untdrl.util.ext.unTdRlLogger
 import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.util.framework.event.HandlesEvent
 import com.runt9.untdrl.util.framework.ui.controller.Controller
+import com.runt9.untdrl.util.framework.ui.controller.injectView
 import com.runt9.untdrl.view.duringRun.HOME_POINT
-import com.runt9.untdrl.view.duringRun.game.tower.TowerViewModel
 import com.runt9.untdrl.view.duringRun.game.chunk.ChunkViewModel
 import com.runt9.untdrl.view.duringRun.game.enemy.EnemyViewModel
 import com.runt9.untdrl.view.duringRun.game.projectile.ProjectileViewModel
-import ktx.assets.async.AssetStorage
+import com.runt9.untdrl.view.duringRun.game.tower.TowerViewModel
 import ktx.async.onRenderingThread
 
 // TODO: Can probably break this into multiple controllers: enemies, towers, projectiles, all floating groups
 class DuringRunGameController(
     private val eventBus: EventBus,
-    private val assets: AssetStorage,
     private val chunkGenerator: ChunkGenerator,
     private val towerService: TowerService,
     private val projectileService: ProjectileService,
     private val grid: IndexedGridGraph,
-    private val randomizer: RandomizerService,
-    private val runStateService: RunStateService
+    private val randomizer: RandomizerService
 ) : Controller {
     private val logger = unTdRlLogger()
     override val vm = DuringRunGameViewModel()
-    override val view = DuringRunGameView(this, vm)
+    override val view = injectView<DuringRunGameView>()
     private val children = mutableListOf<Controller>()
     private var nextChunk: Chunk? = null
 

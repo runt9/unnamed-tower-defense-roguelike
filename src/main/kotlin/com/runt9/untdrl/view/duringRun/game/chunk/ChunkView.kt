@@ -14,7 +14,7 @@ import ktx.actors.plusAssign
 import ktx.scene2d.table
 import ktx.scene2d.vis.visTable
 
-class ChunkView(override val controller: ChunkController, override val vm: ChunkViewModel) : GroupView(controller, vm) {
+class ChunkView(override val controller: ChunkController, override val vm: ChunkViewModel) : GroupView() {
     private val logger = unTdRlLogger()
 
     override fun init() {
