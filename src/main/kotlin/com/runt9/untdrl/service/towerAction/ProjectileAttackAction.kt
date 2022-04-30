@@ -22,7 +22,6 @@ import com.runt9.untdrl.util.ext.toVector
 import com.runt9.untdrl.util.ext.unTdRlLogger
 import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.util.framework.event.HandlesEvent
-import ktx.assets.async.AssetStorage
 import kotlin.math.abs
 
 // TODO: Once more towers start getting created, figure out how we want to abstract away common stuff
@@ -30,8 +29,7 @@ class ProjectileAttackAction(
     private val definition: ProjectileAttackActionDefinition,
     private val tower: Tower,
     override val eventBus: EventBus,
-    private val enemyService: EnemyService,
-    private val assets: AssetStorage
+    private val enemyService: EnemyService
 ) : TowerAction {
     private val logger = unTdRlLogger()
     private var target: Enemy? = null
@@ -79,7 +77,7 @@ class ProjectileAttackAction(
         repeat(projCount.toInt()) { i ->
             var degreesFromCenter = ((i + 1) / 2) * 20
             if (i % 2 == 0) degreesFromCenter *= -1
-            val projectile = Projectile(tower, definition.projectileTexture, target!!, pierce, homing, degreesFromCenter.toFloat())
+            val projectile = Projectile(tower, definition.projectileTexture, target!!, pierce, homing, degreesFromCenter.toFloat(), definition.speed)
             eventBus.enqueueEventSync(ProjectileSpawnedEvent(projectile))
         }
     }

@@ -18,6 +18,7 @@ import com.runt9.untdrl.util.ext.displayPercent
 enum class InterceptorHook {
     ON_ATTACK,
     ON_HIT,
+    CRIT_CHECK,
     BEFORE_DAMAGE_CALC,
     AFTER_DAMAGE_CALC,
     BEFORE_RESISTS,
@@ -44,28 +45,37 @@ fun <I : TowerInteraction> intercept(hook: InterceptorHook, intercept: (Tower, I
 
 interface TowerInteraction
 data class OnAttack(val tower: Tower) : TowerInteraction
-data class DamageRequest(private val tower: Tower) : TowerInteraction {
-    private val baseDamage = tower.damage
+
+data class CritRequest(private val tower: Tower) : TowerInteraction {
     private val baseCrit = tower.critChance
     private val baseCritMulti = tower.critMulti
 
-    private var additionalBaseDamage = 0f
-    private var additionalDamageMultiplier = 1f
     private var additionalCritChance = 0f
     private var additionalCritMulti = 0f
 
-    val totalBaseDamage get() = baseDamage + additionalBaseDamage
     val totalCritChance get() = baseCrit + additionalCritChance
     val totalCritMulti get() = baseCritMulti + additionalCritMulti
-    val totalDamageMulti get() = additionalDamageMultiplier
 
-    fun addBaseDamage(damage: Float) { additionalBaseDamage += damage }
-    fun addDamageMultiplier(multi: Float) { additionalDamageMultiplier += multi }
     fun addCritChance(chance: Float) { additionalCritChance += chance }
     fun addCritMulti(multi: Float) { additionalCritMulti += multi }
 
+    override fun toString() = "[Total Crit: ${(totalCritChance * 100f).displayPercent(1)} | Total Crit Multi: ${totalCritMulti.displayMultiplier()}]"
+}
+
+data class DamageRequest(private val tower: Tower, val damageMultiplier: Float) : TowerInteraction {
+    private val baseDamage = tower.damage
+
+    private var additionalBaseDamage = 0f
+    private var additionalDamageMultiplier = 1f
+
+    val totalBaseDamage get() = baseDamage + additionalBaseDamage
+    val totalDamageMulti get() = damageMultiplier * additionalDamageMultiplier
+
+    fun addBaseDamage(damage: Float) { additionalBaseDamage += damage }
+    fun addDamageMultiplier(multi: Float) { additionalDamageMultiplier += multi }
+
     override fun toString() =
-        "[Total Base: ${totalBaseDamage.displayInt()} | Total Crit: ${(totalCritChance * 100f).displayPercent(1)} | Total Crit Multi: ${totalCritMulti.displayMultiplier()} | Total Multi: ${totalDamageMulti.displayMultiplier()}]"
+        "[Total Base: ${totalBaseDamage.displayInt()} | Total Multi: ${totalDamageMulti.displayMultiplier()}]"
 }
 
 data class DamageResult(val baseDamage: Float, val totalMulti: Float) : TowerInteraction {

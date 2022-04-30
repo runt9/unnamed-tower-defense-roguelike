@@ -1,6 +1,7 @@
 package com.runt9.untdrl.model.attribute
 
 import com.runt9.untdrl.model.attribute.definition.AttributeDefinition
+import com.runt9.untdrl.model.attribute.definition.aoe
 import com.runt9.untdrl.model.attribute.definition.attackSpeed
 import com.runt9.untdrl.model.attribute.definition.critChance
 import com.runt9.untdrl.model.attribute.definition.critMulti
@@ -14,5 +15,6 @@ enum class AttributeType(val definition: AttributeDefinition) {
     ATTACK_SPEED(attackSpeed),
     CRIT_CHANCE(critChance),
     CRIT_MULTI(critMulti),
-    PROJECTILE_COUNT(projCount)
+    PROJECTILE_COUNT(projCount),
+    AREA_OF_EFFECT(aoe),
 }

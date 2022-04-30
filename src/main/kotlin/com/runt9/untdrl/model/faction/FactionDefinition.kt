@@ -11,14 +11,20 @@ interface FactionDefinition {
     val startingTower: TowerDefinition
     val goldPassive: FactionPassiveDefinition
     val researchPassive: FactionPassiveDefinition
+    val otherTowers: List<TowerDefinition>
 
     class Builder {
         internal lateinit var startingTower: TowerDefinition
         internal lateinit var goldPassive: FactionPassiveDefinition
         internal lateinit var researchPassive: FactionPassiveDefinition
+        internal val otherTowers = mutableListOf<TowerDefinition>()
 
         fun startingTower(tower: TowerDefinition) {
             startingTower = tower
+        }
+
+        fun otherTowers(vararg towers: TowerDefinition) {
+            otherTowers += towers
         }
 
         fun goldPassive(name: String, effectClass: KClass<out FactionPassiveEffect>, builder: PassiveBuilder.() -> Unit = {}) {
@@ -64,6 +70,7 @@ fun faction(
         override val name = name
         override val maxHp = maxHp
         override val startingTower = builder.startingTower
+        override val otherTowers = builder.otherTowers
         override val goldPassive = builder.goldPassive
         override val researchPassive = builder.researchPassive
     }

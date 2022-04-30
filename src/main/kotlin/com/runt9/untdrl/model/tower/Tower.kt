@@ -66,6 +66,8 @@ class Tower(val definition: TowerDefinition, val texture: Texture) : BaseSteerab
     fun intercept(hook: InterceptorHook, interaction: TowerInteraction) {
         interceptors[hook]?.forEach { it.intercept(this, interaction) }
     }
+
+    fun hasAttribute(attr: AttributeType) = attrs.containsKey(attr)
 }
 
 fun Map<AttributeType, Attribute>.mapToFloats() = mapValues { (_, v) -> v() }

@@ -13,3 +13,4 @@ val critMulti = attribute("CritDmg", "Crit Multiplier", FLAT, 0.2f..0.3f) { disp
 val damage = attribute("Dmg", "Damage", PERCENT, 10f..20f) { displayInt() }
 val range = attribute("Rng", "Range", PERCENT, 15f..30f) { displayDecimal(1) }
 val projCount = attribute("Proj", "Projectile Count", FLAT, 1f..2f) { displayInt() }
+val aoe = attribute("AoE", "Area of Effect", PERCENT, 10f..20f) { displayDecimal() }

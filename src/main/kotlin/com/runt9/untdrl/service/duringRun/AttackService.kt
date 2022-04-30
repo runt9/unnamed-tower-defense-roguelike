@@ -1,8 +1,10 @@
 package com.runt9.untdrl.service.duringRun
 
+import com.runt9.untdrl.model.attribute.AttributeType
 import com.runt9.untdrl.model.enemy.Enemy
 import com.runt9.untdrl.model.event.EnemyRemovedEvent
 import com.runt9.untdrl.model.tower.Tower
+import com.runt9.untdrl.model.tower.intercept.CritRequest
 import com.runt9.untdrl.model.tower.intercept.DamageRequest
 import com.runt9.untdrl.model.tower.intercept.DamageResult
 import com.runt9.untdrl.model.tower.intercept.InterceptorHook
@@ -31,7 +33,16 @@ class AttackService(
     }
 
     private fun calculateDamage(tower: Tower, enemy: Enemy) {
-        val damageRequest = DamageRequest(tower)
+        var damageMultiplier = 1f
+
+        if (tower.hasAttribute(AttributeType.CRIT_CHANCE)) {
+            val critCheck = CritRequest(tower)
+            tower.intercept(InterceptorHook.CRIT_CHECK, critCheck)
+            val isCrit = randomizer.percentChance(critCheck.totalCritChance)
+            if (isCrit) damageMultiplier = critCheck.totalCritMulti
+        }
+
+        val damageRequest = DamageRequest(tower, damageMultiplier)
         tower.intercept(InterceptorHook.BEFORE_DAMAGE_CALC, damageRequest)
         logger.debug { "Final Damage Request: $damageRequest" }
         val damageResult = rollForDamage(damageRequest)
@@ -45,9 +56,7 @@ class AttackService(
     }
 
     private fun rollForDamage(request: DamageRequest): DamageResult {
-        val isCrit = randomizer.percentChance(request.totalCritChance)
         var damageMulti = randomizer.rng.nextInt(90, 111).toFloat() / 100f
-        if (isCrit) damageMulti *= request.totalCritMulti
         damageMulti *= request.totalDamageMulti
         return DamageResult(request.totalBaseDamage, damageMulti)
     }

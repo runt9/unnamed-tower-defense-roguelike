@@ -4,8 +4,8 @@ import com.runt9.untdrl.model.attribute.AttributeModifier
 import com.runt9.untdrl.model.attribute.AttributeType
 import com.runt9.untdrl.model.event.WaveCompleteEvent
 import com.runt9.untdrl.model.tower.Tower
+import com.runt9.untdrl.model.tower.definition.MinigunSpecialization
 import com.runt9.untdrl.model.tower.intercept.onAttack
-import com.runt9.untdrl.model.tower.specialization.MinigunSpecialization
 import com.runt9.untdrl.service.duringRun.TickerRegistry
 import com.runt9.untdrl.service.duringRun.TowerService
 import com.runt9.untdrl.util.ext.Timer
