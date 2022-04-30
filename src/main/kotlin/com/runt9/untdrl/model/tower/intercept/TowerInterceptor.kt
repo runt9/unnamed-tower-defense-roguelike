@@ -9,6 +9,7 @@ import com.runt9.untdrl.model.tower.damage
 import com.runt9.untdrl.model.tower.intercept.InterceptorHook.AFTER_DAMAGE_CALC
 import com.runt9.untdrl.model.tower.intercept.InterceptorHook.BEFORE_DAMAGE_CALC
 import com.runt9.untdrl.model.tower.intercept.InterceptorHook.BEFORE_RESISTS
+import com.runt9.untdrl.model.tower.intercept.InterceptorHook.CRIT_CHECK
 import com.runt9.untdrl.model.tower.intercept.InterceptorHook.ON_ATTACK
 import com.runt9.untdrl.util.ext.clamp
 import com.runt9.untdrl.util.ext.displayInt
@@ -114,6 +115,7 @@ data class ResistanceRequest(private val damageTypes: List<DamageMap>, private v
 }
 
 fun onAttack(intercept: (Tower, OnAttack) -> Unit) = intercept(ON_ATTACK, intercept)
+fun critCheck(intercept: (Tower, CritRequest) -> Unit) = intercept(CRIT_CHECK, intercept)
 fun beforeDamage(intercept: (Tower, DamageRequest) -> Unit) = intercept(BEFORE_DAMAGE_CALC, intercept)
 fun afterDamage(intercept: (Tower, DamageResult) -> Unit) = intercept(AFTER_DAMAGE_CALC, intercept)
 fun beforeResists(intercept: (Tower, ResistanceRequest) -> Unit) = intercept(BEFORE_RESISTS, intercept)

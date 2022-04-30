@@ -20,13 +20,14 @@ class Projectile(
     val target: Enemy,
     pierce: Int = 0,
     var homing: Boolean = true,
-    val degreesFromCenter: Float = 0f,
-    speed: Float = 10f
-) : BaseSteerable(owner.position, owner.rotation) {
+    degreesFromCenter: Float = 0f,
+    speed: Float = 10f,
+    var delayedHoming: Float = 0f
+) : BaseSteerable(owner.position, owner.rotation + degreesFromCenter) {
     val id = idCounter++
     override val linearSpeedLimit = speed
     override val linearAccelerationLimit = maxLinearSpeed * 100f
-    override val angularSpeedLimit = 10f
+    override val angularSpeedLimit = 5f
     override val angularAccelerationLimit = angularSpeedLimit * 10f
     override val boundingBoxRadius = 0.125f
 
@@ -50,19 +51,23 @@ class Projectile(
             alignTolerance = 0f.degRad
             decelerationRadius = 45f.degRad
         }
-        steering.add(BlendedSteering.BehaviorAndWeight(look, 1f))
+        steering.add(BlendedSteering.BehaviorAndWeight(look, 2f))
 
         if (homing) {
-            val pursue = Pursue(this, target)
+            val pursue = Pursue(this, target, 0.25f)
             steering.add(BlendedSteering.BehaviorAndWeight(pursue, 1f))
         } else {
-            val goToPosition = position.cpy().add((rotation + degreesFromCenter).degRad.toVector(Vector2(0f, 0f)).scl(owner.range))
+            val goToPosition = position.cpy().add((rotation).degRad.toVector(Vector2(0f, 0f)).scl(owner.range))
             val seek = Seek(this, positionToLocation(goToPosition))
 
             steering.add(BlendedSteering.BehaviorAndWeight(seek, 1f))
         }
 
         return steering
+    }
+
+    fun recalculateBehavior() {
+        behavior = calculateBehavior()
     }
 
     suspend fun die() {

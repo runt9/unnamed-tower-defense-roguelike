@@ -41,7 +41,10 @@ class ProjectileAttackAction(
         decelerationRadius = 45f.degRad
     }
     var pierce = definition.pierce
-    var homing = true
+    var homing = definition.homing
+    var speed = definition.speed
+    var delayedHoming = definition.delayedHoming
+    var anglePerProjectile = definition.anglePerProjectile
 
     override suspend fun act(delta: Float) {
         val steeringOutput = SteeringAcceleration(Vector2())
@@ -74,10 +77,11 @@ class ProjectileAttackAction(
 
     private fun spawnProjectiles() {
         val projCount = tower.attrs[AttributeType.PROJECTILE_COUNT]?.invoke() ?: 1
+        // TODO: This calculation is wrong, a projectile should shoot from center _only_ if there is an odd number of total projectiles
         repeat(projCount.toInt()) { i ->
-            var degreesFromCenter = ((i + 1) / 2) * 20
+            var degreesFromCenter = ((i + 1) / 2) * anglePerProjectile
             if (i % 2 == 0) degreesFromCenter *= -1
-            val projectile = Projectile(tower, definition.projectileTexture, target!!, pierce, homing, degreesFromCenter.toFloat(), definition.speed)
+            val projectile = Projectile(tower, definition.projectileTexture, target!!, pierce, homing, degreesFromCenter, speed, delayedHoming)
             eventBus.enqueueEventSync(ProjectileSpawnedEvent(projectile))
         }
     }

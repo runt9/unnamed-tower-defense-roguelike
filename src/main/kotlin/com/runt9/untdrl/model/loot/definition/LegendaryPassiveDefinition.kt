@@ -18,7 +18,7 @@ class EveryXShotGuaranteedCritPassiveDefinition(val shots: Int) : LegendaryPassi
 }
 
 val thirdShotCritPassive = object : LegendaryPassiveDefinition {
-    override val description = "Every 3rd shot from this tower is a guaranteed crit, dealing an additional 25% damage"
+    override val description = "Every 3rd shot from this tower is a guaranteed crit, with a bonus +50% to Crit Multiplier"
     override val effect = EveryXShotGuaranteedCritPassiveDefinition(3)
 }
 

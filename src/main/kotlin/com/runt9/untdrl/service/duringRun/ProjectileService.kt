@@ -36,7 +36,7 @@ class ProjectileService(
                 // TODO: Handle AoE
                 if (collidedEnemy != null && !projectile.collidedWith.contains(collidedEnemy)) {
                     projectile.collidedWith += collidedEnemy
-                    attackService.attackEnemy(projectile.owner, collidedEnemy)
+                    attackService.attackEnemy(projectile.owner, collidedEnemy, projectile.position)
 
                     if (projectile.remainingPierces-- == 0) {
                         despawnProjectile(projectile)
@@ -44,10 +44,16 @@ class ProjectileService(
                     }
                 }
 
+                // TODO: This probably needs to get broken into "ProjectileConfiguration" that can be composed by tower definitions to control
+                //  how that tower's projectiles work and do the typical interceptor + hook type setup
                 // If the projectile is homing and the target is gone, we need to disable homing and just finish moving towards the edge of the range circle
                 if (projectile.homing && !projectile.target.isAlive) {
                     projectile.homing = false
-                    projectile.behavior = projectile.calculateBehavior()
+                    projectile.recalculateBehavior()
+                } else if (!projectile.homing && projectile.delayedHoming > 0 && projectile.travelDistance >= projectile.delayedHoming) {
+                    projectile.homing = true
+                    projectile.recalculateBehavior()
+                    projectile.delayedHoming = 0f
                 }
 
                 val steeringOutput = SteeringAcceleration(Vector2())

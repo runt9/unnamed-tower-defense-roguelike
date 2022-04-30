@@ -1,9 +1,11 @@
 package com.runt9.untdrl.service.duringRun
 
+import com.badlogic.gdx.math.Vector2
 import com.runt9.untdrl.model.attribute.AttributeType
 import com.runt9.untdrl.model.enemy.Enemy
 import com.runt9.untdrl.model.event.EnemyRemovedEvent
 import com.runt9.untdrl.model.tower.Tower
+import com.runt9.untdrl.model.tower.aoe
 import com.runt9.untdrl.model.tower.intercept.CritRequest
 import com.runt9.untdrl.model.tower.intercept.DamageRequest
 import com.runt9.untdrl.model.tower.intercept.DamageResult
@@ -17,18 +19,27 @@ class AttackService(
     private val eventBus: EventBus,
     registry: RunServiceRegistry,
     private val towerService: TowerService,
-    private val randomizer: RandomizerService
+    private val randomizer: RandomizerService,
+    private val enemyService: EnemyService
 ) : RunService(eventBus, registry) {
     private val logger = unTdRlLogger()
 
-    suspend fun attackEnemy(tower: Tower, enemy: Enemy) {
-        if (!enemy.isAlive) return
+    suspend fun attackEnemy(tower: Tower, enemyImpacted: Enemy, pointOfImpact: Vector2) {
+        val enemies = mutableListOf(enemyImpacted)
 
-        calculateDamage(tower, enemy)
-        if (enemy.currentHp <= 0) {
-            enemy.isAlive = false
-            enemy.affectedByTowers.forEach { t -> towerService.gainXp(t, enemy.xpOnDeath) }
-            eventBus.enqueueEvent(EnemyRemovedEvent(enemy))
+        if (tower.hasAttribute(AttributeType.AREA_OF_EFFECT)) {
+            enemies += enemyService.enemiesInRange(pointOfImpact, tower.aoe)
+        }
+
+        enemies.forEach { enemy ->
+            if (!enemy.isAlive) return
+
+            calculateDamage(tower, enemy)
+            if (enemy.currentHp <= 0) {
+                enemy.isAlive = false
+                enemy.affectedByTowers.forEach { t -> towerService.gainXp(t, enemy.xpOnDeath) }
+                eventBus.enqueueEvent(EnemyRemovedEvent(enemy))
+            }
         }
     }
 

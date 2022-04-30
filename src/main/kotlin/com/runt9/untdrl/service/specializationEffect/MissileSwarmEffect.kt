@@ -7,6 +7,7 @@ import com.runt9.untdrl.model.attribute.AttributeType.DAMAGE
 import com.runt9.untdrl.model.attribute.AttributeType.PROJECTILE_COUNT
 import com.runt9.untdrl.model.tower.Tower
 import com.runt9.untdrl.model.tower.definition.MissileSwarmSpecialization
+import com.runt9.untdrl.service.towerAction.ProjectileAttackAction
 import com.runt9.untdrl.util.framework.event.EventBus
 
 class MissileSwarmEffect(
@@ -19,5 +20,10 @@ class MissileSwarmEffect(
         tower.attrMods += AttributeModifier(AREA_OF_EFFECT, percentModifier = -definition.attributeReduction)
         tower.attrs[PROJECTILE_COUNT] = Attribute(PROJECTILE_COUNT, 3f)
         tower.attrBase[PROJECTILE_COUNT] = 3f
+        (tower.action as ProjectileAttackAction).apply {
+            delayedHoming = 0.5f
+            homing = false
+            anglePerProjectile = 50f
+        }
     }
 }

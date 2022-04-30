@@ -2,12 +2,12 @@ package com.runt9.untdrl.service.duringRun
 
 import com.badlogic.gdx.ai.steer.SteeringAcceleration
 import com.badlogic.gdx.math.Vector2
-import com.runt9.untdrl.model.tower.TargetingMode
 import com.runt9.untdrl.model.enemy.Enemy
 import com.runt9.untdrl.model.event.EnemyRemovedEvent
 import com.runt9.untdrl.model.event.EnemySpawnedEvent
 import com.runt9.untdrl.model.event.SpawningCompleteEvent
 import com.runt9.untdrl.model.event.WaveCompleteEvent
+import com.runt9.untdrl.model.tower.TargetingMode
 import com.runt9.untdrl.util.ext.unTdRlLogger
 import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.util.framework.event.HandlesEvent
@@ -88,4 +88,6 @@ class EnemyService(private val grid: IndexedGridGraph, private val eventBus: Eve
         TargetingMode.NEAR_DEATH -> sortedBy { it.currentHp }
         TargetingMode.HEALTHIEST -> sortedByDescending { it.currentHp }
     }
+
+    fun enemiesInRange(fromPosition: Vector2, range: Float) = enemies.filter { it.position.dst(fromPosition) <= range }
 }

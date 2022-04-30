@@ -20,9 +20,9 @@ val rocketTower = tower("Rocket Tower", GOLD_MINE, 75) {
     projectileAttack(UnitTexture.RESEARCH_LAB, speed = 4f)
 
     RANGE(5f, 0.2f, FLAT)
-    ATTACK_SPEED(0.65f, 0.025f, FLAT)
+    ATTACK_SPEED(0.5f, 0.025f, FLAT)
     DAMAGE(100f, 10f, PERCENT)
-    AREA_OF_EFFECT(0.25f, 5f, PERCENT)
+    AREA_OF_EFFECT(0.75f, 5f, PERCENT)
 
     damage(DamageType.PHYSICAL, 0.5f)
     damage(DamageType.HEAT, 0.5f)
@@ -38,5 +38,5 @@ class MissileSwarmSpecialization(val attributeReduction: Float) : TowerSpecializ
 }
 
 fun TowerDefinition.Builder.SpecializationBuilder.missileSwarmEffect() {
-    definition = MissileSwarmSpecialization(25f)
+    definition = MissileSwarmSpecialization(50f)
 }

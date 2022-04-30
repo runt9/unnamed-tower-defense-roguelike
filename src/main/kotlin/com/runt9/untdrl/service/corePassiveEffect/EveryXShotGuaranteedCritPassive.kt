@@ -1,10 +1,10 @@
 package com.runt9.untdrl.service.corePassiveEffect
 
-import com.runt9.untdrl.model.tower.Tower
-import com.runt9.untdrl.model.tower.intercept.beforeDamage
-import com.runt9.untdrl.model.tower.intercept.onAttack
 import com.runt9.untdrl.model.event.WaveCompleteEvent
 import com.runt9.untdrl.model.loot.definition.EveryXShotGuaranteedCritPassiveDefinition
+import com.runt9.untdrl.model.tower.Tower
+import com.runt9.untdrl.model.tower.intercept.critCheck
+import com.runt9.untdrl.model.tower.intercept.onAttack
 import com.runt9.untdrl.util.ext.unTdRlLogger
 import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.util.framework.event.HandlesEvent
@@ -22,17 +22,17 @@ class EveryXShotGuaranteedCritPassive(
         counter++
     }
 
-    private val damageInterceptor = beforeDamage { _, request ->
-        if (counter < definition.shots) return@beforeDamage
-        logger.info { "Before damage, counter is ${definition.shots}, adding guaranteed crit" }
+    private val critInterceptor = critCheck { _, request ->
+        if (counter < definition.shots) return@critCheck
+        logger.info { "On crit check, counter is ${definition.shots}, adding guaranteed crit" }
         counter = 0
         request.addCritChance(1f)
-        request.addDamageMultiplier(0.25f)
+        request.addCritMulti(0.5f)
     }
 
     override fun apply() {
         tower.addInterceptor(attackInterceptor)
-        tower.addInterceptor(damageInterceptor)
+        tower.addInterceptor(critInterceptor)
     }
 
     @HandlesEvent(WaveCompleteEvent::class)
