@@ -1,7 +1,8 @@
 package com.runt9.untdrl.service.specializationEffect
 
 import com.runt9.untdrl.model.attribute.AttributeModifier
-import com.runt9.untdrl.model.attribute.AttributeType
+import com.runt9.untdrl.model.attribute.AttributeType.ATTACK_SPEED
+import com.runt9.untdrl.model.attribute.AttributeType.DAMAGE
 import com.runt9.untdrl.model.event.WaveCompleteEvent
 import com.runt9.untdrl.model.tower.Tower
 import com.runt9.untdrl.model.tower.definition.MinigunSpecialization
@@ -41,14 +42,14 @@ class MinigunEffect(
     }
 
     override fun apply() {
-        tower.attrMods += AttributeModifier(AttributeType.DAMAGE, percentModifier = -definition.attributeReduction)
-        tower.attrMods += AttributeModifier(AttributeType.ATTACK_SPEED, flatModifier = -0.25f)
+        tower.modifyBaseAndLevelGrowth(DAMAGE, percentModifier = -definition.attributeReduction)
+        tower.modifyBaseAndLevelGrowth(ATTACK_SPEED, percentModifier = -definition.attributeReduction)
 
         tower.addInterceptor(onAttack { _, _ ->
             if (currentAttackSpeedBoost == maxAttackSpeedBoost) return@onAttack
 
             currentAttackSpeedBoost += attackSpeedBoostPerShot
-            val newModifier = AttributeModifier(AttributeType.ATTACK_SPEED, percentModifier = attackSpeedBoostPerShot)
+            val newModifier = AttributeModifier(ATTACK_SPEED, percentModifier = attackSpeedBoostPerShot)
             modifierStacks += newModifier
             tower.attrMods += newModifier
             towerService.recalculateAttrsSync(tower)

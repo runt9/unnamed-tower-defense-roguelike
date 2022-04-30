@@ -38,7 +38,7 @@ val rifleTower = tower("Rifle Tower", PROTOTYPE_TOWER, 30) {
     }
 
     specialization("Minigun", PROJECTILE) {
-        +"Tower gains 50% increased attack speed after each shot, stacking up to a limit of 500%. Base damage reduced by 25%. Attack Speed reduced by 0.25."
+        +"Tower gains 50% increased attack speed after each shot, stacking up to a limit of 500%. Damage and Attack Speed reduced by 50%."
         minigunEffect()
     }
 

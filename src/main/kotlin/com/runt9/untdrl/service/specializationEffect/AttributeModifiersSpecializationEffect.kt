@@ -10,7 +10,9 @@ class AttributeModifiersSpecializationEffect(
     private val definition: AttributeModifiersSpecialization
 ) : TowerSpecializationEffect {
     override fun apply() {
-        tower.attrMods += definition.modifiers
+        definition.modifiers.forEach { mod ->
+            tower.modifyBaseAndLevelGrowth(mod.type, mod.flatModifier, mod.percentModifier)
+        }
         // No need to recalculate attrs, automatically done after specializations applied since most specializations need it
     }
 }

@@ -1,7 +1,7 @@
 package com.runt9.untdrl.service.specializationEffect
 
 import com.runt9.untdrl.model.attribute.Attribute
-import com.runt9.untdrl.model.attribute.AttributeModifier
+import com.runt9.untdrl.model.attribute.AttributeModificationType.FLAT
 import com.runt9.untdrl.model.attribute.AttributeType.AREA_OF_EFFECT
 import com.runt9.untdrl.model.attribute.AttributeType.DAMAGE
 import com.runt9.untdrl.model.attribute.AttributeType.PROJECTILE_COUNT
@@ -16,14 +16,17 @@ class MissileSwarmEffect(
     private val definition: MissileSwarmSpecialization
 ) : TowerSpecializationEffect {
     override fun apply() {
-        tower.attrMods += AttributeModifier(DAMAGE, percentModifier = -definition.attributeReduction)
-        tower.attrMods += AttributeModifier(AREA_OF_EFFECT, percentModifier = -definition.attributeReduction)
+        tower.modifyBaseAndLevelGrowth(DAMAGE, percentModifier = -definition.attributeReduction)
+        tower.modifyBaseAndLevelGrowth(AREA_OF_EFFECT, percentModifier = -definition.attributeReduction)
+
         tower.attrs[PROJECTILE_COUNT] = Attribute(PROJECTILE_COUNT, 3f)
         tower.attrBase[PROJECTILE_COUNT] = 3f
+        tower.attrGrowth[PROJECTILE_COUNT] = Pair(FLAT, 0f)
+
         (tower.action as ProjectileAttackAction).apply {
             delayedHoming = 0.5f
             homing = false
-            anglePerProjectile = 50f
+            anglePerProjectile = 40f
         }
     }
 }

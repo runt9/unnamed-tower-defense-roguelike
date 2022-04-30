@@ -1,7 +1,7 @@
 package com.runt9.untdrl.service.specializationEffect
 
 import com.runt9.untdrl.model.attribute.Attribute
-import com.runt9.untdrl.model.attribute.AttributeModifier
+import com.runt9.untdrl.model.attribute.AttributeModificationType.FLAT
 import com.runt9.untdrl.model.attribute.AttributeType.DAMAGE
 import com.runt9.untdrl.model.attribute.AttributeType.PROJECTILE_COUNT
 import com.runt9.untdrl.model.attribute.AttributeType.RANGE
@@ -16,10 +16,13 @@ class ShotgunEffect(
     private val definition: ShotgunSpecialization
 ) : TowerSpecializationEffect {
     override fun apply() {
-        tower.attrMods += AttributeModifier(DAMAGE, percentModifier = -definition.attributeReduction)
-        tower.attrMods += AttributeModifier(RANGE, percentModifier = -definition.attributeReduction)
+        tower.modifyBaseAndLevelGrowth(DAMAGE, percentModifier = -definition.attributeReduction)
+        tower.modifyBaseAndLevelGrowth(RANGE, percentModifier = -definition.attributeReduction)
+
         tower.attrs[PROJECTILE_COUNT] = Attribute(PROJECTILE_COUNT, 5f)
         tower.attrBase[PROJECTILE_COUNT] = 5f
+        tower.attrGrowth[PROJECTILE_COUNT] = Pair(FLAT, 0f)
+
         (tower.action as ProjectileAttackAction).apply {
             homing = false
         }

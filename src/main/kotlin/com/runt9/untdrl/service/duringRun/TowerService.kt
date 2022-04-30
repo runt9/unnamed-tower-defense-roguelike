@@ -2,8 +2,6 @@ package com.runt9.untdrl.service.duringRun
 
 import com.badlogic.gdx.math.Vector2
 import com.runt9.untdrl.model.attribute.AttributeModificationType.FLAT
-import com.runt9.untdrl.model.attribute.AttributeModificationType.PERCENT
-import com.runt9.untdrl.model.attribute.AttributeModifier
 import com.runt9.untdrl.model.event.TowerPlacedEvent
 import com.runt9.untdrl.model.loot.TowerCore
 import com.runt9.untdrl.model.loot.definition.LegendaryPassiveEffectDefinition
@@ -68,7 +66,7 @@ class TowerService(
         }
     }
 
-    fun injectTowerAction(tower: Tower): TowerAction {
+    private fun injectTowerAction(tower: Tower): TowerAction {
         val action = dynamicInject(
             tower.definition.action.actionClass,
             dynamicInjectCheckInterfaceContains(TowerActionDefinition::class.java) to tower.definition.action,
@@ -117,15 +115,6 @@ class TowerService(
             xp -= xpToLevel
             xpToLevel = (xpToLevel * 1.5f).roundToInt()
 
-            definition.attrs.forEach { (type, def) ->
-                // TODO: This is wrong, tower growth needs to modify the base value directly, not stack with other modifiers
-                attrMods += AttributeModifier(
-                    type,
-                    flatModifier = if (def.growthType == FLAT) def.growthPerLevel else 0f,
-                    percentModifier = if (def.growthType == PERCENT) def.growthPerLevel else 0f
-                )
-            }
-
             if (level >= TOWER_SPECIALIZATION_LEVEL) {
                 tower.canSpecialize = true
             }
@@ -138,10 +127,15 @@ class TowerService(
         recalculateAttrs(tower)
     }
 
-    suspend fun recalculateAttrs(tower: Tower) {
+    private suspend fun recalculateAttrs(tower: Tower) {
         tower.apply {
             attrs.forEach { (type, attr) ->
                 val baseValue = attrBase[type] ?: 0f
+
+                val growthPair = attrGrowth[type] ?: Pair(FLAT, 0f)
+                val growthAmount = growthPair.second * (tower.level - 1)
+                val levelGrownBaseValue = if (growthPair.first == FLAT) baseValue + growthAmount else baseValue * (1 + (growthAmount / 100))
+
                 var totalFlat = 0f
                 var totalPercent = 0f
 
@@ -150,7 +144,7 @@ class TowerService(
                     totalPercent += it.percentModifier
                 }
 
-                val newValue = ((baseValue + totalFlat) * (1 + (totalPercent / 100)))
+                val newValue = ((levelGrownBaseValue + totalFlat) * (1 + (totalPercent / 100)))
                 if (newValue != attr()) {
                     attr(newValue)
                 }

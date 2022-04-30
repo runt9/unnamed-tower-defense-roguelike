@@ -3,6 +3,7 @@ package com.runt9.untdrl.model.tower
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.math.Vector2
 import com.runt9.untdrl.model.attribute.Attribute
+import com.runt9.untdrl.model.attribute.AttributeModificationType
 import com.runt9.untdrl.model.attribute.AttributeModifier
 import com.runt9.untdrl.model.attribute.AttributeType
 import com.runt9.untdrl.model.damage.DamageMap
@@ -15,6 +16,7 @@ import com.runt9.untdrl.model.tower.proc.TowerProc
 import com.runt9.untdrl.model.tower.specialization.TowerSpecializationDefinition
 import com.runt9.untdrl.service.towerAction.TowerAction
 import com.runt9.untdrl.util.ext.BaseSteerable
+import kotlin.math.max
 
 private var idCounter = 0
 
@@ -37,6 +39,7 @@ class Tower(val definition: TowerDefinition, val texture: Texture) : BaseSteerab
     var maxCores = 1
 
     val attrBase = definition.attrs.mapValues { (_, def) -> def.baseValue }.toMutableMap()
+    val attrGrowth = definition.attrs.mapValues { (_, def) -> Pair(def.growthType, def.growthPerLevel) }.toMutableMap()
     val attrs = definition.attrs.mapValues { (type, _) -> Attribute(type) }.toMutableMap()
     val attrMods = mutableListOf<AttributeModifier>()
     val damageTypes = copyDefinitionDamageTypes().toMutableList()
@@ -68,6 +71,23 @@ class Tower(val definition: TowerDefinition, val texture: Texture) : BaseSteerab
     }
 
     fun hasAttribute(attr: AttributeType) = attrs.containsKey(attr)
+
+    fun modifyBase(attr: AttributeType, flatModifier: Float = 0f, percentModifier: Float = 0f) {
+        val base = attrBase[attr] ?: 0f
+        val newValue = ((base + flatModifier) * (1 + (percentModifier / 100)))
+        attrBase[attr] = max(0f, newValue)
+    }
+
+    fun modifyLevelGrowth(attr: AttributeType, flatModifier: Float = 0f, percentModifier: Float = 0f) {
+        val growth = attrGrowth[attr] ?: Pair(AttributeModificationType.FLAT, 0f)
+        val newValue = ((growth.second + flatModifier) * (1 + (percentModifier / 100)))
+        attrGrowth[attr] = Pair(growth.first, max(0f, newValue))
+    }
+
+    fun modifyBaseAndLevelGrowth(attr: AttributeType, flatModifier: Float = 0f, percentModifier: Float = 0f) {
+        modifyBase(attr, flatModifier, percentModifier)
+        modifyLevelGrowth(attr, flatModifier, percentModifier)
+    }
 }
 
 fun Map<AttributeType, Attribute>.mapToFloats() = mapValues { (_, v) -> v() }
