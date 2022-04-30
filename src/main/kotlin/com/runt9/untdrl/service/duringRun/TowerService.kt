@@ -2,6 +2,7 @@ package com.runt9.untdrl.service.duringRun
 
 import com.badlogic.gdx.math.Vector2
 import com.runt9.untdrl.model.attribute.AttributeModificationType.FLAT
+import com.runt9.untdrl.model.attribute.AttributeType
 import com.runt9.untdrl.model.event.TowerPlacedEvent
 import com.runt9.untdrl.model.loot.TowerCore
 import com.runt9.untdrl.model.loot.definition.LegendaryPassiveEffectDefinition
@@ -32,7 +33,10 @@ class TowerService(eventBus: EventBus, registry: RunServiceRegistry) : RunServic
     }
 
     @HandlesEvent
-    fun add(event: TowerPlacedEvent) = add(event.tower)
+    fun add(event: TowerPlacedEvent) {
+        event.tower.action = injectTowerAction(event.tower)
+        add(event.tower)
+    }
 
     // TODO: Selling towers
     fun remove(tower: Tower) {
@@ -122,8 +126,9 @@ class TowerService(eventBus: EventBus, registry: RunServiceRegistry) : RunServic
         recalculateAttrs(tower)
     }
 
-    private suspend fun recalculateAttrs(tower: Tower) {
+    suspend fun recalculateAttrs(tower: Tower) {
         tower.apply {
+            val mods = attrMods.toList()
             attrs.forEach { (type, attr) ->
                 val baseValue = attrBase[type] ?: 0f
 
@@ -134,7 +139,7 @@ class TowerService(eventBus: EventBus, registry: RunServiceRegistry) : RunServic
                 var totalFlat = 0f
                 var totalPercent = 0f
 
-                attrMods.filter { it.type == type }.forEach {
+                mods.filter { it.type == type }.forEach {
                     totalFlat += it.flatModifier
                     totalPercent += it.percentModifier
                 }
@@ -187,7 +192,6 @@ class TowerService(eventBus: EventBus, registry: RunServiceRegistry) : RunServic
     suspend fun newTower(towerDef: TowerDefinition): Tower {
         val tower = Tower(towerDef)
         recalculateAttrs(tower)
-        tower.action = injectTowerAction(tower)
         return tower
     }
 
@@ -196,5 +200,17 @@ class TowerService(eventBus: EventBus, registry: RunServiceRegistry) : RunServic
     suspend fun update(id: Int, fn: suspend Tower.() -> Unit) = withTower(id) {
         fn()
         changed()
+    }
+
+    fun towersInRange(position: Vector2, range: Float) = towers.filter { it.position.dst(position) <= range }
+
+    fun removeAttribute(tower: Tower, attr: AttributeType) = launchOnServiceThread {
+        tower.apply {
+            attrs.remove(attr)
+            attrBase.remove(attr)
+            attrGrowth.remove(attr)
+            attrMods.removeIf { it.type == attr }
+            changed()
+        }
     }
 }

@@ -1,8 +1,8 @@
 package com.runt9.untdrl.model.tower.proc
 
-import com.runt9.untdrl.model.enemy.Burn
+import com.runt9.untdrl.model.enemy.status.Burn
 import com.runt9.untdrl.model.enemy.Enemy
-import com.runt9.untdrl.model.enemy.Stun
+import com.runt9.untdrl.model.enemy.status.Stun
 import com.runt9.untdrl.model.tower.Tower
 
 interface TowerProc {

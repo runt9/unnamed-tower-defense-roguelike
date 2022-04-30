@@ -59,7 +59,7 @@ data class CritRequest(private val tower: Tower) : TowerInteraction {
     fun addCritChance(chance: Float) { additionalCritChance += chance }
     fun addCritMulti(multi: Float) { additionalCritMulti += multi }
 
-    override fun toString() = "[Total Crit: ${(totalCritChance * 100f).displayPercent(1)} | Total Crit Multi: ${totalCritMulti.displayMultiplier()}]"
+    override fun toString() = "[Total Crit: ${totalCritChance.displayPercent(1)} | Total Crit Multi: ${totalCritMulti.displayMultiplier()}]"
 }
 
 enum class DamageSource {

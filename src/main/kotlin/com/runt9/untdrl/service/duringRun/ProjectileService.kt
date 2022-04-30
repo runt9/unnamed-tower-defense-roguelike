@@ -36,7 +36,7 @@ class ProjectileService(
                     projectile.collidedWith += collidedEnemy
                     enemyService.attackEnemy(DamageSource.PROJECTILE, projectile.owner, collidedEnemy, projectile.position)
 
-                    if (projectile.remainingPierces-- == 0) {
+                    if (projectile.remainingPierces-- <= 0) {
                         despawnProjectile(projectile)
                         return@forEach
                     }

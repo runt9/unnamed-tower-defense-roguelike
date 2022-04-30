@@ -7,6 +7,9 @@ import com.badlogic.gdx.ai.steer.utils.paths.LinePath
 import com.badlogic.gdx.ai.steer.utils.paths.LinePath.LinePathParam
 import com.badlogic.gdx.math.Vector2
 import com.runt9.untdrl.model.enemy.definition.EnemyDefinition
+import com.runt9.untdrl.model.enemy.status.Slow
+import com.runt9.untdrl.model.enemy.status.StatusEffect
+import com.runt9.untdrl.model.enemy.status.Stun
 import com.runt9.untdrl.model.tower.Tower
 import com.runt9.untdrl.util.ext.BaseSteerable
 import com.runt9.untdrl.util.ext.degRad
@@ -18,11 +21,12 @@ class Enemy(val definition: EnemyDefinition, wave: Int, initialPosition: Vector2
     private val difficultyModifier = 1 + (path.size / 200f)
     val id = idCounter++
 
-    val statusEffects = mutableListOf<StatusEffect>()
+    val statusEffects = mutableListOf<StatusEffect<*>>()
 
     override val linearSpeedLimit: Float get() {
         if (statusEffects.any { it is Stun }) return 0f
-        return definition.baseSpeed * difficultyModifier
+        val slowPct = statusEffects.filterIsInstance<Slow>().map { it.slowPct }.sum()
+        return (definition.baseSpeed * difficultyModifier) * (1 - slowPct)
     }
     override val linearAccelerationLimit get() = linearSpeedLimit * 100f
     override val angularSpeedLimit = 10f
@@ -58,23 +62,7 @@ class Enemy(val definition: EnemyDefinition, wave: Int, initialPosition: Vector2
 
     fun numNodesToHome() = fullPath.segments.size - (followPathBehavior.pathParam as LinePathParam).segmentIndex
 
-    inline fun <reified T : StatusEffect> addStatusEffect(effect: T) {
-        val existingEffect = statusEffects.find { it is T }
-        if (existingEffect == null || effect.stacks) {
-            statusEffects += effect
-            return
-        }
-
-        if (effect.refreshes) {
-            existingEffect.timer.targetTime = effect.duration
-        }
-
-        if (effect is DamagingStatusEffect) {
-            val existingDamage = (existingEffect as DamagingStatusEffect).totalDamage
-            if (effect.totalDamage >= existingDamage) {
-                statusEffects -= existingEffect
-                statusEffects += effect
-            }
-        }
+    inline fun <reified T : StatusEffect<T>> addStatusEffect(effect: T) {
+        effect.applyStrategy.apply(statusEffects, effect)
     }
 }

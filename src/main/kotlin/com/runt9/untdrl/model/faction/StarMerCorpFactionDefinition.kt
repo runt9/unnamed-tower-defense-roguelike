@@ -1,5 +1,6 @@
 package com.runt9.untdrl.model.faction
 
+import com.runt9.untdrl.model.tower.definition.propagandaTower
 import com.runt9.untdrl.model.tower.definition.rifleTower
 import com.runt9.untdrl.model.tower.definition.rocketTower
 import com.runt9.untdrl.service.factionPassiveEffect.RnDBudgetEffect
@@ -7,7 +8,7 @@ import com.runt9.untdrl.service.factionPassiveEffect.StockMarketEffect
 
 val baseFaction = faction(1, "StarMerCorp", 25) {
     startingTower(rifleTower)
-    otherTowers(rocketTower)
+    otherTowers(rocketTower, propagandaTower)
 
     goldPassive("Stock Market", StockMarketEffect::class) {
         +"""

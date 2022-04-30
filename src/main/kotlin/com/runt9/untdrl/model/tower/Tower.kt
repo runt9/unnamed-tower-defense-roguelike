@@ -50,6 +50,7 @@ class Tower(val definition: TowerDefinition) : BaseSteerable(Vector2.Zero, 0f) {
     var appliedSpecialization: TowerSpecializationDefinition? = null
 
     val localXpModifiers = mutableListOf<Float>()
+    val affectedByTowers = mutableSetOf<Tower>()
 
     private val interceptors = mutableMapOf<InterceptorHook, MutableList<TowerInterceptor<TowerInteraction>>>()
     val procs = mutableListOf<TowerProc>()

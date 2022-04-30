@@ -5,8 +5,8 @@ import com.badlogic.gdx.math.Vector2
 import com.runt9.untdrl.model.attribute.AttributeType
 import com.runt9.untdrl.model.damage.DamageMap
 import com.runt9.untdrl.model.damage.DamageType
-import com.runt9.untdrl.model.enemy.DamagingStatusEffect
 import com.runt9.untdrl.model.enemy.Enemy
+import com.runt9.untdrl.model.enemy.status.DamagingStatusEffect
 import com.runt9.untdrl.model.event.EnemyRemovedEvent
 import com.runt9.untdrl.model.event.EnemySpawnedEvent
 import com.runt9.untdrl.model.event.SpawningCompleteEvent
@@ -88,13 +88,12 @@ class EnemyService(
         }
     }
 
+    fun enemiesInRange(position: Vector2, range: Float) = enemies.toList().filter { it.isAlive && position.dst(it.position) <= range }
+
     fun getTowerTarget(position: Vector2, range: Float, targetingMode: TargetingMode) =
-        enemies.toList()
+        enemiesInRange(position, range)
             .sortByTargetingMode(targetingMode)
-            .filter { it.isAlive }
-            .find { enemy ->
-                position.dst(enemy.position) <= range
-            }
+            .firstOrNull()
 
     override fun stopInternal() {
         enemies.clear()
@@ -113,8 +112,6 @@ class EnemyService(
         TargetingMode.HEALTHIEST -> sortedByDescending { it.currentHp }
     }
 
-    private fun enemiesInRange(fromPosition: Vector2, range: Float) = enemies.filter { it.position.dst(fromPosition) <= range }
-
     private suspend fun takeDamage(enemy: Enemy, source: Tower, finalDamage: Float) {
         enemy.apply {
             currentHp -= finalDamage
@@ -124,7 +121,13 @@ class EnemyService(
 
         if (enemy.currentHp <= 0) {
             enemy.isAlive = false
-            enemy.affectedByTowers.forEach { t -> towerService.gainXp(t, enemy.xpOnDeath) }
+            val allAffectedTowers = mutableSetOf<Tower>()
+            enemy.affectedByTowers.forEach { t ->
+                allAffectedTowers += t
+                allAffectedTowers += t.affectedByTowers
+            }
+
+            allAffectedTowers.forEach { t -> towerService.gainXp(t, enemy.xpOnDeath) }
             eventBus.enqueueEvent(EnemyRemovedEvent(enemy))
         }
     }

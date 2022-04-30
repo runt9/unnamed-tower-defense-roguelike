@@ -3,6 +3,7 @@ package com.runt9.untdrl.model.tower
 import com.runt9.untdrl.model.attribute.AttributeType
 import com.runt9.untdrl.model.attribute.AttributeType.AREA_OF_EFFECT
 import com.runt9.untdrl.model.attribute.AttributeType.ATTACK_SPEED
+import com.runt9.untdrl.model.attribute.AttributeType.BUFF_DEBUFF_EFFECT
 import com.runt9.untdrl.model.attribute.AttributeType.CRIT_CHANCE
 import com.runt9.untdrl.model.attribute.AttributeType.CRIT_MULTI
 import com.runt9.untdrl.model.attribute.AttributeType.DAMAGE
@@ -19,3 +20,4 @@ val Tower.critChance get() = attr(CRIT_CHANCE)
 val Tower.critMulti get() = attr(CRIT_MULTI)
 val Tower.projCount get() = attr(PROJECTILE_COUNT)
 val Tower.aoe get() = attr(AREA_OF_EFFECT)
+val Tower.buffEffect get() = attr(BUFF_DEBUFF_EFFECT)
