@@ -50,7 +50,6 @@ class TowerView(
                 attrs[AttributeType.RANGE]?.also {
                     setSize(it * 2, it * 2)
                     setPosition(towerSize / 2, towerSize / 2, Align.center)
-
                 }
             }
         }

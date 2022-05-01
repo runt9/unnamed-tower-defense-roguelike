@@ -65,7 +65,7 @@ class EnemyService(
                     se.tick(delta)
 
                     if (se is DamagingStatusEffect) {
-                        performDotDamage(se.damageSource, se.source, enemy, se.damageThisTick, se.damageType)
+                        performTickDamage(se.damageSource, se.source, enemy, se.damageThisTick, listOf(DamageMap(se.damageType)), false)
                     }
 
                     if (se.timer.isReady) {
@@ -152,30 +152,47 @@ class EnemyService(
             if (isCrit) damageMultiplier = critCheck.totalCritMulti
         }
 
-        val damageRequest = DamageRequest(source, tower.damage, damageMultiplier)
-        tower.intercept(InterceptorHook.BEFORE_DAMAGE_CALC, damageRequest)
+        val damageRequest = damageRequest(tower, source, tower.damage, damageMultiplier)
         logger.info { "Final Damage Request: $damageRequest" }
-        val damageResult = rollForDamage(damageRequest)
-        tower.intercept(InterceptorHook.AFTER_DAMAGE_CALC, damageResult)
+        val damageResult = damageResult(tower, damageRequest, true)
         logger.info { "Final Damage Result: $damageResult" }
-        val resistanceRequest = ResistanceRequest(source, tower.damageTypes.toList(), enemy.resistances.toMap(), damageResult)
-        tower.intercept(InterceptorHook.BEFORE_RESISTS, resistanceRequest)
+
+        val resistanceRequest = resistanceRequest(tower, source, damageResult, tower.damageTypes, enemy.resistances)
         logger.info { "Total Damage: ${resistanceRequest.finalDamage}" }
         takeDamage(enemy, tower, resistanceRequest.finalDamage)
 
-        tower.procs.filter { randomizer.percentChance(it.chance) }.forEach { proc -> proc.applyToEnemy(tower, enemy, resistanceRequest.finalDamage) }
+        processProcs(tower, enemy, resistanceRequest)
     }
 
-    private suspend fun performDotDamage(source: DamageSource, tower: Tower, enemy: Enemy, damageTick: Float, damageType: DamageType) {
-        val damageRequest = DamageRequest(source, damageTick)
-        tower.intercept(InterceptorHook.BEFORE_DAMAGE_CALC, damageRequest)
-
-        val damageResult = DamageResult(damageRequest.totalBaseDamage, damageRequest.totalDamageMulti)
-        tower.intercept(InterceptorHook.AFTER_DAMAGE_CALC, damageResult)
-
-        val resistanceRequest = ResistanceRequest(source, listOf(DamageMap(damageType)), enemy.resistances.toMap(), damageResult)
-        tower.intercept(InterceptorHook.BEFORE_RESISTS, resistanceRequest)
+    suspend fun performTickDamage(source: DamageSource, tower: Tower, enemy: Enemy, damageTick: Float, damageTypes: List<DamageMap>, processProcs: Boolean) {
+        val damageRequest = damageRequest(tower, source, damageTick)
+        val damageResult = damageResult(tower, damageRequest, false)
+        val resistanceRequest = resistanceRequest(tower, source, damageResult, damageTypes, enemy.resistances)
         takeDamage(enemy, tower, resistanceRequest.finalDamage)
+        if (processProcs) processProcs(tower, enemy, resistanceRequest)
+    }
+
+    private fun processProcs(tower: Tower, enemy: Enemy, resistanceRequest: ResistanceRequest) =
+        tower.procs.filter { randomizer.percentChance(it.chance) }.forEach { proc ->
+            proc.applyToEnemy(tower, enemy, resistanceRequest.finalDamage)
+        }
+
+    private fun damageRequest(tower: Tower, source: DamageSource, damage: Float, damageMultiplier: Float = 1f): DamageRequest {
+        val damageRequest = DamageRequest(source, damage, damageMultiplier)
+        tower.intercept(InterceptorHook.BEFORE_DAMAGE_CALC, damageRequest)
+        return damageRequest
+    }
+
+    private fun damageResult(tower: Tower, request: DamageRequest, roll: Boolean): DamageResult {
+        val result = if (roll) rollForDamage(request) else DamageResult(request.totalBaseDamage, request.totalDamageMulti)
+        tower.intercept(InterceptorHook.AFTER_DAMAGE_CALC, result)
+        return result
+    }
+
+    private fun resistanceRequest(tower: Tower, source: DamageSource, result: DamageResult, damageTypes: List<DamageMap>, resistances: Map<DamageType, Float>): ResistanceRequest {
+        val request = ResistanceRequest(source, damageTypes.toList(), resistances.toMap(), result)
+        tower.intercept(InterceptorHook.BEFORE_RESISTS, request)
+        return request
     }
 
     private fun rollForDamage(request: DamageRequest): DamageResult {

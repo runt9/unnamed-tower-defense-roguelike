@@ -5,7 +5,7 @@ import com.runt9.untdrl.model.attribute.AttributeType.DAMAGE
 import com.runt9.untdrl.model.damage.DamageType
 import com.runt9.untdrl.model.tower.Tower
 import com.runt9.untdrl.model.tower.definition.NapalmCannonSpecialization
-import com.runt9.untdrl.model.tower.proc.BurnProc
+import com.runt9.untdrl.model.tower.proc.burnProc
 import com.runt9.untdrl.util.framework.event.EventBus
 
 class NapalmCannonEffect(
@@ -19,6 +19,6 @@ class NapalmCannonEffect(
 
         tower.damageTypes.removeIf { it.type == DamageType.PHYSICAL }
         tower.damageTypes.find { it.type == DamageType.HEAT }?.pctOfBase = 1f
-        tower.procs += BurnProc(1f, 2f, 0.5f)
+        tower.procs += burnProc(1f, 2f, 0.5f)
     }
 }

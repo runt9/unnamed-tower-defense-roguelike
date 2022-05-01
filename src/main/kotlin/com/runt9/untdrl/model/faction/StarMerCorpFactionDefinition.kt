@@ -1,18 +1,21 @@
 package com.runt9.untdrl.model.faction
 
 import com.runt9.untdrl.model.TextureDefinition
-import com.runt9.untdrl.model.research.advancedBallistics
-import com.runt9.untdrl.model.research.energyBallistics
+import com.runt9.untdrl.model.research.ResearchDefinition
+import com.runt9.untdrl.model.research.ResearchEffectDefinition
 import com.runt9.untdrl.model.research.research
 import com.runt9.untdrl.model.research.unlockTower
+import com.runt9.untdrl.model.tower.definition.flamethrower
 import com.runt9.untdrl.model.tower.definition.propagandaTower
-import com.runt9.untdrl.model.tower.definition.rifleTower
 import com.runt9.untdrl.model.tower.definition.rocketTower
 import com.runt9.untdrl.service.factionPassiveEffect.RnDBudgetEffect
 import com.runt9.untdrl.service.factionPassiveEffect.StockMarketEffect
+import com.runt9.untdrl.service.researchEffect.AdvancedBallisticsEffect
+import com.runt9.untdrl.service.researchEffect.EnergyBallisticsEffect
 
 val baseFaction = faction(1, "StarMerCorp", 25) {
-    startingTower(rifleTower)
+//    startingTower(rifleTower)
+    startingTower(flamethrower)
 
     goldPassive("Stock Market", StockMarketEffect::class) {
         +"""
@@ -35,6 +38,7 @@ val baseFaction = faction(1, "StarMerCorp", 25) {
 
     unlockTower(rocketTower, 15)
     unlockTower(propagandaTower, 25)
+//    unlockTower(flamethrower, 35)
 
     val advBallistics = research("Advanced Ballistics", TextureDefinition.ENEMY, 10) {
         +"All projectiles do 25% more damage and penetrate 10% of enemy resistances."
@@ -46,4 +50,20 @@ val baseFaction = faction(1, "StarMerCorp", 25) {
         +"All projectiles do an additional 25% of base damage as Lightning damage and have a 10% chance to stun all enemies hit for 0.75s."
         energyBallistics(0.25f, 0.1f, 0.75f)
     }
+}
+
+class AdvancedBallisticsEffectDefinition(val damagePct: Float, val penetration: Float) : ResearchEffectDefinition {
+    override val effectClass = AdvancedBallisticsEffect::class
+}
+
+fun ResearchDefinition.Builder.advancedBallistics(damagePct: Float, penetration: Float) {
+    definition = AdvancedBallisticsEffectDefinition(damagePct, penetration)
+}
+
+class EnergyBallisticsEffectDefinition(val lightningDamage: Float, val stunChance: Float, val stunDuration: Float) : ResearchEffectDefinition {
+    override val effectClass = EnergyBallisticsEffect::class
+}
+
+fun ResearchDefinition.Builder.energyBallistics(lightningDamage: Float, stunChance: Float, stunDuration: Float) {
+    definition = EnergyBallisticsEffectDefinition(lightningDamage, stunChance, stunDuration)
 }

@@ -2,7 +2,6 @@ package com.runt9.untdrl.service.towerAction
 
 import com.badlogic.gdx.ai.steer.SteeringAcceleration
 import com.badlogic.gdx.ai.steer.behaviors.Face
-import com.badlogic.gdx.ai.utils.ArithmeticUtils
 import com.badlogic.gdx.math.Vector2
 import com.runt9.untdrl.model.attribute.AttributeType
 import com.runt9.untdrl.model.enemy.Enemy
@@ -17,12 +16,11 @@ import com.runt9.untdrl.model.tower.intercept.OnAttack
 import com.runt9.untdrl.model.tower.range
 import com.runt9.untdrl.service.duringRun.EnemyService
 import com.runt9.untdrl.util.ext.Timer
+import com.runt9.untdrl.util.ext.angleToWithin
 import com.runt9.untdrl.util.ext.degRad
-import com.runt9.untdrl.util.ext.toVector
 import com.runt9.untdrl.util.ext.unTdRlLogger
 import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.util.framework.event.HandlesEvent
-import kotlin.math.abs
 
 // TODO: Once more towers start getting created, figure out how we want to abstract away common stuff
 class ProjectileAttackAction(
@@ -65,10 +63,7 @@ class ProjectileAttackAction(
             tower.applySteering(delta, steeringOutput)
         }
 
-        val rotationVector = ArithmeticUtils.wrapAngleAroundZero(tower.rotation.degRad).toVector(Vector2.Zero).angleDeg()
-        val positionVector = behavior.target.position.cpy().sub(tower.position.cpy()).nor().angleDeg()
-
-        if (attackTimer.isReady && abs(rotationVector - positionVector) <= 3f) {
+        if (attackTimer.isReady && tower.angleToWithin(target, 3f)) {
             attackTimer.reset(false)
             spawnProjectiles()
             tower.intercept(InterceptorHook.ON_ATTACK, OnAttack(tower))

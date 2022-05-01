@@ -1,11 +1,11 @@
 package com.runt9.untdrl.service.researchEffect
 
-import com.runt9.untdrl.model.tower.proc.StunProc
 import com.runt9.untdrl.model.damage.DamageMap
 import com.runt9.untdrl.model.damage.DamageType
-import com.runt9.untdrl.model.research.EnergyBallisticsEffectDefinition
-import com.runt9.untdrl.service.towerAction.ProjectileAttackAction
+import com.runt9.untdrl.model.faction.EnergyBallisticsEffectDefinition
+import com.runt9.untdrl.model.tower.proc.StunProc
 import com.runt9.untdrl.service.duringRun.TowerService
+import com.runt9.untdrl.service.towerAction.ProjectileAttackAction
 import com.runt9.untdrl.util.framework.event.EventBus
 
 class EnergyBallisticsEffect(

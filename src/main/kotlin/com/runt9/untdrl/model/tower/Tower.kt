@@ -19,7 +19,7 @@ import kotlin.math.max
 
 private var idCounter = 0
 
-class Tower(val definition: TowerDefinition) : BaseSteerable(Vector2.Zero, 0f) {
+class Tower(val definition: TowerDefinition) : BaseSteerable(Vector2.Zero.cpy(), 0f) {
     val id = idCounter++
 
     override val linearSpeedLimit = 0f

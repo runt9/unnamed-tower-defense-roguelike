@@ -62,7 +62,7 @@ class Enemy(val definition: EnemyDefinition, wave: Int, initialPosition: Vector2
 
     fun numNodesToHome() = fullPath.segments.size - (followPathBehavior.pathParam as LinePathParam).segmentIndex
 
-    inline fun <reified T : StatusEffect<T>> addStatusEffect(effect: T) {
+    fun <T : StatusEffect<T>> addStatusEffect(effect: T) {
         effect.applyStrategy.apply(statusEffects, effect)
     }
 }

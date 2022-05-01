@@ -35,7 +35,10 @@ class EnemyView(
             progressBar {
                 style = this@EnemyView.unitBarStyle(Color.GREEN)
 
-                bindUpdatable(vm.hpPercent) { value = vm.hpPercent.get() }
+                bindUpdatable(vm.hpPercent) {
+                    if (!vm.enemy.isAlive) return@bindUpdatable
+                    value = vm.hpPercent.get()
+                }
 
                 setAnimateDuration(0.15f)
                 setSize(0.75f, 0.2f)

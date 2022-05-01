@@ -4,6 +4,7 @@ import com.runt9.untdrl.model.damage.DamageType
 import com.runt9.untdrl.model.enemy.status.strategy.StatusEffectApplyStrategy
 import com.runt9.untdrl.model.enemy.status.strategy.applyIfEmpty
 import com.runt9.untdrl.model.enemy.status.strategy.keepsBetter
+import com.runt9.untdrl.model.enemy.status.strategy.stacks
 import com.runt9.untdrl.model.tower.Tower
 import com.runt9.untdrl.model.tower.intercept.DamageSource
 import com.runt9.untdrl.util.ext.Timer
@@ -46,5 +47,7 @@ abstract class DamagingStatusEffect<S : StatusEffect<S>>(
 class Stun(source: Tower, duration: Float) : StatusEffect<Stun>(source, duration, applyIfEmpty())
 
 class Burn(source: Tower, duration: Float, damage: Float) : DamagingStatusEffect<Burn>(source, duration, damage, DamageType.HEAT, DamageSource.BURN, keepsBetter(Comparator.comparing(Burn::totalDamage)))
+
+class Poison(source: Tower, duration: Float, damage: Float) : DamagingStatusEffect<Poison>(source, duration, damage, DamageType.NATURE, DamageSource.POISON, stacks())
 
 class Slow(source: Tower, duration: Float, val slowPct: Float) : StatusEffect<Slow>(source, duration, keepsBetter(Comparator.comparing(Slow::slowPct)))

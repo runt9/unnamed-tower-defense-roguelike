@@ -4,7 +4,7 @@ import com.badlogic.gdx.ai.utils.Location
 import com.badlogic.gdx.math.Vector2
 
 abstract class LocationAdapter : Location<Vector2> {
-    private val position: Vector2 = Vector2.Zero
+    private val position: Vector2 = Vector2.Zero.cpy()
     var rotation = 0f
 
     override fun getPosition() = position

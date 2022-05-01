@@ -1,6 +1,6 @@
 package com.runt9.untdrl.service.researchEffect
 
-import com.runt9.untdrl.model.research.AdvancedBallisticsEffectDefinition
+import com.runt9.untdrl.model.faction.AdvancedBallisticsEffectDefinition
 import com.runt9.untdrl.model.tower.intercept.DamageSource
 import com.runt9.untdrl.model.tower.intercept.beforeDamage
 import com.runt9.untdrl.model.tower.intercept.beforeResists

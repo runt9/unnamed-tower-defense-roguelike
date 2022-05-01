@@ -135,6 +135,7 @@ class LootService(
     private fun generateCore(): TowerCore {
         val rarity = generateRarity()
         val count = rarity.numCoreAttrs
+        // TODO: If a faction's starting tower only has 2 attributes, this cannot generate a Rare/Legendary with 3 attributes
         val allowedAttributeTypes = runStateService.load().availableTowers.flatMap { it.attrs.keys }.distinct()
 
         val generatedSoFar = mutableListOf<AttributeType>()

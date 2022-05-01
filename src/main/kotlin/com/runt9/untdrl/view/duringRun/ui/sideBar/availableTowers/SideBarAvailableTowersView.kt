@@ -72,7 +72,7 @@ fun KStack.towerTooltip(tower: TowerDefinition) = tooltip {
 
     visLabel(tower.description) {
         wrap = true
-    }.cell(growX = true, row = true, pad = 5f)
+    }.cell(growX = true, row = true, pad = 5f, minWidth = 300f)
 
     separator(2f)
 
