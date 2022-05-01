@@ -38,6 +38,7 @@ class SideBarAvailableTowersView(
 
             flowGroup(spacing = 2f) {
                 bindUpdatable(vm.availableTowers) {
+                    clear()
                     vm.availableTowers.get().forEach { tower ->
                         stack {
                             squarePixmap(60, Color.LIGHT_GRAY)

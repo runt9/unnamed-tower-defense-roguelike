@@ -1,6 +1,8 @@
 package com.runt9.untdrl.model.research
 
 import com.runt9.untdrl.model.TextureDefinition
+import com.runt9.untdrl.model.faction.FactionDefinition
+import com.runt9.untdrl.model.tower.definition.TowerDefinition
 
 interface ResearchDefinition {
     val icon: TextureDefinition
@@ -24,11 +26,11 @@ interface ResearchDefinition {
     }
 }
 
-fun research(name: String, icon: TextureDefinition, cost: Int, builder: ResearchDefinition.Builder.() -> Unit = {}): ResearchDefinition {
+fun FactionDefinition.Builder.research(name: String, icon: TextureDefinition, cost: Int, builder: ResearchDefinition.Builder.() -> Unit = {}): ResearchDefinition {
     val researchBuilder = ResearchDefinition.Builder()
     researchBuilder.builder()
 
-    return object : ResearchDefinition {
+    val research = object : ResearchDefinition {
         override val icon = icon
         override val name = name
         override val description = researchBuilder.description
@@ -37,4 +39,13 @@ fun research(name: String, icon: TextureDefinition, cost: Int, builder: Research
         override val dependsOn = researchBuilder.dependsOn
         override val exclusiveOf = researchBuilder.exclusiveOf
     }
+
+    this.research += research
+
+    return research
+}
+
+fun FactionDefinition.Builder.unlockTower(towerDef: TowerDefinition, cost: Int) = research(towerDef.name, towerDef.texture, cost) {
+    +"Unlocks ${towerDef.name}."
+    unlock(towerDef)
 }

@@ -1,5 +1,6 @@
 package com.runt9.untdrl.model.faction
 
+import com.runt9.untdrl.model.research.ResearchDefinition
 import com.runt9.untdrl.model.tower.definition.TowerDefinition
 import com.runt9.untdrl.service.factionPassiveEffect.FactionPassiveEffect
 import kotlin.reflect.KClass
@@ -11,20 +12,16 @@ interface FactionDefinition {
     val startingTower: TowerDefinition
     val goldPassive: FactionPassiveDefinition
     val researchPassive: FactionPassiveDefinition
-    val otherTowers: List<TowerDefinition>
+    val research: List<ResearchDefinition>
 
     class Builder {
         internal lateinit var startingTower: TowerDefinition
         internal lateinit var goldPassive: FactionPassiveDefinition
         internal lateinit var researchPassive: FactionPassiveDefinition
-        internal val otherTowers = mutableListOf<TowerDefinition>()
+        val research = mutableListOf<ResearchDefinition>()
 
         fun startingTower(tower: TowerDefinition) {
             startingTower = tower
-        }
-
-        fun otherTowers(vararg towers: TowerDefinition) {
-            otherTowers += towers
         }
 
         fun goldPassive(name: String, effectClass: KClass<out FactionPassiveEffect>, builder: PassiveBuilder.() -> Unit = {}) {
@@ -70,8 +67,8 @@ fun faction(
         override val name = name
         override val maxHp = maxHp
         override val startingTower = builder.startingTower
-        override val otherTowers = builder.otherTowers
         override val goldPassive = builder.goldPassive
         override val researchPassive = builder.researchPassive
+        override val research = builder.research
     }
 }

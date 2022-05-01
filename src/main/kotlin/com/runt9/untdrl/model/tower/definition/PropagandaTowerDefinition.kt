@@ -15,7 +15,7 @@ import com.runt9.untdrl.service.specializationEffect.MentalDisruptionEffect
 import com.runt9.untdrl.service.specializationEffect.RiseToTheOccasionEffect
 import com.runt9.untdrl.service.specializationEffect.SayItLouderEffect
 
-val propagandaTower = tower("Propaganda Tower", RESEARCH_LAB, 10) {
+val propagandaTower = tower("Propaganda Tower", RESEARCH_LAB, 100) {
     +"Buffs nearby towers, granting them 25% increased Damage and Attack Speed."
 
     actionDefinition = AttributeBuffActionDefinition(

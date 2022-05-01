@@ -3,7 +3,6 @@ package com.runt9.untdrl.service.duringRun
 import com.runt9.untdrl.model.RunState
 import com.runt9.untdrl.model.research.ResearchDefinition
 import com.runt9.untdrl.model.research.ResearchEffectDefinition
-import com.runt9.untdrl.model.research.allResearch
 import com.runt9.untdrl.service.RandomizerService
 import com.runt9.untdrl.util.ext.dynamicInject
 import com.runt9.untdrl.util.ext.dynamicInjectCheckIsSubclassOf
@@ -18,9 +17,10 @@ class ResearchService(
     private val randomizer: RandomizerService
 ) : RunService(eventBus, registry) {
     private val logger = unTdRlLogger()
-    private val research = allResearch
+    private lateinit var research: List<ResearchDefinition>
 
     override fun startInternal() {
+        research = runStateService.load().faction.research
         runStateService.update { addResearch() }
     }
 

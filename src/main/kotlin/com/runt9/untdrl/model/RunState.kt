@@ -31,7 +31,7 @@ data class RunState(
     var selectableResearchOptionCount: Int = 5,
     var researchAmount: Int = 0,
     var wave: Int = 1,
-    var availableTowers: List<TowerDefinition> = listOf(faction.startingTower) + faction.otherTowers,
+    var availableTowers: List<TowerDefinition> = listOf(faction.startingTower),
     var relics: List<Relic> = listOf(),
     var consumableSlots: Int = 3,
     var consumables: List<Consumable> = listOf(),
