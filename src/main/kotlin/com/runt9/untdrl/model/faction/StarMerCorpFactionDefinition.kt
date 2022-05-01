@@ -7,6 +7,7 @@ import com.runt9.untdrl.model.research.research
 import com.runt9.untdrl.model.research.unlockTower
 import com.runt9.untdrl.model.tower.definition.flamethrower
 import com.runt9.untdrl.model.tower.definition.propagandaTower
+import com.runt9.untdrl.model.tower.definition.rifleTower
 import com.runt9.untdrl.model.tower.definition.rocketTower
 import com.runt9.untdrl.service.factionPassiveEffect.RnDBudgetEffect
 import com.runt9.untdrl.service.factionPassiveEffect.StockMarketEffect
@@ -14,8 +15,7 @@ import com.runt9.untdrl.service.researchEffect.AdvancedBallisticsEffect
 import com.runt9.untdrl.service.researchEffect.EnergyBallisticsEffect
 
 val baseFaction = faction(1, "StarMerCorp", 25) {
-//    startingTower(rifleTower)
-    startingTower(flamethrower)
+    startingTower(rifleTower)
 
     goldPassive("Stock Market", StockMarketEffect::class) {
         +"""
@@ -38,7 +38,7 @@ val baseFaction = faction(1, "StarMerCorp", 25) {
 
     unlockTower(rocketTower, 15)
     unlockTower(propagandaTower, 25)
-//    unlockTower(flamethrower, 35)
+    unlockTower(flamethrower, 35)
 
     val advBallistics = research("Advanced Ballistics", TextureDefinition.ENEMY, 10) {
         +"All projectiles do 25% more damage and penetrate 10% of enemy resistances."
