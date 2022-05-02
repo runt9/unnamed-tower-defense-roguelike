@@ -42,6 +42,7 @@ class Tower(val definition: TowerDefinition) : BaseSteerable(Vector2.Zero.cpy(),
     val attrs = definition.attrs.mapValues { (type, _) -> Attribute(type) }.toMutableMap()
     val attrMods = mutableListOf<AttributeModifier>()
     val damageTypes = copyDefinitionDamageTypes().toMutableList()
+    var canChangeTargetingMode = definition.canChangeTargetingMode
     var targetingMode = TargetingMode.FRONT
 
     val cores = mutableListOf<TowerCore>()
@@ -88,6 +89,8 @@ class Tower(val definition: TowerDefinition) : BaseSteerable(Vector2.Zero.cpy(),
         modifyBase(attr, flatModifier, percentModifier)
         modifyLevelGrowth(attr, flatModifier, percentModifier)
     }
+
+    fun inRangeOf(pos: Vector2) = position.dst(pos) <= range
 }
 
 fun Map<AttributeType, Attribute>.mapToFloats() = mapValues { (_, v) -> v() }

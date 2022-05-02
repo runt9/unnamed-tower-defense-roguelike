@@ -41,7 +41,7 @@ class AttributeBuffAction(
     @HandlesEvent
     suspend fun towerPlaced(event: TowerPlacedEvent) {
         val newTower = event.tower
-        if (newTower.position.dst(tower.position) <= tower.range) {
+        if (tower.inRangeOf(newTower.position)) {
             affectedTowers += newTower
             newTower.affectedByTowers += newTower
             modifications.forEach { it.applyToTower(newTower) }

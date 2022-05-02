@@ -11,6 +11,7 @@ import com.runt9.untdrl.service.asset.SkinLoader
 import com.runt9.untdrl.service.duringRun.EnemyService
 import com.runt9.untdrl.service.duringRun.IndexedGridGraph
 import com.runt9.untdrl.service.duringRun.LootService
+import com.runt9.untdrl.service.duringRun.MineService
 import com.runt9.untdrl.service.duringRun.ProjectileService
 import com.runt9.untdrl.service.duringRun.ResearchService
 import com.runt9.untdrl.service.duringRun.RunInitializer
@@ -74,6 +75,7 @@ object Injector : Context() {
         bindSingleton<TickerRegistry>()
         bindSingleton<EnemyService>()
         bindSingleton<ProjectileService>()
+        bindSingleton<MineService>()
         bindSingleton<SpawnerService>()
         bindSingleton<LootService>()
         bindSingleton<ResearchService>()

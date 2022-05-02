@@ -2,6 +2,7 @@ package com.runt9.untdrl.model.tower.intercept
 
 import com.runt9.untdrl.model.damage.DamageMap
 import com.runt9.untdrl.model.damage.DamageType
+import com.runt9.untdrl.model.enemy.Enemy
 import com.runt9.untdrl.model.tower.Tower
 import com.runt9.untdrl.model.tower.critChance
 import com.runt9.untdrl.model.tower.critMulti
@@ -10,6 +11,7 @@ import com.runt9.untdrl.model.tower.intercept.InterceptorHook.BEFORE_DAMAGE_CALC
 import com.runt9.untdrl.model.tower.intercept.InterceptorHook.BEFORE_RESISTS
 import com.runt9.untdrl.model.tower.intercept.InterceptorHook.CRIT_CHECK
 import com.runt9.untdrl.model.tower.intercept.InterceptorHook.ON_ATTACK
+import com.runt9.untdrl.model.tower.intercept.InterceptorHook.ON_CRIT
 import com.runt9.untdrl.util.ext.clamp
 import com.runt9.untdrl.util.ext.displayDecimal
 import com.runt9.untdrl.util.ext.displayMultiplier
@@ -19,6 +21,7 @@ enum class InterceptorHook {
     ON_ATTACK,
     ON_HIT,
     CRIT_CHECK,
+    ON_CRIT,
     BEFORE_DAMAGE_CALC,
     AFTER_DAMAGE_CALC,
     BEFORE_RESISTS,
@@ -45,6 +48,7 @@ fun <I : TowerInteraction> intercept(hook: InterceptorHook, intercept: (Tower, I
 
 interface TowerInteraction
 data class OnAttack(val tower: Tower) : TowerInteraction
+data class OnCrit(val tower: Tower, val enemy: Enemy) : TowerInteraction
 
 data class CritRequest(private val tower: Tower) : TowerInteraction {
     private val baseCrit = tower.critChance
@@ -63,7 +67,7 @@ data class CritRequest(private val tower: Tower) : TowerInteraction {
 }
 
 enum class DamageSource {
-    TOWER, PROJECTILE, BURN, BLEED, POISON
+    TOWER, PROJECTILE, MINE, BURN, BLEED, POISON
 }
 
 data class DamageRequest(val source: DamageSource, private val baseDamage: Float, val damageMultiplier: Float = 1f) : TowerInteraction {
@@ -123,6 +127,7 @@ data class ResistanceRequest(
 }
 
 fun onAttack(intercept: (Tower, OnAttack) -> Unit) = intercept(ON_ATTACK, intercept)
+fun onCrit(intercept: (Tower, OnCrit) -> Unit) = intercept(ON_CRIT, intercept)
 fun critCheck(intercept: (Tower, CritRequest) -> Unit) = intercept(CRIT_CHECK, intercept)
 fun beforeDamage(vararg filterSource: DamageSource = DamageSource.values(), intercept: (Tower, DamageRequest) -> Unit) =
     intercept<DamageRequest>(BEFORE_DAMAGE_CALC) { tower, request ->

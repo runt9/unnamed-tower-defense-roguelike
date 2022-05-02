@@ -7,6 +7,7 @@ import com.runt9.untdrl.model.event.ChunkCancelledEvent
 import com.runt9.untdrl.model.event.ChunkPlacedEvent
 import com.runt9.untdrl.model.event.EnemyRemovedEvent
 import com.runt9.untdrl.model.event.EnemySpawnedEvent
+import com.runt9.untdrl.model.event.MineSpawnedEvent
 import com.runt9.untdrl.model.event.NewChunkEvent
 import com.runt9.untdrl.model.event.NewTowerEvent
 import com.runt9.untdrl.model.event.PrepareNextWaveEvent
@@ -15,6 +16,7 @@ import com.runt9.untdrl.model.event.TowerCancelledEvent
 import com.runt9.untdrl.service.ChunkGenerator
 import com.runt9.untdrl.service.RandomizerService
 import com.runt9.untdrl.service.duringRun.IndexedGridGraph
+import com.runt9.untdrl.service.duringRun.MineService
 import com.runt9.untdrl.service.duringRun.ProjectileService
 import com.runt9.untdrl.service.duringRun.TowerService
 import com.runt9.untdrl.util.ext.unTdRlLogger
@@ -25,6 +27,7 @@ import com.runt9.untdrl.util.framework.ui.controller.injectView
 import com.runt9.untdrl.view.duringRun.HOME_POINT
 import com.runt9.untdrl.view.duringRun.game.chunk.ChunkViewModel
 import com.runt9.untdrl.view.duringRun.game.enemy.EnemyViewModel
+import com.runt9.untdrl.view.duringRun.game.mine.MineViewModel
 import com.runt9.untdrl.view.duringRun.game.projectile.ProjectileViewModel
 import com.runt9.untdrl.view.duringRun.game.tower.TowerViewModel
 import ktx.async.onRenderingThread
@@ -36,7 +39,8 @@ class DuringRunGameController(
     private val towerService: TowerService,
     private val projectileService: ProjectileService,
     private val grid: IndexedGridGraph,
-    private val randomizer: RandomizerService
+    private val randomizer: RandomizerService,
+    private val mineService: MineService
 ) : Controller {
     private val logger = unTdRlLogger()
     override val vm = DuringRunGameViewModel()
@@ -120,6 +124,23 @@ class DuringRunGameController(
 
         vm.projectiles += projVm
         projectileService.add(projectile)
+    }
+
+    @HandlesEvent
+    suspend fun spawnMine(event: MineSpawnedEvent) = onRenderingThread {
+        val mine = event.mine
+        val projVm = MineViewModel(mine)
+
+        mine.onMove {
+            projVm.position(position.cpy())
+        }
+
+        mine.onDie { onRenderingThread {
+            vm.mines -= projVm
+        }}
+
+        vm.mines += projVm
+        mineService.add(mine)
     }
 
     @HandlesEvent

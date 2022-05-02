@@ -28,7 +28,7 @@ class IndexedGridGraph(
 
     lateinit var home: GridNode
     private val nodes: MutableMap<Vector2, GridNode> = mutableMapOf()
-    val spawners = mutableListOf<Spawner>()
+    private val spawners = mutableListOf<Spawner>()
 
     override fun getNodeCount() = nodes.size
     override fun getIndex(node: GridNode) = node.index
@@ -90,7 +90,7 @@ class IndexedGridGraph(
                     return false
                 }
 
-                if (!foundValidPath && node.type == GridNodeType.PATH &&  getConnections(node).isNotEmpty()) {
+                if (!foundValidPath && node.type == GridNodeType.PATH && getConnections(node).isNotEmpty()) {
                     foundValidPath = true
                 }
             }
@@ -107,4 +107,5 @@ class IndexedGridGraph(
     }
 
     fun emptyTiles() = nodes.values.filter { it.type == GridNodeType.EMPTY }
+    fun pathTiles() = nodes.values.filter { it.type == GridNodeType.PATH }
 }

@@ -6,6 +6,7 @@ import com.runt9.untdrl.model.research.ResearchEffectDefinition
 import com.runt9.untdrl.model.research.research
 import com.runt9.untdrl.model.research.unlockTower
 import com.runt9.untdrl.model.tower.definition.flamethrower
+import com.runt9.untdrl.model.tower.definition.mineThrower
 import com.runt9.untdrl.model.tower.definition.propagandaTower
 import com.runt9.untdrl.model.tower.definition.rifleTower
 import com.runt9.untdrl.model.tower.definition.rocketTower
@@ -48,6 +49,7 @@ val baseFaction = faction(1, "StarMerCorp", 25) {
     unlockTower(rocketTower, 15)
     unlockTower(propagandaTower, 25)
     unlockTower(flamethrower, 35)
+    unlockTower(mineThrower, 45)
 
 //    val carefulInvestments = research("Careful Investments", TextureDefinition.PROJECTILE, 10) {
 //        +"All Stock Market risk levels have their negative minimum returns halved (e.g. -25% to -12.5%)."

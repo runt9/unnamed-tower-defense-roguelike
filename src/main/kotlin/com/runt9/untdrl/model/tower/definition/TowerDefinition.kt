@@ -14,6 +14,7 @@ interface TowerDefinition {
     val description: String
     val texture: TextureDefinition
     val goldCost: Int
+    val canChangeTargetingMode: Boolean
     val action: TowerActionDefinition
     val attrs: Map<AttributeType, TowerAttributeDefinition>
     val specializations: List<TowerSpecializationDefinition>
@@ -71,6 +72,7 @@ fun tower(
     name: String,
     texture: TextureDefinition,
     goldCost: Int,
+    canChangeTargetingMode: Boolean = true,
     init: TowerDefinition.Builder.() -> Unit
 ): TowerDefinition {
     val builder = TowerDefinition.Builder()
@@ -79,6 +81,7 @@ fun tower(
     return object : TowerDefinition {
         override val name = name
         override val description = builder.description
+        override val canChangeTargetingMode = canChangeTargetingMode
         override val texture = texture
         override val goldCost = goldCost
         override val action = builder.actionDefinition

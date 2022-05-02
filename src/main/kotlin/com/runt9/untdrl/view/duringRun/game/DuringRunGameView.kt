@@ -10,6 +10,8 @@ import com.runt9.untdrl.view.duringRun.game.chunk.ChunkController
 import com.runt9.untdrl.view.duringRun.game.chunk.chunk
 import com.runt9.untdrl.view.duringRun.game.enemy.EnemyController
 import com.runt9.untdrl.view.duringRun.game.enemy.enemy
+import com.runt9.untdrl.view.duringRun.game.mine.MineController
+import com.runt9.untdrl.view.duringRun.game.mine.mine
 import com.runt9.untdrl.view.duringRun.game.projectile.ProjectileController
 import com.runt9.untdrl.view.duringRun.game.projectile.projectile
 import com.runt9.untdrl.view.duringRun.game.tower.TowerController
@@ -26,6 +28,7 @@ class DuringRunGameView(
     private val towers = mutableListOf<TowerController>()
     private val enemies = mutableListOf<EnemyController>()
     private val projectiles = mutableListOf<ProjectileController>()
+    private val mines = mutableListOf<MineController>()
 
     override fun init() {
         val vm = vm
@@ -53,6 +56,7 @@ class DuringRunGameView(
             bindList(vm.enemies, this@DuringRunGameView.enemies) { enemy -> enemy(enemy).controller }
             bindList(vm.towers, this@DuringRunGameView.towers) { tower -> tower(tower).controller }
             bindList(vm.projectiles, this@DuringRunGameView.projectiles) { projectile -> projectile(projectile).controller }
+            bindList(vm.mines, this@DuringRunGameView.mines) { mine -> mine(mine).controller }
         }.cell(row = true, grow = true)
     }
 }

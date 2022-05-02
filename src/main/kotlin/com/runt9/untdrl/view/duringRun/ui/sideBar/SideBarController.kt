@@ -100,6 +100,7 @@ class SideBarController(
                 hasSelectedSpecialization(b.appliedSpecialization != null)
                 selectedSpecializationName(b.appliedSpecialization?.name ?: "")
                 specializations(b.specializations.toList())
+                canChangeTargetingMode(b.canChangeTargetingMode)
                 targetingMode(b.targetingMode)
             }
         }}

@@ -187,13 +187,17 @@ class SideBarTowerView(
             separator(2f)
 
             visTable {
-                visLabel("Targeting Mode:").cell(growX = true, row = true, padBottom = 2f)
+                bindUpdatable(vm.canChangeTargetingMode) {
+                    clear()
 
-                val selectBox = visSelectBoxOf(TargetingMode.values().toGdxArray())
-                selectBox.selected = vm.targetingMode.get()
-                selectBox.onChange {
-                    vm.targetingMode(selectBox.selected)
-                    controller.targetingModeChange(selectBox.selected)
+                    visLabel("Targeting Mode:").cell(growX = true, row = true, padBottom = 2f)
+
+                    val selectBox = visSelectBoxOf(TargetingMode.values().toGdxArray())
+                    selectBox.selected = vm.targetingMode.get()
+                    selectBox.onChange {
+                        vm.targetingMode(selectBox.selected)
+                        controller.targetingModeChange(selectBox.selected)
+                    }
                 }
             }.cell(growX = true, row = true, pad = 4f)
         }.cell(row = true, grow = true, align = Align.top, pad = 4f)

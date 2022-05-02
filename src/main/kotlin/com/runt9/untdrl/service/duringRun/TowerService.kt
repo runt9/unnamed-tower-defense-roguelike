@@ -204,12 +204,14 @@ class TowerService(eventBus: EventBus, registry: RunServiceRegistry) : RunServic
 
     fun towersInRange(position: Vector2, range: Float) = towers.filter { it.position.dst(position) <= range }
 
-    fun removeAttribute(tower: Tower, attr: AttributeType) = launchOnServiceThread {
+    fun removeAttributes(tower: Tower, vararg attrsToRemove: AttributeType) = launchOnServiceThread {
         tower.apply {
-            attrs.remove(attr)
-            attrBase.remove(attr)
-            attrGrowth.remove(attr)
-            attrMods.removeIf { it.type == attr }
+            attrsToRemove.forEach { attr ->
+                attrs.remove(attr)
+                attrBase.remove(attr)
+                attrGrowth.remove(attr)
+                attrMods.removeIf { it.type == attr }
+            }
             changed()
         }
     }

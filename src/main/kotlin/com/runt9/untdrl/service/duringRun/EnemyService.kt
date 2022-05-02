@@ -20,6 +20,7 @@ import com.runt9.untdrl.model.tower.intercept.DamageRequest
 import com.runt9.untdrl.model.tower.intercept.DamageResult
 import com.runt9.untdrl.model.tower.intercept.DamageSource
 import com.runt9.untdrl.model.tower.intercept.InterceptorHook
+import com.runt9.untdrl.model.tower.intercept.OnCrit
 import com.runt9.untdrl.model.tower.intercept.ResistanceRequest
 import com.runt9.untdrl.service.RandomizerService
 import com.runt9.untdrl.util.ext.unTdRlLogger
@@ -149,7 +150,10 @@ class EnemyService(
             val critCheck = CritRequest(tower)
             tower.intercept(InterceptorHook.CRIT_CHECK, critCheck)
             val isCrit = randomizer.percentChance(critCheck.totalCritChance)
-            if (isCrit) damageMultiplier = critCheck.totalCritMulti
+            if (isCrit) {
+                damageMultiplier = critCheck.totalCritMulti
+                tower.intercept(InterceptorHook.ON_CRIT, OnCrit(tower, enemy))
+            }
         }
 
         val damageRequest = damageRequest(tower, source, tower.damage, damageMultiplier)

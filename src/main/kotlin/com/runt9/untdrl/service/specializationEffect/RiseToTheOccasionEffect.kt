@@ -11,7 +11,6 @@ import com.runt9.untdrl.service.duringRun.Ticker
 import com.runt9.untdrl.service.duringRun.TickerRegistry
 import com.runt9.untdrl.service.duringRun.TowerService
 import com.runt9.untdrl.service.towerAction.AttributeBuffAction
-import com.runt9.untdrl.util.ext.Timer
 import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.util.framework.event.HandlesEvent
 
@@ -28,7 +27,7 @@ class RiseToTheOccasionEffect(
 
     override fun apply() {
         ticker = tickerRegistry.registerTimer(1f, action = ::addStack)
-        towerService.removeAttribute(tower, BUFF_DEBUFF_EFFECT)
+        towerService.removeAttributes(tower, BUFF_DEBUFF_EFFECT)
         removeAllStacks()
     }
 

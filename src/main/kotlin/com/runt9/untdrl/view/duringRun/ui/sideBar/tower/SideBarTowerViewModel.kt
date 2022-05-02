@@ -21,5 +21,6 @@ class SideBarTowerViewModel(val empty: Boolean = true) : ViewModel() {
     val specializations = ListBinding<TowerSpecializationDefinition>()
     val hasSelectedSpecialization = Binding(false)
     val selectedSpecializationName = Binding("")
+    val canChangeTargetingMode = Binding(true)
     val targetingMode = Binding(TargetingMode.FRONT)
 }
