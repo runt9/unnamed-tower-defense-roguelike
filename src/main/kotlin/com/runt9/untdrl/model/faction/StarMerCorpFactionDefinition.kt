@@ -15,6 +15,7 @@ import com.runt9.untdrl.service.researchEffect.AdvancedBallisticsEffect
 import com.runt9.untdrl.service.researchEffect.AiTradingEffect
 import com.runt9.untdrl.service.researchEffect.CarefulInvestmentsEffect
 import com.runt9.untdrl.service.researchEffect.DividendsEffect
+import com.runt9.untdrl.service.researchEffect.EfficientScientistsEffect
 import com.runt9.untdrl.service.researchEffect.EtfsEffect
 import com.runt9.untdrl.service.researchEffect.GoForBrokeEffect
 import com.runt9.untdrl.service.researchEffect.HighYieldDividendsEffect
@@ -48,50 +49,62 @@ val baseFaction = faction(1, "StarMerCorp", 25) {
     unlockTower(propagandaTower, 25)
     unlockTower(flamethrower, 35)
 
-    val carefulInvestments = research("Careful Investments", TextureDefinition.PROJECTILE, 0) {
-        +"All Stock Market risk levels have their negative minimum returns halved (e.g. -25% to -12.5%)."
-        carefulInvestments()
-    }
-
-    val etfs = research("ETFs", TextureDefinition.GOLD_MINE, 0) {
-        +"The Stock Market cannot lose Gold two or more waves in a row. If the Stock Market would lose Gold on a consecutive wave, it rerolls until a positive profit is rolled."
-        etfs()
-        dependsOn(carefulInvestments)
-    }
-
-    val aiTrading = research("AI Trading", TextureDefinition.GOLD_MINE, 0) {
-        +"Stock Market profit percentage rolls are Lucky."
-        aiTrading()
-        dependsOn(etfs)
-    }
-
-    val richGetRicher = research("Rich Get Richer", TextureDefinition.GOLD_MINE, 0) {
-        +"If the Stock Market would return a profit after a wave, the profit percentage is increased by +1% per 10 Gold invested at the beginning of the wave."
-        richGetRicher(10)
-        dependsOn(aiTrading)
-    }
-
-    val neuralNetwork = research("Neural Network", TextureDefinition.GOLD_MINE, 0) {
-        +"Stock Market risk tolerances gain +1% maximum profit per wave"
-        neuralNetwork(0.01f)
-        dependsOn(aiTrading)
-    }
+//    val carefulInvestments = research("Careful Investments", TextureDefinition.PROJECTILE, 10) {
+//        +"All Stock Market risk levels have their negative minimum returns halved (e.g. -25% to -12.5%)."
+//        carefulInvestments()
+//    }
+//
+//    val etfs = research("ETFs", TextureDefinition.GOLD_MINE, 20) {
+//        +"The Stock Market cannot lose Gold two or more waves in a row. If the Stock Market would lose Gold on a consecutive wave, it rerolls until a positive profit is rolled."
+//        etfs()
+//        dependsOn(carefulInvestments)
+//    }
+//
+//    val aiTrading = research("AI Trading", TextureDefinition.GOLD_MINE, 20) {
+//        +"Stock Market profit percentage rolls are Lucky."
+//        aiTrading()
+//        dependsOn(etfs)
+//    }
+//
+//    val richGetRicher = research("Rich Get Richer", TextureDefinition.GOLD_MINE, 25) {
+//        +"If the Stock Market would return a profit after a wave, the profit percentage is increased by +1% per 10 Gold invested at the beginning of the wave."
+//        richGetRicher(10)
+//        dependsOn(aiTrading)
+//    }
+//
+//    val neuralNetwork = research("Neural Network", TextureDefinition.GOLD_MINE, 35) {
+//        +"Stock Market risk tolerances gain +1% maximum profit per wave"
+//        neuralNetwork(0.01f)
+//        dependsOn(aiTrading)
+//    }
 
 //    val goForBroke = research("Go For Broke", TextureDefinition.PROTOTYPE_TOWER, 15) {
 //        +"Can now invest up to 100% of gold into the Stock Market, and adds a Super High Risk investment option that ranges from -50% to +100%."
 //        goForBroke()
 //    }
 
-//    val dividends = research("Dividends", TextureDefinition.GOLD_MINE, 0) {
+//    val dividends = research("Dividends", TextureDefinition.GOLD_MINE, 50) {
 //        +"During a wave, gain Gold each second equal to 1% of the Gold amount currently invested in the Stock Market."
 //        dividends(0.01f)
 //    }
 //
-//    val highYieldDividends = research("High-Yield Dividends", TextureDefinition.GOLD_MINE, 0) {
+//    val highYieldDividends = research("High-Yield Dividends", TextureDefinition.GOLD_MINE, 35) {
 //        +"Increases the bonus for Dividends to 2.5%."
 //        highYieldDividends(0.025f)
 //        dependsOn(dividends)
 //    }
+    
+    val efficientScientists1 = research("Efficient Scientists I", TextureDefinition.RESEARCH_LAB, 0) {
+        +"Increases Research gained from Stock Market Profit by 25%"
+        efficientScientists(0.25f)
+    }
+    
+    val efficientScientists2 = research("Efficient Scientists II", TextureDefinition.RESEARCH_LAB, 0) {
+        +"Increases Research gained from Stock Market Profit by an additional 25%"
+        efficientScientists(0.25f)
+        dependsOn(efficientScientists1)
+    }
+    
 
 //    val advBallistics = research("Advanced Ballistics", TextureDefinition.ENEMY, 10) {
 //        +"All projectiles do 25% more damage, penetrate 10% of enemy resistances, and pierce an additional enemy."
@@ -134,3 +147,6 @@ fun ResearchDefinition.Builder.dividends(dividendPct: Float) { definition = Divi
 
 class HighYieldDividendsEffectDefinition(val dividendPct: Float) : ResearchEffectDefinition { override val effectClass = HighYieldDividendsEffect::class }
 fun ResearchDefinition.Builder.highYieldDividends(dividendPct: Float) { definition = HighYieldDividendsEffectDefinition(dividendPct) }
+
+class EfficientScientistsEffectDefinition(val increasePct: Float) : ResearchEffectDefinition { override val effectClass = EfficientScientistsEffect::class }
+fun ResearchDefinition.Builder.efficientScientists(increasePct: Float) { definition = EfficientScientistsEffectDefinition(increasePct) }
