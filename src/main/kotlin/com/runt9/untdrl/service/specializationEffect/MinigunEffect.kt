@@ -7,6 +7,7 @@ import com.runt9.untdrl.model.event.WaveCompleteEvent
 import com.runt9.untdrl.model.tower.Tower
 import com.runt9.untdrl.model.tower.definition.MinigunSpecialization
 import com.runt9.untdrl.model.tower.intercept.onAttack
+import com.runt9.untdrl.service.duringRun.Ticker
 import com.runt9.untdrl.service.duringRun.TickerRegistry
 import com.runt9.untdrl.service.duringRun.TowerService
 import com.runt9.untdrl.util.ext.Timer
@@ -24,16 +25,22 @@ class MinigunEffect(
     private val attackSpeedBoostPerShot = definition.attackSpeedBoostPerShot
     private var currentAttackSpeedBoost = 0f
     private val modifierStacks = mutableListOf<AttributeModifier>()
-    private val decayTimer = Timer(1f)
+    private val decayTimer = Timer(2f)
 
-    val tick: (Float) -> Unit = { _ ->
+    val tick: Ticker = { delta ->
+        decayTimer.tick(delta)
         if (decayTimer.isReady) {
-            val modifier = modifierStacks.removeLast()
-            tower.attrMods.remove(modifier)
-            towerService.recalculateAttrsSync(tower)
+            decayStack()
             decayTimer.reset(false)
-            currentAttackSpeedBoost -= attackSpeedBoostPerShot
         }
+    }
+
+    private fun decayStack() {
+        if (modifierStacks.isEmpty()) return
+        val modifier = modifierStacks.removeLast()
+        tower.attrMods.remove(modifier)
+        towerService.recalculateAttrsSync(tower)
+        currentAttackSpeedBoost -= attackSpeedBoostPerShot
     }
 
     override fun init() {
@@ -46,6 +53,7 @@ class MinigunEffect(
         tower.modifyBaseAndLevelGrowth(ATTACK_SPEED, percentModifier = -definition.attributeReduction)
 
         tower.addInterceptor(onAttack { _, _ ->
+            decayTimer.reset(false)
             if (currentAttackSpeedBoost == maxAttackSpeedBoost) return@onAttack
 
             currentAttackSpeedBoost += attackSpeedBoostPerShot
@@ -53,7 +61,6 @@ class MinigunEffect(
             modifierStacks += newModifier
             tower.attrMods += newModifier
             towerService.recalculateAttrsSync(tower)
-            decayTimer.reset(false)
         })
     }
 

@@ -12,7 +12,7 @@ import com.runt9.untdrl.model.tower.specialization.TowerSpecializationEffectDefi
 import com.runt9.untdrl.service.specializationEffect.NapalmEffect
 import com.runt9.untdrl.service.specializationEffect.ToxicFumesEffect
 
-val flamethrower = tower("Flamethrower", ENEMY, 12/*5*/) {
+val flamethrower = tower("Flamethrower", ENEMY, 125) {
     +"Fires constant stream of flame in a small cone in front of it dealing Heat damage to all enemies inside. Has a 50% chance to Burn each enemy hit for 100% of base damage over 1.5s."
 
     flamethrower(90f, 0.5f, 1.5f, 1f)

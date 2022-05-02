@@ -2,6 +2,8 @@ package com.runt9.untdrl.view.duringRun.ui.faction
 
 import com.runt9.untdrl.util.ext.displayInt
 import com.runt9.untdrl.util.ext.ui.bindLabelText
+import com.runt9.untdrl.util.ext.ui.bindUpdatable
+import com.runt9.untdrl.util.ext.ui.bindUpdatables
 import com.runt9.untdrl.util.framework.ui.view.DialogView
 import ktx.actors.onChange
 import ktx.collections.toGdxArray
@@ -25,24 +27,32 @@ class ManageFactionDialogView(
         visLabel("Investment Percentage:").cell()
 
         visTable {
-            visSlider(vm.minInvestPct.get() * 100, vm.maxInvestPct.get() * 100, step = 1f) {
-                value = vm.investmentPct.get() * 100
-                onChange {
-                    vm.investmentPct(value / 100)
+            bindUpdatables(listOf(vm.minInvestPct, vm.maxInvestPct)) {
+                clear()
+
+                visSlider(vm.minInvestPct.get() * 100, vm.maxInvestPct.get() * 100, step = 1f) {
+                    value = vm.investmentPct.get() * 100
+                    onChange {
+                        vm.investmentPct(value / 100)
+                    }
                 }
-            }
-            visLabel("") {
-                bindLabelText { "${(vm.investmentPct() * 100).displayInt()}%" }
+                visLabel("") {
+                    bindLabelText { "${(vm.investmentPct() * 100).displayInt()}%" }
+                }
             }
         }.cell(row = true)
 
         visLabel("Risk Tolerance:").cell()
-        val selectBox = visSelectBoxOf(vm.riskToleranceOptions.get().toGdxArray())
-        selectBox.selected = vm.riskTolerance.get()
-        selectBox.onChange {
-            vm.riskTolerance(selectBox.selected)
-        }
-        selectBox.cell(row = true)
+        visTable {
+            bindUpdatable(vm.riskToleranceOptions) {
+                clear()
+                val selectBox = visSelectBoxOf(vm.riskToleranceOptions.get().toGdxArray())
+                selectBox.selected = vm.riskTolerance.get()
+                selectBox.onChange {
+                    vm.riskTolerance(selectBox.selected)
+                }
+            }
+        }.cell(row = true)
 
         visLabel("R&D Budget:", "title-plain").cell(row = true, colspan = 2)
         visLabel("Profit to Research Percentage:").cell()

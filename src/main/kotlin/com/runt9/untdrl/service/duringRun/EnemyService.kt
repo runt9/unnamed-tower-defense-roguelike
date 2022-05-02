@@ -153,12 +153,12 @@ class EnemyService(
         }
 
         val damageRequest = damageRequest(tower, source, tower.damage, damageMultiplier)
-        logger.info { "Final Damage Request: $damageRequest" }
+        logger.debug { "Final Damage Request: $damageRequest" }
         val damageResult = damageResult(tower, damageRequest, true)
-        logger.info { "Final Damage Result: $damageResult" }
+        logger.debug { "Final Damage Result: $damageResult" }
 
         val resistanceRequest = resistanceRequest(tower, source, damageResult, tower.damageTypes, enemy.resistances)
-        logger.info { "Total Damage: ${resistanceRequest.finalDamage}" }
+        logger.debug { "Total Damage: ${resistanceRequest.finalDamage}" }
         takeDamage(enemy, tower, resistanceRequest.finalDamage)
 
         processProcs(tower, enemy, resistanceRequest)

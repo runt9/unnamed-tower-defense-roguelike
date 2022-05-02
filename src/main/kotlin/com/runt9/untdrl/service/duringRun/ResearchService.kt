@@ -1,5 +1,6 @@
 package com.runt9.untdrl.service.duringRun
 
+import com.runt9.untdrl.config.Injector
 import com.runt9.untdrl.model.RunState
 import com.runt9.untdrl.model.research.ResearchDefinition
 import com.runt9.untdrl.model.research.ResearchEffectDefinition

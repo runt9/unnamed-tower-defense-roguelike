@@ -20,4 +20,4 @@ fun BaseSteerable.angleTo(other: Steerable<Vector2>) = angleTo(other.position)
 fun BaseSteerable.angleTo(otherPos: Vector2) = otherPos.cpy().sub(position.cpy()).nor().angleDeg() - 90f
 fun BaseSteerable.angleToWithin(other: Steerable<Vector2>, limit: Float) = angleToWithin(other.position, limit)
 fun BaseSteerable.angleToWithin(otherPos: Vector2, limit: Float) =
-    abs(ArithmeticUtils.wrapAngleAroundZero(rotation.degRad).radDeg.normalizeAngle - angleTo(otherPos)) <= limit
+    abs(ArithmeticUtils.wrapAngleAroundZero(rotation.degRad).radDeg.normalizeAngle - angleTo(otherPos).normalizeAngle) <= limit

@@ -95,5 +95,5 @@ fun Actor.researchTooltip(research: ResearchDefinition) = tooltip {
 
     visLabel(research.description) {
         wrap = true
-    }.cell(growX = true, row = true, pad = 5f, minWidth = 50f)
+    }.cell(growX = true, row = true, pad = 5f, minWidth = 300f)
 }

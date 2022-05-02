@@ -46,8 +46,8 @@ class SpawnerService(
 
     private fun recalculateSpawner(spawner: Spawner) {
         val waveNum = runStateService.load().wave
-//        spawner.enemiesToSpawn = waveNum * 2
-        spawner.enemiesToSpawn = waveNum * 10
+        spawner.enemiesToSpawn = waveNum * 2
+//        spawner.enemiesToSpawn = waveNum * 10
         spawner.enemyDelayTimer.reset(false)
         spawner.currentEnemySpawnType = spawner.enemyTypesToSpawn.random(randomizer.rng)
     }

@@ -8,6 +8,7 @@ import com.runt9.untdrl.service.duringRun.RunServiceRegistry
 import com.runt9.untdrl.service.duringRun.RunStateService
 import com.runt9.untdrl.util.ext.random
 import com.runt9.untdrl.util.framework.event.EventBus
+import kotlin.math.max
 import kotlin.random.Random
 
 class RandomizerService(private val runStateService: RunStateService, eventBus: EventBus, registry: RunServiceRegistry) : RunService(eventBus, registry) {
@@ -32,5 +33,15 @@ class RandomizerService(private val runStateService: RunStateService, eventBus: 
             flatModifier = if (rangeType == AttributeModificationType.FLAT) range.range.random(rng) else 0f,
             percentModifier = if (rangeType == AttributeModificationType.PERCENT) range.range.random(rng) else 0f
         )
+    }
+
+    fun range(range: ClosedFloatingPointRange<Float>, lucky: Boolean = false): Float {
+        val roll1 = range.random(rng)
+        return if (lucky) {
+            val roll2 = range.random(rng)
+            max(roll1, roll2)
+        } else {
+            roll1
+        }
     }
 }

@@ -7,6 +7,7 @@ import com.runt9.untdrl.model.attribute.AttributeType.DAMAGE
 import com.runt9.untdrl.model.event.WaveCompleteEvent
 import com.runt9.untdrl.model.tower.Tower
 import com.runt9.untdrl.model.tower.definition.RiseToTheOccasionDefinition
+import com.runt9.untdrl.service.duringRun.Ticker
 import com.runt9.untdrl.service.duringRun.TickerRegistry
 import com.runt9.untdrl.service.duringRun.TowerService
 import com.runt9.untdrl.service.towerAction.AttributeBuffAction
@@ -21,19 +22,12 @@ class RiseToTheOccasionEffect(
     private val tickerRegistry: TickerRegistry,
     private val towerService: TowerService
 ) : TowerSpecializationEffect {
-    private val timer = Timer(1f)
     private var stacks = 0
 
-    private val ticker: (Float) -> Unit = { delta ->
-        timer.tick(delta)
-        if (timer.isReady) {
-            addStack()
-            timer.reset()
-        }
-    }
+    private lateinit var ticker: Ticker
 
     override fun apply() {
-        tickerRegistry.registerTicker(ticker)
+        ticker = tickerRegistry.registerTimer(1f, action = ::addStack)
         towerService.removeAttribute(tower, BUFF_DEBUFF_EFFECT)
         removeAllStacks()
     }
