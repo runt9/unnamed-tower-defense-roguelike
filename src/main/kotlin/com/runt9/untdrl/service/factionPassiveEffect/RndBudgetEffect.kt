@@ -6,7 +6,7 @@ import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.math.roundToInt
 
-typealias ResearchMultiplier = (profit: Int) -> Float
+typealias ResearchMultiplier = () -> Float
 
 class RndBudgetEffect(override val eventBus: EventBus) : FactionPassiveEffect {
     var profitPct = 0.1f
@@ -36,7 +36,7 @@ class RndBudgetEffect(override val eventBus: EventBus) : FactionPassiveEffect {
         val research = floor(profit * profitPct)
         val remainingProfit = ceil(profit * (1 - profitPct))
         
-        val totalResearchMultiplier = researchMultipliers.map { it(profit) }.sum()
+        val totalResearchMultiplier = researchMultipliers.map { it() }.sum()
         val finalResearch = research * (1 + totalResearchMultiplier)
         
         return Pair(remainingProfit.roundToInt(), finalResearch.roundToInt())

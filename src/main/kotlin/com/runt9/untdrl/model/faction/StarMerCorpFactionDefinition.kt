@@ -20,12 +20,19 @@ import com.runt9.untdrl.service.researchEffect.DontRepeatYourselfEffect
 import com.runt9.untdrl.service.researchEffect.EfficientScientistsEffect
 import com.runt9.untdrl.service.researchEffect.EtfsEffect
 import com.runt9.untdrl.service.researchEffect.GoForBrokeEffect
+import com.runt9.untdrl.service.researchEffect.GoldPurseIncreaseEffect
 import com.runt9.untdrl.service.researchEffect.HighYieldDividendsEffect
 import com.runt9.untdrl.service.researchEffect.KineticBallisticsEffect
+import com.runt9.untdrl.service.researchEffect.LootSlotIncreaseEffect
+import com.runt9.untdrl.service.researchEffect.LuckyCoreValuesEffect
+import com.runt9.untdrl.service.researchEffect.LuckyRarityEffect
+import com.runt9.untdrl.service.researchEffect.MaterialisticEffect
 import com.runt9.untdrl.service.researchEffect.NeuralNetworkEffect
 import com.runt9.untdrl.service.researchEffect.PerformanceBonusEffect
+import com.runt9.untdrl.service.researchEffect.RevenueSharingEffect
 import com.runt9.untdrl.service.researchEffect.RichGetRicherEffect
 import com.runt9.untdrl.service.researchEffect.ScienceFirstApproachEffect
+import com.runt9.untdrl.service.researchEffect.SpreadTheWealthEffect
 
 val baseFaction = faction(1, "StarMerCorp", 25) {
     startingTower(rifleTower)
@@ -61,13 +68,13 @@ val baseFaction = faction(1, "StarMerCorp", 25) {
 
     val etfs = research("ETFs", TextureDefinition.GOLD_MINE, 20) {
         +"The Stock Market cannot lose Gold two or more waves in a row. If the Stock Market would lose Gold on a consecutive wave, it rerolls until a positive profit is rolled."
-        +EtfsEffectDefinition()
+        emptyDefinition(EtfsEffect::class)
         dependsOn(carefulInvestments)
     }
 
     val aiTrading = research("AI Trading", TextureDefinition.GOLD_MINE, 20) {
         +"Stock Market profit percentage rolls are Lucky."
-        +AiTradingEffectDefinition()
+        emptyDefinition(AiTradingEffect::class)
         dependsOn(etfs)
     }
 
@@ -85,7 +92,7 @@ val baseFaction = faction(1, "StarMerCorp", 25) {
 
     val goForBroke = research("Go For Broke", TextureDefinition.PROTOTYPE_TOWER, 15) {
         +"Can now invest up to 100% of gold into the Stock Market, and adds a Super High Risk investment option that ranges from -50% to +100%."
-        +GoForBrokeEffectDefinition()
+        emptyDefinition(GoForBrokeEffect::class)
     }
 
     val dividends = research("Dividends", TextureDefinition.GOLD_MINE, 50) {
@@ -116,6 +123,12 @@ val baseFaction = faction(1, "StarMerCorp", 25) {
         dependsOn(efficientScientists2)
     }
 
+    val revenueSharing = research("Revenue Sharing", TextureDefinition.RESEARCH_LAB, 35) {
+        +"Research gained from Stock Market Profit is by the profit percentage."
+        emptyDefinition(RevenueSharingEffect::class)
+        dependsOn(efficientScientists2)
+    }
+
     val brainstorming = research("Brainstorming", TextureDefinition.RESEARCH_LAB, 15) {
         +"Grants an additional option in the Research menu and discounts all Research costs by 10%"
         +BrainstormingEffectDefinition(0.1f)
@@ -129,7 +142,53 @@ val baseFaction = faction(1, "StarMerCorp", 25) {
 
     val scienceFirst = research("Science-first Approach", TextureDefinition.RESEARCH_LAB, 10) {
         +"Allows converting up to 100% of Stock Market profit to Research."
-        +ScienceFirstApproachDefinition()
+        emptyDefinition(ScienceFirstApproachEffect::class)
+    }
+
+    val biggerGoldPurse = research("Bigger Gold Purse", TextureDefinition.GOLD_MINE, 20) {
+        +"Increases Gold purse size by +50"
+        +GoldPurseIncreaseDefinition(50)
+    }
+
+    val biggestGoldPurse = research("Biggest Gold Purse", TextureDefinition.GOLD_MINE, 40) {
+        +"Increases Gold purse size by +100"
+        +GoldPurseIncreaseDefinition(100)
+        dependsOn(biggerGoldPurse)
+    }
+
+    val luckyRarity = research("Lucky Loot", TextureDefinition.GOLD_MINE, 35) {
+        +"Loot Rarity is Lucky"
+        emptyDefinition(LuckyRarityEffect::class)
+    }
+
+    val luckyCoreAttributes = research("Lucky Cores", TextureDefinition.GOLD_MINE, 35) {
+        +"Attribute Values of Tore Cores are Lucky"
+        emptyDefinition(LuckyCoreValuesEffect::class)
+        dependsOn(luckyRarity)
+    }
+
+    val biggerBackpack = research("Bigger Backpack", TextureDefinition.GOLD_MINE, 50) {
+        +"Adds an additional slot for collecting loot"
+        emptyDefinition(LootSlotIncreaseEffect::class)
+        dependsOn(biggerGoldPurse)
+    }
+
+    val biggestBackpack = research("Biggest Backpack", TextureDefinition.GOLD_MINE, 50) {
+        +"Adds an additional slot for collecting loot"
+        emptyDefinition(LootSlotIncreaseEffect::class)
+        dependsOn(biggerBackpack)
+    }
+
+    val materialistic = research("Materialistic", TextureDefinition.GOLD_MINE, 25) {
+        +"Enemies drop 50% less gold, but have a 25% increased chance to drop Relics, Consumables, and Tower Cores"
+        +MaterialisticDefinition(-0.5f, 1.25f)
+        dependsOn(luckyRarity)
+    }
+
+    val spreadTheWealth = research("Spread the Wealth", TextureDefinition.GOLD_MINE, 50) {
+        +"After a wave where the Stock Market produced a profit, increase looted gold amount by the profit percentage"
+        emptyDefinition(SpreadTheWealthEffect::class)
+        dependsOn(richGetRicher)
     }
 
     val advBallistics = research("Advanced Ballistics", TextureDefinition.ENEMY, 10) {
@@ -148,15 +207,13 @@ class AdvancedBallisticsEffectDefinition(val damagePct: Float, val penetration: 
 class KineticBallisticsEffectDefinition(val lightningDamage: Float, val stunChance: Float, val stunDuration: Float) :
     ResearchEffectDefinition(KineticBallisticsEffect::class)
 class CarefulInvestmentsEffectDefinition : ResearchEffectDefinition(CarefulInvestmentsEffect::class)
-class EtfsEffectDefinition : ResearchEffectDefinition(EtfsEffect::class)
-class AiTradingEffectDefinition : ResearchEffectDefinition(AiTradingEffect::class)
 class RichGetRicherEffectDefinition(val goldPerPct: Int) : ResearchEffectDefinition(RichGetRicherEffect::class)
 class NeuralNetworkEffectDefinition(val profitPctPerWave: Float) : ResearchEffectDefinition(NeuralNetworkEffect::class)
-class GoForBrokeEffectDefinition : ResearchEffectDefinition(GoForBrokeEffect::class)
 class DividendsEffectDefinition(val dividendPct: Float) : ResearchEffectDefinition(DividendsEffect::class)
 class HighYieldDividendsEffectDefinition(val dividendPct: Float) : ResearchEffectDefinition(HighYieldDividendsEffect::class)
 class EfficientScientistsEffectDefinition(val increasePct: Float) : ResearchEffectDefinition(EfficientScientistsEffect::class)
 class BrainstormingEffectDefinition(val discountPct: Float) : ResearchEffectDefinition(BrainstormingEffect::class)
 class DontRepeatYourselfDefinition(val discountPct: Float, val discountCap: Float) : ResearchEffectDefinition(DontRepeatYourselfEffect::class)
-class ScienceFirstApproachDefinition : ResearchEffectDefinition(ScienceFirstApproachEffect::class)
 class PerformanceBonusDefinition(val bonusPct: Float) : ResearchEffectDefinition(PerformanceBonusEffect::class)
+class GoldPurseIncreaseDefinition(val increaseAmt: Int) : ResearchEffectDefinition(GoldPurseIncreaseEffect::class)
+class MaterialisticDefinition(val goldMultiplier: Float, val lootChanceMultiplier: Float) : ResearchEffectDefinition(MaterialisticEffect::class)

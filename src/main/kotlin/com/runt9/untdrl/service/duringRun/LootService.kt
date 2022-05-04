@@ -35,7 +35,7 @@ class LootService(
 ) : RunService(eventBus, registry) {
     private val logger = unTdRlLogger()
 
-    private val lootWeights = mapOf(
+    val lootWeights = mutableMapOf(
         LootType.GOLD to 90,
         LootType.CONSUMABLE to 5,
         LootType.CORE to 4,
@@ -53,6 +53,19 @@ class LootService(
     private val lootTable = generateWeightedList(lootWeights)
     val lootPool = LootPool()
     private val currentlyGeneratedRelics = mutableListOf<RelicDefinition>()
+
+    var luckyRarity = false
+    var luckyCoreAttributes = false
+    private val goldDropMultipliers = mutableListOf<() -> Float>()
+    private val lootedGoldMultipliers = mutableListOf<() -> Float>()
+
+    fun addGoldDropMultiplier(multiplier: () -> Float) {
+        goldDropMultipliers += multiplier
+    }
+
+    fun addLootedGoldMultiplier(multiplier: () -> Float) {
+        lootedGoldMultipliers += multiplier
+    }
 
     override fun startInternal() {
         runStateService.update {
@@ -89,16 +102,14 @@ class LootService(
     }
 
     private fun generateLoot() = launchOnServiceThread {
-        randomizer.randomize {
-            when (lootTable.random(it)) {
-                LootType.GOLD -> generateGold()
-                LootType.RELIC -> generateRelic()?.also { relic ->
-                    lootPool.items += relic
-                    currentlyGeneratedRelics += relic.definition
-                }
-                LootType.CONSUMABLE -> lootPool.items += generateConsumable()
-                LootType.CORE -> lootPool.items += generateCore()
+        when (lootTable.random(randomizer.rng)) {
+            LootType.GOLD -> generateGold()
+            LootType.RELIC -> generateRelic()?.also { relic ->
+                lootPool.items += relic
+                currentlyGeneratedRelics += relic.definition
             }
+            LootType.CONSUMABLE -> lootPool.items += generateConsumable()
+            LootType.CORE -> lootPool.items += generateCore()
         }
     }
 
@@ -144,7 +155,7 @@ class LootService(
         repeat(count) {
             val type = allowedAttributeTypes.filter { !generatedSoFar.contains(it) }.random(randomizer.rng)
 
-            modifiers += randomizer.randomAttributeModifier(type)
+            modifiers += randomizer.randomAttributeModifier(luckyCoreAttributes, type)
             generatedSoFar += type
         }
 
@@ -155,15 +166,36 @@ class LootService(
 
     private fun generateGold() {
         val generatedGold = (2..5).random(randomizer.rng)
-        lootPool.gold += generatedGold
+        val goldMultiplier = goldDropMultipliers.map { it() }.sum()
+        lootPool.gold += (generatedGold * (1 + goldMultiplier)).roundToInt()
         logger.debug { "Generated $generatedGold gold" }
     }
 
-    private fun generateRarity() = rarityTable.random(randomizer.rng)
+    private fun generateRarity() = randomizer.randomize(luckyRarity) { rarityTable.random(it) }
 
-    fun clearRemainingLootPool() {
+    private fun clearRemainingLootPool() {
         currentlyGeneratedRelics -= lootPool.items.filterIsInstance<Relic>().map(Relic::definition).toSet()
         lootPool.clear()
+    }
+
+    fun takeLoot(lootedGold: Int, lootItems: List<LootItem>) {
+        runStateService.update {
+            val goldMultiplier = lootedGoldMultipliers.map { it() }.sum()
+            gold += (lootedGold * (1 + goldMultiplier)).roundToInt()
+
+            lootItems.forEach { item ->
+                when (item) {
+                    is Relic -> {
+                        relics += item
+                        item.effect.apply()
+                    }
+                    is Consumable -> consumables += item
+                    is TowerCore -> cores += item
+                }
+            }
+        }
+
+        clearRemainingLootPool()
     }
 
     private val Rarity.numCoreAttrs: Int get() = when (this) {

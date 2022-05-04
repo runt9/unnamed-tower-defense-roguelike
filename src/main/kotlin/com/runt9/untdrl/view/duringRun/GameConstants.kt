@@ -13,6 +13,7 @@ const val GAME_HEIGHT = GAME_AREA_HEIGHT - GAME_HEIGHT_MARGIN
 val HOME_POINT = Vector2(7f, 4f)
 const val STARTING_GOLD = 100
 const val INITIAL_GOLD_PURSE_MAX = 50
+const val INITIAL_LOOT_ITEM_MAX = 2
 const val REROLL_COST = 50
 const val MAX_TOWER_LEVEL = 20
 const val SHOP_ITEMS = 3

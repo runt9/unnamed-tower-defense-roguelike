@@ -20,6 +20,10 @@ class LootDialogController(private val lootService: LootService, private val run
             vm.lootedGold(gold)
             vm.lootedItems(items)
         }
+        runStateService.load().apply {
+            vm.maxGoldInPurse(goldPurseMax)
+            vm.maxItemSelections(lootItemMax)
+        }
     }
 
     fun fillGoldPurse() {
@@ -31,22 +35,7 @@ class LootDialogController(private val lootService: LootService, private val run
     }
 
     fun done() {
-        runStateService.update {
-            gold += vm.goldSelected.get()
-
-            vm.selectedItems.get().forEach { item ->
-                when (item) {
-                    is Relic -> {
-                        relics += item
-                        item.effect.apply()
-                    }
-                    is Consumable -> consumables += item
-                    is TowerCore -> cores += item
-                }
-            }
-        }
-
-        lootService.clearRemainingLootPool()
+        lootService.takeLoot(vm.goldSelected.get(), vm.selectedItems.get())
         hide()
     }
 

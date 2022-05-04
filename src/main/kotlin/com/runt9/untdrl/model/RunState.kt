@@ -9,6 +9,7 @@ import com.runt9.untdrl.model.research.ResearchItem
 import com.runt9.untdrl.model.tower.definition.TowerDefinition
 import com.runt9.untdrl.util.ext.randomString
 import com.runt9.untdrl.view.duringRun.INITIAL_GOLD_PURSE_MAX
+import com.runt9.untdrl.view.duringRun.INITIAL_LOOT_ITEM_MAX
 import com.runt9.untdrl.view.duringRun.REROLL_COST
 import com.runt9.untdrl.view.duringRun.STARTING_GOLD
 import kotlinx.serialization.Serializable
@@ -22,6 +23,7 @@ data class RunState(
     var hp: Int = faction.maxHp,
     var gold: Int = STARTING_GOLD,
     var goldPurseMax: Int = INITIAL_GOLD_PURSE_MAX,
+    var lootItemMax: Int = INITIAL_LOOT_ITEM_MAX,
     var shopRerollCost: Int = REROLL_COST,
     var researchRerollCost: Int = REROLL_COST,
     var currentShop: Shop = Shop(),

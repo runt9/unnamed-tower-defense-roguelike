@@ -3,6 +3,8 @@ package com.runt9.untdrl.model.research
 import com.runt9.untdrl.model.TextureDefinition
 import com.runt9.untdrl.model.faction.FactionDefinition
 import com.runt9.untdrl.model.tower.definition.TowerDefinition
+import com.runt9.untdrl.service.researchEffect.ResearchEffect
+import kotlin.reflect.KClass
 
 interface ResearchDefinition {
     val icon: TextureDefinition
@@ -25,6 +27,10 @@ interface ResearchDefinition {
 
         operator fun ResearchEffectDefinition.unaryPlus() {
             definition = this
+        }
+
+        fun emptyDefinition(effectClass: KClass<out ResearchEffect>) {
+            definition = object : ResearchEffectDefinition(effectClass) {}
         }
     }
 }

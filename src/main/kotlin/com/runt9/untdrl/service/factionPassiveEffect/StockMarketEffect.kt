@@ -42,6 +42,9 @@ class StockMarketEffect(
     var investedGold = 0
         private set
 
+    var finalProfitMultiplier = 0f
+        private set
+
     private val profitChecks = mutableListOf<ProfitCheck>()
 
     override fun init() {
@@ -74,17 +77,17 @@ class StockMarketEffect(
     @HandlesEvent(WaveCompleteEvent::class)
     fun waveEnd() {
         val riskOutput = rollProfitCheck()
-        val finalRiskOutput = profitChecks.fold(riskOutput) { r, c -> c(r) }
+        finalProfitMultiplier = profitChecks.fold(riskOutput) { r, c -> c(r) }
 
         runStateService.update {
-            val returnedGold = (investedGold * finalRiskOutput).roundToInt()
+            val returnedGold = (investedGold * finalProfitMultiplier).roundToInt()
             val profit = returnedGold - investedGold
             if (profit > 0) {
                 val (remainingProfit, addedResearch) = rndBudget.getResearchFromProfit(profit)
                 val finalGold = investedGold + remainingProfit
                 gold += finalGold
                 researchAmount += addedResearch
-                logger.info { "Stock Market profit [ Profit: ${finalRiskOutput.displayMultiplier()} | Turned ${investedGold}g into ${returnedGold}g | Made ${profit}g into ${remainingProfit}g and ${addedResearch}R ]" }
+                logger.info { "Stock Market profit [ Profit: ${finalProfitMultiplier.displayMultiplier()} | Turned ${investedGold}g into ${returnedGold}g | Made ${profit}g into ${remainingProfit}g and ${addedResearch}R ]" }
             } else {
                 gold += returnedGold
                 logger.info { "Stock Market did not profit, returned ${returnedGold}g" }

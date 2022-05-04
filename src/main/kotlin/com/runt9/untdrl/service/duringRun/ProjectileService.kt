@@ -45,7 +45,8 @@ class ProjectileService(
                 // TODO: This probably needs to get broken into "ProjectileConfiguration" that can be composed by tower definitions to control
                 //  how that tower's projectiles work and do the typical interceptor + hook type setup
                 // If the projectile is homing and the target is gone, we need to disable homing and just finish moving towards the edge of the range circle
-                if (projectile.homing && !projectile.target.isAlive) {
+                // We also need to disable homing if we collided with an enemy and didn't despawn since this means we pierced and now just need to keep moving
+                if (projectile.homing && (!projectile.target.isAlive || collidedEnemy != null)) {
                     projectile.homing = false
                     projectile.recalculateBehavior()
                 } else if (!projectile.homing && projectile.delayedHoming > 0 && projectile.travelDistance >= projectile.delayedHoming) {
