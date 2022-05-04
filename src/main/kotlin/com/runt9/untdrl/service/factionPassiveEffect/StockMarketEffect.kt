@@ -37,7 +37,7 @@ class StockMarketEffect(
     var minInvestPct = 0.1f
     var maxInvestPct = 0.5f
     var luckyProfit = false
-    private val rndBudget by lazyInject<RnDBudgetEffect>()
+    private val rndBudget by lazyInject<RndBudgetEffect>()
 
     var investedGold = 0
         private set

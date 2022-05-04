@@ -11,7 +11,7 @@ import com.runt9.untdrl.model.attribute.AttributeType.ATTACK_SPEED
 import com.runt9.untdrl.model.attribute.AttributeType.DAMAGE
 import com.runt9.untdrl.model.attribute.AttributeType.RANGE
 import com.runt9.untdrl.model.damage.DamageType
-import com.runt9.untdrl.model.tower.action.projectileAttack
+import com.runt9.untdrl.model.tower.action.ProjectileAttackActionDefinition
 import com.runt9.untdrl.model.tower.specialization.TowerSpecializationEffectDefinition
 import com.runt9.untdrl.service.specializationEffect.MissileSwarmEffect
 import com.runt9.untdrl.service.specializationEffect.NapalmCannonEffect
@@ -19,7 +19,7 @@ import com.runt9.untdrl.service.specializationEffect.NapalmCannonEffect
 val rocketTower = tower("Rocket Tower", GOLD_MINE, 75) {
     +"Fires a rocket at an enemy that explodes on contact dealing AoE Physical and Heat damage."
 
-    projectileAttack(RESEARCH_LAB, speed = 4f)
+    +ProjectileAttackActionDefinition(RESEARCH_LAB, speed = 4f)
 
     RANGE(5f, 0.2f, FLAT)
     ATTACK_SPEED(0.5f, 0.025f, FLAT)
@@ -31,27 +31,14 @@ val rocketTower = tower("Rocket Tower", GOLD_MINE, 75) {
 
     specialization("Missile Swarm Tower", PROTOTYPE_TOWER) {
         +"Tower now fires 3 missiles, but loses 50% Damage and AoE."
-        missileSwarmEffect()
+        +MissileSwarmSpecialization(50f)
     }
 
     specialization("Napalm Cannon", ENEMY) {
         +"Tower loses 50% Damage, but gains 25% AoE, converts all damage to Heat, and Burns all enemies hit for 50% of the hit damage over 2s"
-        napalmCannonEffect()
+        +NapalmCannonSpecialization(50f, 25f)
     }
 }
 
-class MissileSwarmSpecialization(val attributeReduction: Float) : TowerSpecializationEffectDefinition {
-    override val effectClass = MissileSwarmEffect::class
-}
-
-fun TowerDefinition.Builder.SpecializationBuilder.missileSwarmEffect() {
-    definition = MissileSwarmSpecialization(50f)
-}
-
-class NapalmCannonSpecialization(val damageReduction: Float, val aoeGain: Float) : TowerSpecializationEffectDefinition {
-    override val effectClass = NapalmCannonEffect::class
-}
-
-fun TowerDefinition.Builder.SpecializationBuilder.napalmCannonEffect() {
-    definition = NapalmCannonSpecialization(50f, 25f)
-}
+class MissileSwarmSpecialization(val attributeReduction: Float) : TowerSpecializationEffectDefinition(MissileSwarmEffect::class)
+class NapalmCannonSpecialization(val damageReduction: Float, val aoeGain: Float) : TowerSpecializationEffectDefinition(NapalmCannonEffect::class)

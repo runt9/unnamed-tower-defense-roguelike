@@ -11,17 +11,20 @@ interface ResearchDefinition {
     val cost: Int
     val effect: ResearchEffectDefinition
     val dependsOn: List<ResearchDefinition>
-    val exclusiveOf: List<ResearchDefinition>
 
     class Builder {
         internal val dependsOn = mutableListOf<ResearchDefinition>()
-        internal val exclusiveOf = mutableListOf<ResearchDefinition>()
         internal var description = ""
         lateinit var definition: ResearchEffectDefinition
 
         fun dependsOn(vararg research: ResearchDefinition) = dependsOn.addAll(research)
+
         operator fun String.unaryPlus() {
             description = this
+        }
+
+        operator fun ResearchEffectDefinition.unaryPlus() {
+            definition = this
         }
     }
 }
@@ -37,7 +40,6 @@ fun FactionDefinition.Builder.research(name: String, icon: TextureDefinition, co
         override val effect = researchBuilder.definition
         override val cost = cost
         override val dependsOn = researchBuilder.dependsOn
-        override val exclusiveOf = researchBuilder.exclusiveOf
     }
 
     this.research += research
@@ -47,5 +49,5 @@ fun FactionDefinition.Builder.research(name: String, icon: TextureDefinition, co
 
 fun FactionDefinition.Builder.unlockTower(towerDef: TowerDefinition, cost: Int) = research(towerDef.name, towerDef.texture, cost) {
     +"Unlocks ${towerDef.name}."
-    unlock(towerDef)
+    +TowerUnlockEffectDefinition(towerDef)
 }

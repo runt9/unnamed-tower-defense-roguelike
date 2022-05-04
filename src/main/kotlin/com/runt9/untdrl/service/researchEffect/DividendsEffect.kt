@@ -14,9 +14,9 @@ class DividendsEffect(
     override val eventBus: EventBus,
     private val tickerRegistry: TickerRegistry,
     definition: DividendsEffectDefinition,
-    private val runStateService: RunStateService
+    private val runStateService: RunStateService,
+    private val stockMarket: StockMarketEffect
 ) : ResearchEffect {
-    private val stockMarket by lazyInject<StockMarketEffect>()
     var dividendPct = definition.dividendPct
 
     private lateinit var ticker: Ticker

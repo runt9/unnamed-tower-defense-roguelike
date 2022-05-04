@@ -4,8 +4,8 @@ import com.runt9.untdrl.model.event.MineSpawnedEvent
 import com.runt9.untdrl.model.event.WaveCompleteEvent
 import com.runt9.untdrl.model.tower.Mine
 import com.runt9.untdrl.model.tower.Tower
-import com.runt9.untdrl.model.tower.action.MineThrowerActionDefinition
 import com.runt9.untdrl.model.tower.attackTime
+import com.runt9.untdrl.model.tower.definition.MineThrowerActionDefinition
 import com.runt9.untdrl.service.RandomizerService
 import com.runt9.untdrl.service.duringRun.IndexedGridGraph
 import com.runt9.untdrl.service.towerAction.subAction.AttackSubAction

@@ -4,13 +4,15 @@ import com.runt9.untdrl.model.faction.RichGetRicherEffectDefinition
 import com.runt9.untdrl.service.factionPassiveEffect.ProfitCheck
 import com.runt9.untdrl.service.factionPassiveEffect.StockMarketEffect
 import com.runt9.untdrl.util.ext.displayMultiplier
-import com.runt9.untdrl.util.ext.lazyInject
 import com.runt9.untdrl.util.ext.unTdRlLogger
 import com.runt9.untdrl.util.framework.event.EventBus
 
-class RichGetRicherEffect(override val eventBus: EventBus, private val definition: RichGetRicherEffectDefinition) : ResearchEffect {
+class RichGetRicherEffect(
+    override val eventBus: EventBus,
+    private val definition: RichGetRicherEffectDefinition,
+    private val stockMarket: StockMarketEffect
+) : ResearchEffect {
     private val logger = unTdRlLogger()
-    private val stockMarket by lazyInject<StockMarketEffect>()
 
     private val profitCheck: ProfitCheck = ::profitCheck
 

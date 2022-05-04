@@ -3,13 +3,11 @@ package com.runt9.untdrl.service.researchEffect
 import com.runt9.untdrl.service.factionPassiveEffect.ProfitCheck
 import com.runt9.untdrl.service.factionPassiveEffect.StockMarketEffect
 import com.runt9.untdrl.util.ext.displayMultiplier
-import com.runt9.untdrl.util.ext.lazyInject
 import com.runt9.untdrl.util.ext.unTdRlLogger
 import com.runt9.untdrl.util.framework.event.EventBus
 
-class EtfsEffect(override val eventBus: EventBus) : ResearchEffect {
+class EtfsEffect(override val eventBus: EventBus, private val stockMarket: StockMarketEffect) : ResearchEffect {
     private val logger = unTdRlLogger()
-    private val stockMarket by lazyInject<StockMarketEffect>()
 
     var lastWaveNegative = false
 

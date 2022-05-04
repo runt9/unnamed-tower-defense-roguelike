@@ -5,7 +5,7 @@ import com.runt9.untdrl.model.loot.Consumable
 import com.runt9.untdrl.model.loot.Relic
 import com.runt9.untdrl.model.loot.Shop
 import com.runt9.untdrl.model.loot.TowerCore
-import com.runt9.untdrl.model.research.ResearchDefinition
+import com.runt9.untdrl.model.research.ResearchItem
 import com.runt9.untdrl.model.tower.definition.TowerDefinition
 import com.runt9.untdrl.util.ext.randomString
 import com.runt9.untdrl.view.duringRun.INITIAL_GOLD_PURSE_MAX
@@ -25,11 +25,12 @@ data class RunState(
     var shopRerollCost: Int = REROLL_COST,
     var researchRerollCost: Int = REROLL_COST,
     var currentShop: Shop = Shop(),
-    var availableResearch: List<ResearchDefinition> = listOf(),
-    var appliedResearch: List<ResearchDefinition> = listOf(),
-    var selectableResearch: List<ResearchDefinition> = listOf(),
+    var availableResearch: List<ResearchItem> = listOf(),
+    var appliedResearch: List<ResearchItem> = listOf(),
+    var selectableResearch: List<ResearchItem> = listOf(),
     var selectableResearchOptionCount: Int = 5,
-    var researchAmount: Int = 0,
+    // TODO:
+    var researchAmount: Int = 1000,
     var wave: Int = 1,
     var availableTowers: List<TowerDefinition> = listOf(faction.startingTower),
     var relics: List<Relic> = listOf(),

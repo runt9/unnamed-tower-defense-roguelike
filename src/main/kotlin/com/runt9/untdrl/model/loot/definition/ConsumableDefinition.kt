@@ -9,33 +9,17 @@ interface ConsumableDefinition {
     val action: ConsumableActionDefinition
 }
 
-val healthPotion = object : ConsumableDefinition {
-    override val name = "Health Potion"
-    override val rarity = Rarity.COMMON
-    override val description = "Restores 25% of Base's Max HP"
-    override val action = HealingPotionActionDefinition(0.25f)
+fun consumable(name: String, rarity: Rarity, description: String, action: ConsumableActionDefinition) = object : ConsumableDefinition {
+    override val name = name
+    override val rarity = rarity
+    override val description = description
+    override val action = action
 }
 
-val greaterHealthPotion = object : ConsumableDefinition {
-    override val name = "Greater Health Potion"
-    override val rarity = Rarity.UNCOMMON
-    override val description = "Restores 50% of Base's Max HP"
-    override val action = HealingPotionActionDefinition(0.50f)
-}
-
-val superiorHealthPotion = object : ConsumableDefinition {
-    override val name = "Superior Health Potion"
-    override val rarity = Rarity.RARE
-    override val description = "Restores 75% of Base's Max HP"
-    override val action = HealingPotionActionDefinition(0.75f)
-}
-
-val perfectHealthPotion = object : ConsumableDefinition {
-    override val name = "Perfect Health Potion"
-    override val rarity = Rarity.LEGENDARY
-    override val description = "Fully restores Base's HP to maximum"
-    override val action = HealingPotionActionDefinition(1f)
-}
+val healthPotion = consumable("Health Potion", Rarity.COMMON, "Restores 25% of Base's Max HP", HealingPotionActionDefinition(0.25f))
+val greaterHealthPotion = consumable("Greater Health Potion", Rarity.UNCOMMON, "Restores 50% of Base's Max HP", HealingPotionActionDefinition(0.50f))
+val superiorHealthPotion = consumable("Superior Health Potion", Rarity.RARE, "Restores 75% of Base's Max HP", HealingPotionActionDefinition(0.75f))
+val perfectHealthPotion = consumable("Perfect Health Potion", Rarity.LEGENDARY, "Fully restores Base's HP to maximum", HealingPotionActionDefinition(1f))
 
 val availableConsumables = mapOf(
     Rarity.COMMON to listOf(healthPotion),

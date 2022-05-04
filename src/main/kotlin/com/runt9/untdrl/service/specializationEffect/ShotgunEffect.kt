@@ -19,8 +19,8 @@ class ShotgunEffect(
         tower.modifyBaseAndLevelGrowth(DAMAGE, percentModifier = -definition.attributeReduction)
         tower.modifyBaseAndLevelGrowth(RANGE, percentModifier = -definition.attributeReduction)
 
-        tower.attrs[PROJECTILE_COUNT] = Attribute(PROJECTILE_COUNT, 5f)
-        tower.attrBase[PROJECTILE_COUNT] = 5f
+        tower.attrs[PROJECTILE_COUNT] = Attribute(PROJECTILE_COUNT, definition.numProjectiles.toFloat())
+        tower.attrBase[PROJECTILE_COUNT] = definition.numProjectiles.toFloat()
         tower.attrGrowth[PROJECTILE_COUNT] = Pair(FLAT, 0f)
 
         (tower.action as ProjectileAttackAction).apply {

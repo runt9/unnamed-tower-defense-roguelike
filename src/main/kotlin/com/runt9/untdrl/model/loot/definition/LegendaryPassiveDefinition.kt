@@ -9,17 +9,18 @@ interface LegendaryPassiveDefinition {
     val effect: LegendaryPassiveEffectDefinition
 }
 
-interface LegendaryPassiveEffectDefinition {
-    val effectClass: KClass<out LegendaryPassiveEffect>
+fun legendaryPassive(description: String, effect: LegendaryPassiveEffectDefinition) = object : LegendaryPassiveDefinition {
+    override val description = description
+    override val effect = effect
 }
 
-class EveryXShotGuaranteedCritPassiveDefinition(val shots: Int) : LegendaryPassiveEffectDefinition {
-    override val effectClass = EveryXShotGuaranteedCritPassive::class
-}
+abstract class LegendaryPassiveEffectDefinition(val effectClass: KClass<out LegendaryPassiveEffect>)
 
-val thirdShotCritPassive = object : LegendaryPassiveDefinition {
-    override val description = "Every 3rd shot from this tower is a guaranteed crit, with a bonus +50% to Crit Multiplier"
-    override val effect = EveryXShotGuaranteedCritPassiveDefinition(3)
-}
+class EveryXShotGuaranteedCritPassiveDefinition(val shots: Int) : LegendaryPassiveEffectDefinition(EveryXShotGuaranteedCritPassive::class)
+
+val thirdShotCritPassive = legendaryPassive(
+    "Every 3rd shot from this tower is a guaranteed crit, with a bonus +50% to Crit Multiplier",
+    EveryXShotGuaranteedCritPassiveDefinition(3)
+)
 
 val availableLegendaryPassives = listOf(thirdShotCritPassive)

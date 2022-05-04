@@ -1,8 +1,8 @@
 package com.runt9.untdrl.service.towerAction
 
 import com.runt9.untdrl.model.tower.Tower
-import com.runt9.untdrl.model.tower.action.FlamethrowerActionDefinition
 import com.runt9.untdrl.model.tower.damage
+import com.runt9.untdrl.model.tower.definition.FlamethrowerActionDefinition
 import com.runt9.untdrl.model.tower.intercept.DamageSource
 import com.runt9.untdrl.model.tower.proc.burnProc
 import com.runt9.untdrl.model.tower.range

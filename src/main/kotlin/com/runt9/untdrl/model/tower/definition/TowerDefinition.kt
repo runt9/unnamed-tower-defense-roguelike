@@ -36,6 +36,10 @@ interface TowerDefinition {
             description = this
         }
 
+        operator fun TowerActionDefinition.unaryPlus() {
+            actionDefinition = this
+        }
+
         fun specialization(name: String, icon: TextureDefinition, builder: SpecializationBuilder.() -> Unit = {}): TowerSpecializationDefinition {
             val specializationBuilder = SpecializationBuilder()
             specializationBuilder.builder()
@@ -63,6 +67,10 @@ interface TowerDefinition {
 
             operator fun String.unaryPlus() {
                 description = this
+            }
+
+            operator fun TowerSpecializationEffectDefinition.unaryPlus() {
+                definition = this
             }
         }
     }

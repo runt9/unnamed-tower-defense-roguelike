@@ -1,6 +1,6 @@
 package com.runt9.untdrl.view.duringRun.ui.faction
 
-import com.runt9.untdrl.service.factionPassiveEffect.RnDBudgetEffect
+import com.runt9.untdrl.service.factionPassiveEffect.RndBudgetEffect
 import com.runt9.untdrl.service.factionPassiveEffect.StockMarketEffect
 import com.runt9.untdrl.util.ext.lazyInject
 import com.runt9.untdrl.util.framework.ui.controller.DialogController
@@ -11,7 +11,7 @@ class ManageFactionDialogController : DialogController() {
     override val view = injectView<ManageFactionDialogView>()
 
     private val stockMarket by lazyInject<StockMarketEffect>()
-    private val rndBudget by lazyInject<RnDBudgetEffect>()
+    private val rndBudget by lazyInject<RndBudgetEffect>()
 
     override fun load() {
         vm.investmentPct(stockMarket.investmentPct)

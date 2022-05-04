@@ -5,10 +5,5 @@ import com.runt9.untdrl.service.specializationEffect.AttributeModifiersSpecializ
 import com.runt9.untdrl.service.specializationEffect.TowerSpecializationEffect
 import kotlin.reflect.KClass
 
-interface TowerSpecializationEffectDefinition {
-    val effectClass: KClass<out TowerSpecializationEffect>
-}
-
-class AttributeModifiersSpecialization(vararg val modifiers: AttributeModifier) : TowerSpecializationEffectDefinition {
-    override val effectClass = AttributeModifiersSpecializationEffect::class
-}
+abstract class TowerSpecializationEffectDefinition(val effectClass: KClass<out TowerSpecializationEffect>)
+class AttributeModifiersSpecialization(vararg val modifiers: AttributeModifier) : TowerSpecializationEffectDefinition(AttributeModifiersSpecializationEffect::class)

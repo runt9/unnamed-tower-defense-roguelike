@@ -6,37 +6,38 @@ import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.math.roundToInt
 
-typealias ResearchModifier = (Float) -> Float
+typealias ResearchMultiplier = (profit: Int) -> Float
 
-class RnDBudgetEffect(override val eventBus: EventBus) : FactionPassiveEffect {
+class RndBudgetEffect(override val eventBus: EventBus) : FactionPassiveEffect {
     var profitPct = 0.1f
     var minProfitPct = 0.1f
     var maxProfitPct = 0.5f
     
-    private val researchModifiers = mutableListOf<ResearchModifier>()
+    private val researchMultipliers = mutableListOf<ResearchMultiplier>()
 
     override fun init() {
         Injector.bindSingleton(this)
     }
 
     override fun dispose() {
-        Injector.removeProvider(RnDBudgetEffect::class.java)
+        Injector.removeProvider(RndBudgetEffect::class.java)
         super.dispose()
     }
 
-    fun addResearchModifier(check: ResearchModifier) {
-        researchModifiers += check
+    fun addResearchModifier(check: ResearchMultiplier) {
+        researchMultipliers += check
     }
 
-    fun removeResearchModifier(check: ResearchModifier) {
-        researchModifiers -= check
+    fun removeResearchModifier(check: ResearchMultiplier) {
+        researchMultipliers -= check
     }
 
     fun getResearchFromProfit(profit: Int): Pair<Int, Int> {
         val research = floor(profit * profitPct)
         val remainingProfit = ceil(profit * (1 - profitPct))
         
-        val finalResearch = researchModifiers.fold(research) { r, c -> c(r) }
+        val totalResearchMultiplier = researchMultipliers.map { it(profit) }.sum()
+        val finalResearch = research * (1 + totalResearchMultiplier)
         
         return Pair(remainingProfit.roundToInt(), finalResearch.roundToInt())
     }

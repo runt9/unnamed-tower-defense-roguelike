@@ -1,9 +1,8 @@
 package com.runt9.untdrl.service.duringRun
 
-import com.runt9.untdrl.config.Injector
 import com.runt9.untdrl.model.RunState
-import com.runt9.untdrl.model.research.ResearchDefinition
 import com.runt9.untdrl.model.research.ResearchEffectDefinition
+import com.runt9.untdrl.model.research.ResearchItem
 import com.runt9.untdrl.service.RandomizerService
 import com.runt9.untdrl.util.ext.dynamicInject
 import com.runt9.untdrl.util.ext.dynamicInjectCheckIsSubclassOf
@@ -18,14 +17,21 @@ class ResearchService(
     private val randomizer: RandomizerService
 ) : RunService(eventBus, registry) {
     private val logger = unTdRlLogger()
-    private lateinit var research: List<ResearchDefinition>
+    lateinit var research: List<ResearchItem>
+        private set
+
+    private val researchAppliedCbs = mutableListOf<() -> Unit>()
+
+    fun onResearchApplied(cb: () -> Unit) {
+        researchAppliedCbs += cb
+    }
 
     override fun startInternal() {
-        research = runStateService.load().faction.research
+        research = runStateService.load().faction.research.map(::ResearchItem)
         runStateService.update { addResearch() }
     }
 
-    fun applyResearch(research: ResearchDefinition) {
+    fun applyResearch(research: ResearchItem) {
         logger.info { "Applying ${research.name}" }
 
         val effect = dynamicInject(
@@ -43,6 +49,8 @@ class ResearchService(
 
             addResearch()
         }
+
+        researchAppliedCbs.forEach { it() }
     }
 
     fun rerollResearch() {
@@ -56,12 +64,12 @@ class ResearchService(
 
     private fun RunState.addResearch() {
         val newResearchs = research.filter { up ->
-            // Exclude research already made available, already applied, or anything made exclusive
+            // Exclude research already made available or already applied
             if (availableResearch.contains(up)) return@filter false
             if (appliedResearch.contains(up)) return@filter false
 
             // Only include researches with no dependencies or satisfied dependencies
-            return@filter appliedResearch.containsAll(up.dependsOn)
+            return@filter appliedResearch.map { it.definition }.containsAll(up.dependsOn)
         }
 
         availableResearch += newResearchs

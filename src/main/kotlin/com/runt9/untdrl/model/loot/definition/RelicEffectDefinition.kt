@@ -4,10 +4,6 @@ import com.runt9.untdrl.service.relicEffect.BonusXpPercentEffect
 import com.runt9.untdrl.service.relicEffect.RelicEffect
 import kotlin.reflect.KClass
 
-interface RelicEffectDefinition {
-    val effectClass: KClass<out RelicEffect>
-}
+abstract class RelicEffectDefinition(val effectClass: KClass<out RelicEffect>)
 
-class BonusXpPercentEffectDefinition(val xpPercent: Float) : RelicEffectDefinition {
-    override val effectClass = BonusXpPercentEffect::class
-}
+class BonusXpPercentEffectDefinition(val xpPercent: Float) : RelicEffectDefinition(BonusXpPercentEffect::class)

@@ -12,7 +12,7 @@ import com.runt9.untdrl.model.attribute.AttributeType.CRIT_MULTI
 import com.runt9.untdrl.model.attribute.AttributeType.DAMAGE
 import com.runt9.untdrl.model.attribute.AttributeType.RANGE
 import com.runt9.untdrl.model.damage.DamageType
-import com.runt9.untdrl.model.tower.action.projectileAttack
+import com.runt9.untdrl.model.tower.action.ProjectileAttackActionDefinition
 import com.runt9.untdrl.model.tower.specialization.AttributeModifiersSpecialization
 import com.runt9.untdrl.model.tower.specialization.TowerSpecializationEffectDefinition
 import com.runt9.untdrl.service.specializationEffect.MinigunEffect
@@ -21,7 +21,7 @@ import com.runt9.untdrl.service.specializationEffect.ShotgunEffect
 val rifleTower = tower("Rifle Tower", PROTOTYPE_TOWER, 30) {
     +"A simple tower that shoots a single bullet at an enemy dealing Physical damage."
 
-    projectileAttack(PROJECTILE)
+    +ProjectileAttackActionDefinition(PROJECTILE)
 
     RANGE(4f, 0.25f, FLAT)
     ATTACK_SPEED(1f, 0.05f, FLAT)
@@ -34,43 +34,29 @@ val rifleTower = tower("Rifle Tower", PROTOTYPE_TOWER, 30) {
     // TODO: Contextual tooltips that fill in actual numbers
     specialization("Shotgun", PROTOTYPE_TOWER) {
         +"Tower fires 5 small projectiles in a cone in front of it. Base damage reduced by 25%. Range reduced by 25%. Bullets no longer follow targets."
-        shotgunEffect()
+        +ShotgunSpecialization(25f, 5)
     }
 
     specialization("Minigun", PROJECTILE) {
         +"Tower gains 50% increased attack speed after each shot, stacking up to a limit of 500%. Damage and Attack Speed reduced by 50%."
-        minigunEffect()
+        +MinigunSpecialization(500f, 50f, 50f)
     }
 
     specialization("Sniper", GOLD_MINE) {
         +"Tower gains 200% increased range, damage, crit chance, and crit multiplier, however attack speed is reduced by 75%"
-        sniperEffect()
+        sniperEffect(200f, -75f)
     }
 }
 
-fun TowerDefinition.Builder.SpecializationBuilder.sniperEffect() {
+fun TowerDefinition.Builder.SpecializationBuilder.sniperEffect(pctIncrease: Float, pctReduction: Float) {
     definition = AttributeModifiersSpecialization(
-        AttributeModifier(RANGE, percentModifier = 200f),
-        AttributeModifier(DAMAGE, percentModifier = 200f),
-        AttributeModifier(CRIT_CHANCE, percentModifier = 200f),
-        AttributeModifier(CRIT_MULTI, percentModifier = 200f),
-        AttributeModifier(ATTACK_SPEED, percentModifier = -75f)
+        AttributeModifier(RANGE, percentModifier = pctIncrease),
+        AttributeModifier(DAMAGE, percentModifier = pctIncrease),
+        AttributeModifier(CRIT_CHANCE, percentModifier = pctIncrease),
+        AttributeModifier(CRIT_MULTI, percentModifier = pctIncrease),
+        AttributeModifier(ATTACK_SPEED, percentModifier = pctReduction)
     )
 }
 
-class MinigunSpecialization(val maxAttackSpeedBoost: Float, val attackSpeedBoostPerShot: Float, val attributeReduction: Float) : TowerSpecializationEffectDefinition {
-    override val effectClass = MinigunEffect::class
-}
-
-fun TowerDefinition.Builder.SpecializationBuilder.minigunEffect() {
-    definition = MinigunSpecialization(500f, 50f, 50f)
-}
-
-
-class ShotgunSpecialization(val attributeReduction: Float) : TowerSpecializationEffectDefinition {
-    override val effectClass = ShotgunEffect::class
-}
-
-fun TowerDefinition.Builder.SpecializationBuilder.shotgunEffect() {
-    definition = ShotgunSpecialization(25f)
-}
+class MinigunSpecialization(val maxAttackSpeedBoost: Float, val attackSpeedBoostPerShot: Float, val attributeReduction: Float) : TowerSpecializationEffectDefinition(MinigunEffect::class)
+class ShotgunSpecialization(val attributeReduction: Float, val numProjectiles: Int) : TowerSpecializationEffectDefinition(ShotgunEffect::class)

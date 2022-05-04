@@ -2,7 +2,7 @@ package com.runt9.untdrl.view.duringRun.ui.research
 
 import com.runt9.untdrl.model.RunState
 import com.runt9.untdrl.model.event.RunStateUpdated
-import com.runt9.untdrl.model.research.ResearchDefinition
+import com.runt9.untdrl.model.research.ResearchItem
 import com.runt9.untdrl.service.duringRun.ResearchService
 import com.runt9.untdrl.service.duringRun.RunStateService
 import com.runt9.untdrl.util.framework.event.EventBus
@@ -46,7 +46,7 @@ class ResearchDialogController(
         researchService.rerollResearch()
     }
 
-    fun applyResearch(research: ResearchDefinition) {
+    fun applyResearch(research: ResearchItem) {
         if (vm.researchAmount.get() < research.cost) return
         researchService.applyResearch(research)
     }

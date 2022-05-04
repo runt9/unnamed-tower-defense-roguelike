@@ -9,12 +9,14 @@ interface RelicDefinition {
     val effect: RelicEffectDefinition
 }
 
-val bookOfWonders = object : RelicDefinition {
-    override val name = "Book of Wonders"
-    override val rarity = Rarity.COMMON
-    override val description = "Towers gain 25% increased XP"
-    override val effect = BonusXpPercentEffectDefinition(0.25f)
+fun relic(name: String, rarity: Rarity, description: String, effect: RelicEffectDefinition) = object : RelicDefinition {
+    override val name = name
+    override val rarity = rarity
+    override val description = description
+    override val effect = effect
 }
+
+val bookOfWonders = relic("Book of Wonders", Rarity.COMMON, "Towers gain 25% increased XP", BonusXpPercentEffectDefinition(0.25f))
 
 val availableRelics = mapOf(
     Rarity.COMMON to listOf(bookOfWonders),
