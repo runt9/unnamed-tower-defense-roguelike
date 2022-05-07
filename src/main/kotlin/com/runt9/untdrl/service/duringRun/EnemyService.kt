@@ -39,6 +39,8 @@ class EnemyService(
     private val enemies = mutableListOf<Enemy>()
     private var isSpawning = false
 
+    val globalDamageMultipliers = mutableListOf<Float>()
+
     @HandlesEvent
     fun add(event: EnemySpawnedEvent) = launchOnServiceThread {
         isSpawning = true
@@ -114,8 +116,11 @@ class EnemyService(
     }
 
     private suspend fun takeDamage(enemy: Enemy, source: Tower, finalDamage: Float) {
+        val multipliers = globalDamageMultipliers.sum()
+        val totalDamage = finalDamage * (1f + multipliers)
+
         enemy.apply {
-            currentHp -= finalDamage
+            currentHp -= totalDamage
             affectedByTowers += source
             onHpChangeCb()
         }

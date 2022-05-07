@@ -28,6 +28,7 @@ class SideBarInfoPanelView(
 
             visTable {
                 visLabel("") { bindLabelText { "Wave: ${vm.wave()}" } }.cell(row = true, pad = 2f, align = Align.left)
+                visLabel("") { bindLabelText { "Armor: ${vm.armor()}" } }.cell(row = true, pad = 2f, align = Align.left)
                 visLabel("") { bindLabelText { "HP: ${vm.hp()} / ${vm.maxHp()}" } }.cell(row = true, pad = 2f, align = Align.left)
                 visLabel("") { bindLabelText { "Gold: ${vm.gold()}" } }.cell(row = true, pad = 2f, align = Align.left)
                 visLabel("") { bindLabelText { "Research: ${vm.research()}" } }.cell(row = true, pad = 2f, align = Align.left)

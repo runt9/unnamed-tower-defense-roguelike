@@ -21,6 +21,7 @@ data class RunState(
     val faction: FactionDefinition,
     var maxHp: Int = faction.maxHp,
     var hp: Int = faction.maxHp,
+    var armor: Int = 0,
     var gold: Int = STARTING_GOLD,
     var goldPurseMax: Int = INITIAL_GOLD_PURSE_MAX,
     var lootItemMax: Int = INITIAL_LOOT_ITEM_MAX,

@@ -29,7 +29,10 @@ class RunStateService(private val eventBus: EventBus, registry: RunServiceRegist
 
     @HandlesEvent(WaveCompleteEvent::class)
     fun waveComplete() = launchOnServiceThread {
-        update { wave++ }
+        update {
+            wave++
+            armor = 0
+        }
 
         // TODO: Maybe not the right way to handle this, will figure out later
         eventBus.enqueueEvent(PrepareNextWaveEvent())
@@ -41,7 +44,9 @@ class RunStateService(private val eventBus: EventBus, registry: RunServiceRegist
 
         // TODO: This is where enemy damage goes if enemies can have different damage values. Boss probably does, for example
         update {
-            if (--hp <= 0) {
+            if (armor > 0) {
+                armor--
+            } else if (--hp <= 0) {
                 eventBus.enqueueEventSync(RunEndEvent(false))
             }
         }

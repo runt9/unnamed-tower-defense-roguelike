@@ -39,6 +39,7 @@ class SideBarInfoPanelController(private val eventBus: EventBus, private val run
 
     private fun RunState.applyNewState() {
         vm.maxHp(maxHp)
+        vm.armor(armor)
         vm.hp(hp)
         vm.gold(gold)
         vm.research(researchAmount)
