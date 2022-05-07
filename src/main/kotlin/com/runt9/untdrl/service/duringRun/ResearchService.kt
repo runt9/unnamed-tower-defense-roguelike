@@ -63,7 +63,7 @@ class ResearchService(
     }
 
     private fun RunState.addResearch() {
-        val newResearchs = research.filter { up ->
+        val newResearches = research.filter { up ->
             // Exclude research already made available or already applied
             if (availableResearch.contains(up)) return@filter false
             if (appliedResearch.contains(up)) return@filter false
@@ -72,7 +72,7 @@ class ResearchService(
             return@filter appliedResearch.map { it.definition }.containsAll(up.dependsOn)
         }
 
-        availableResearch += newResearchs
+        availableResearch += newResearches
         while (selectableResearch.size < selectableResearchOptionCount && selectableResearch.size < availableResearch.size) {
             selectableResearch += availableResearch.filter { !selectableResearch.contains(it) }.random(randomizer.rng)
         }

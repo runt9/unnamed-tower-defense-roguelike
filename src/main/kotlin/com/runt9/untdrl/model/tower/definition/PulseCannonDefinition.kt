@@ -16,7 +16,7 @@ import com.runt9.untdrl.service.specializationEffect.RattledBonesEffect
 import com.runt9.untdrl.service.specializationEffect.WindCannonEffect
 import com.runt9.untdrl.service.towerAction.PulseCannonAction
 
-val pulseCannon = tower("Pulse Cannon", RESEARCH_LAB, 25/*0*/) {
+val pulseCannon = tower("Pulse Cannon", RESEARCH_LAB, 250) {
     +"Fires a sound wave towards an enemy that pierces all enemies hit, deals Energy damage, and reduces enemy resistances by 5%."
 
     +PulseCannonActionDefinition(PULSE_CANNON_PROJECTILE, 0.05f)

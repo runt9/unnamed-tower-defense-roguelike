@@ -10,6 +10,7 @@ import com.runt9.untdrl.model.tower.Tower
 import com.runt9.untdrl.model.tower.attackTime
 import com.runt9.untdrl.model.tower.buffEffect
 import com.runt9.untdrl.model.tower.definition.PulseCannonActionDefinition
+import com.runt9.untdrl.model.tower.intercept.ResistanceRequest
 import com.runt9.untdrl.model.tower.proc.TowerProc
 import com.runt9.untdrl.service.towerAction.subAction.AttackSubAction
 import com.runt9.untdrl.service.towerAction.subAction.faceTarget
@@ -32,7 +33,7 @@ class PulseCannonAction(
     val resistLowerProc = object : TowerProc {
         override val chance: Float = 1f
 
-        override fun applyToEnemy(tower: Tower, enemy: Enemy, finalDamage: Float) {
+        override fun applyToEnemy(tower: Tower, enemy: Enemy, resistRequest: ResistanceRequest) {
             val reduction = definition.resistanceReduction * (1 + tower.buffEffect)
             enemy.reduceAllResistances(reduction)
         }

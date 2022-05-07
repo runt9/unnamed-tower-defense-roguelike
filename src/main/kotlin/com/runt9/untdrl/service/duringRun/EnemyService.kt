@@ -23,6 +23,7 @@ import com.runt9.untdrl.model.tower.intercept.DamageResult
 import com.runt9.untdrl.model.tower.intercept.DamageSource
 import com.runt9.untdrl.model.tower.intercept.InterceptorHook
 import com.runt9.untdrl.model.tower.intercept.OnCrit
+import com.runt9.untdrl.model.tower.intercept.OnKill
 import com.runt9.untdrl.model.tower.intercept.ResistanceRequest
 import com.runt9.untdrl.service.RandomizerService
 import com.runt9.untdrl.util.ext.unTdRlLogger
@@ -132,6 +133,7 @@ class EnemyService(
 
         if (enemy.currentHp <= 0) {
             enemy.isAlive = false
+            source.intercept(InterceptorHook.ON_KILL, OnKill(enemy))
             val allAffectedTowers = mutableSetOf<Tower>()
             enemy.affectedByTowers.forEach { t ->
                 allAffectedTowers += t
@@ -188,7 +190,7 @@ class EnemyService(
 
     private fun processProcs(tower: Tower, enemy: Enemy, resistanceRequest: ResistanceRequest) =
         tower.procs.filter { randomizer.percentChance(it.chance) }.forEach { proc ->
-            proc.applyToEnemy(tower, enemy, resistanceRequest.finalDamage)
+            proc.applyToEnemy(tower, enemy, resistanceRequest)
         }
 
     private fun damageRequest(tower: Tower, source: DamageSource, damage: Float, damageMultiplier: Float = 1f): DamageRequest {

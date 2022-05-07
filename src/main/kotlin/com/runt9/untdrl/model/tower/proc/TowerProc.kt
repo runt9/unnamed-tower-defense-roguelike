@@ -8,21 +8,22 @@ import com.runt9.untdrl.model.enemy.status.Slow
 import com.runt9.untdrl.model.enemy.status.Stun
 import com.runt9.untdrl.model.tower.Tower
 import com.runt9.untdrl.model.tower.damage
+import com.runt9.untdrl.model.tower.intercept.ResistanceRequest
 
 interface TowerProc {
     val chance: Float
 
-    fun applyToEnemy(tower: Tower, enemy: Enemy, finalDamage: Float)
+    fun applyToEnemy(tower: Tower, enemy: Enemy, resistRequest: ResistanceRequest)
 }
 
 data class StunProc(override val chance: Float, val duration: Float) : TowerProc {
-    override fun applyToEnemy(tower: Tower, enemy: Enemy, finalDamage: Float) {
+    override fun applyToEnemy(tower: Tower, enemy: Enemy, resistRequest: ResistanceRequest) {
         enemy.addStatusEffect(Stun(tower, duration))
     }
 }
 
 data class SlowProc(override val chance: Float, val duration: Float, val slowPct: Float) : TowerProc {
-    override fun applyToEnemy(tower: Tower, enemy: Enemy, finalDamage: Float) {
+    override fun applyToEnemy(tower: Tower, enemy: Enemy, resistRequest: ResistanceRequest) {
         enemy.addStatusEffect(Slow(tower, duration, slowPct))
     }
 }
@@ -34,8 +35,8 @@ data class DotProc<S : DamagingStatusEffect<S>>(
     val pctOfBaseDamage: Float = 0f,
     val constructor: (Tower, Float, Float) -> S
 ) : TowerProc {
-    override fun applyToEnemy(tower: Tower, enemy: Enemy, finalDamage: Float) {
-        val totalDamage = if (pctOfHitDamage > 0f) finalDamage * pctOfHitDamage else tower.damage * pctOfBaseDamage
+    override fun applyToEnemy(tower: Tower, enemy: Enemy, resistRequest: ResistanceRequest) {
+        val totalDamage = if (pctOfHitDamage > 0f) resistRequest.finalDamage * pctOfHitDamage else tower.damage * pctOfBaseDamage
         enemy.addStatusEffect(constructor(tower, duration, totalDamage))
     }
 }

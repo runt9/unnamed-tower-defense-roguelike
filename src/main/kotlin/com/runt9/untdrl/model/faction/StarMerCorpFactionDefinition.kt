@@ -16,10 +16,14 @@ import com.runt9.untdrl.service.researchEffect.AdvancedBallisticsEffect
 import com.runt9.untdrl.service.researchEffect.AiTradingEffect
 import com.runt9.untdrl.service.researchEffect.BrainstormingEffect
 import com.runt9.untdrl.service.researchEffect.CarefulInvestmentsEffect
+import com.runt9.untdrl.service.researchEffect.CoreSlotEffect
 import com.runt9.untdrl.service.researchEffect.DividendsEffect
 import com.runt9.untdrl.service.researchEffect.DontRepeatYourselfEffect
+import com.runt9.untdrl.service.researchEffect.EfficientGrowthEffect
 import com.runt9.untdrl.service.researchEffect.EfficientScientistsEffect
 import com.runt9.untdrl.service.researchEffect.EtfsEffect
+import com.runt9.untdrl.service.researchEffect.ExpandingShrapnelEffect
+import com.runt9.untdrl.service.researchEffect.FastLearningEffect
 import com.runt9.untdrl.service.researchEffect.GoForBrokeEffect
 import com.runt9.untdrl.service.researchEffect.GoldPurseIncreaseEffect
 import com.runt9.untdrl.service.researchEffect.HighYieldDividendsEffect
@@ -28,11 +32,14 @@ import com.runt9.untdrl.service.researchEffect.LootSlotIncreaseEffect
 import com.runt9.untdrl.service.researchEffect.LuckyCoreValuesEffect
 import com.runt9.untdrl.service.researchEffect.LuckyRarityEffect
 import com.runt9.untdrl.service.researchEffect.MaterialisticEffect
+import com.runt9.untdrl.service.researchEffect.MoneyTalksEffect
+import com.runt9.untdrl.service.researchEffect.MoraleBoostEffect
 import com.runt9.untdrl.service.researchEffect.NeuralNetworkEffect
 import com.runt9.untdrl.service.researchEffect.PerformanceBonusEffect
 import com.runt9.untdrl.service.researchEffect.RevenueSharingEffect
 import com.runt9.untdrl.service.researchEffect.RichGetRicherEffect
 import com.runt9.untdrl.service.researchEffect.ScienceFirstApproachEffect
+import com.runt9.untdrl.service.researchEffect.ShrapnelEffect
 import com.runt9.untdrl.service.researchEffect.SpreadTheWealthEffect
 
 val baseFaction = faction(1, "StarMerCorp", 25) {
@@ -193,6 +200,51 @@ val baseFaction = faction(1, "StarMerCorp", 25) {
         dependsOn(richGetRicher)
     }
 
+    val fastLearning = research("Fast Learning", TextureDefinition.RESEARCH_LAB, 15) {
+        +"Towers gain 25% increased XP"
+        +FastLearningDefinition(0.25f)
+    }
+
+    val efficientGrowth = research("Efficient Growth", TextureDefinition.RESEARCH_LAB, 25) {
+        +"Towers gain 20% increased attribute growth"
+        +EfficientGrowthDefinition(0.2f)
+        dependsOn(fastLearning)
+    }
+
+    val moneyTalks = research("Money Talks", TextureDefinition.GOLD_MINE, 50) {
+        +"Towers gain 1% increased damage per 25 Gold currently held"
+        +MoneyTalksDefinition(25)
+        dependsOn(goForBroke)
+    }
+
+    val moraleBoost = research("Morale Boost", TextureDefinition.ENEMY, 35) {
+        +"After killing an enemy, towers gain 10% increased attack speed for 3 seconds, stacking up to 5 times"
+        +MoraleBoostDefinition(10f, 3f, 5)
+        dependsOn(moneyTalks)
+    }
+
+    val shrapnel = research("Shrapnel", TextureDefinition.ENEMY, 20) {
+        +"Physical damage dealt by towers has a 25% chance to apply a Bleed that deals 75% of the Physical Damage of the hit over 3s"
+        +ShrapnelDefinition(0.25f, 3f, 0.75f)
+    }
+
+    val expandingShrapnel = research("Expanding Shrapnel", TextureDefinition.ENEMY, 35) {
+        +"Critical hits with Physical damage refresh the duration of existing bleeds on that enemy and bleeds applied by Shrapnel deal the same damage over 50% reduced duration"
+        +ExpandingShrapnelDefinition(0.5f)
+        dependsOn(shrapnel)
+    }
+
+    val coreSlots1 = research("Core Slots I", TextureDefinition.ENEMY, 25) {
+        +"Towers gain an additional Tower Core slot"
+        emptyDefinition(CoreSlotEffect::class)
+    }
+
+    val coreSlots2 = research("Core Slots II", TextureDefinition.ENEMY, 35) {
+        +"Towers gain an additional Tower Core slot"
+        emptyDefinition(CoreSlotEffect::class)
+        dependsOn(coreSlots1)
+    }
+
     val advBallistics = research("Advanced Ballistics", TextureDefinition.ENEMY, 10) {
         +"All projectiles do 25% more damage, penetrate 10% of enemy resistances, and pierce an additional enemy."
         +AdvancedBallisticsEffectDefinition(0.25f, 0.1f)
@@ -219,3 +271,9 @@ class DontRepeatYourselfDefinition(val discountPct: Float, val discountCap: Floa
 class PerformanceBonusDefinition(val bonusPct: Float) : ResearchEffectDefinition(PerformanceBonusEffect::class)
 class GoldPurseIncreaseDefinition(val increaseAmt: Int) : ResearchEffectDefinition(GoldPurseIncreaseEffect::class)
 class MaterialisticDefinition(val goldMultiplier: Float, val lootChanceMultiplier: Float) : ResearchEffectDefinition(MaterialisticEffect::class)
+class FastLearningDefinition(val xpPercent: Float) : ResearchEffectDefinition(FastLearningEffect::class)
+class EfficientGrowthDefinition(val growthPct: Float) : ResearchEffectDefinition(EfficientGrowthEffect::class)
+class MoneyTalksDefinition(val goldPerDmg: Int) : ResearchEffectDefinition(MoneyTalksEffect::class)
+class MoraleBoostDefinition(val attackSpeedIncrease: Float, val duration: Float, val maxStacks: Int) : ResearchEffectDefinition(MoraleBoostEffect::class)
+class ShrapnelDefinition(val bleedChance: Float, val duration: Float, val pctOfPhysicalDamage: Float) : ResearchEffectDefinition(ShrapnelEffect::class)
+class ExpandingShrapnelDefinition(val durationMod: Float) : ResearchEffectDefinition(ExpandingShrapnelEffect::class)

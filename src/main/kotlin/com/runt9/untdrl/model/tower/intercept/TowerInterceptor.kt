@@ -12,6 +12,7 @@ import com.runt9.untdrl.model.tower.intercept.InterceptorHook.BEFORE_RESISTS
 import com.runt9.untdrl.model.tower.intercept.InterceptorHook.CRIT_CHECK
 import com.runt9.untdrl.model.tower.intercept.InterceptorHook.ON_ATTACK
 import com.runt9.untdrl.model.tower.intercept.InterceptorHook.ON_CRIT
+import com.runt9.untdrl.model.tower.intercept.InterceptorHook.ON_KILL
 import com.runt9.untdrl.util.ext.clamp
 import com.runt9.untdrl.util.ext.displayDecimal
 import com.runt9.untdrl.util.ext.displayMultiplier
@@ -26,12 +27,7 @@ enum class InterceptorHook {
     AFTER_DAMAGE_CALC,
     BEFORE_RESISTS,
     AFTER_DAMAGE_DEALT,
-
-    BEFORE_GENERATE_GOLD,
-    AFTER_GENERATE_GOLD,
-
-    BEFORE_GENERATE_RESEARCH,
-    AFTER_GENERATE_RESEARCH
+    ON_KILL
 }
 
 interface TowerInterceptor<I : TowerInteraction> {
@@ -49,6 +45,7 @@ fun <I : TowerInteraction> intercept(hook: InterceptorHook, intercept: (Tower, I
 interface TowerInteraction
 data class OnAttack(val tower: Tower) : TowerInteraction
 data class OnCrit(val tower: Tower, val enemy: Enemy) : TowerInteraction
+data class OnKill(val enemy: Enemy) : TowerInteraction
 
 data class CritRequest(private val tower: Tower) : TowerInteraction {
     private val baseCrit = tower.critChance
@@ -102,11 +99,17 @@ data class ResistanceRequest(
     private val specificPenetration = mutableMapOf<DamageType, Float>()
 
     val finalDamage by lazy {
-        (damageTypes + additionalDamageTypes).map { dt ->
-            val damage = damageResult.totalDamage * dt.pctOfBase
-            val resistance = getResistance(dt.type, dt.penetration)
-            return@map damage / resistance
-        }.sum()
+        (damageTypes + additionalDamageTypes).map(::damageFromMap).sum()
+    }
+
+    fun getDamageForType(damageType: DamageType): Float {
+        return (damageTypes + additionalDamageTypes).filter { it.type == damageType }.map(::damageFromMap).sum()
+    }
+
+    private fun damageFromMap(map: DamageMap): Float {
+        val damage = damageResult.totalDamage * map.pctOfBase
+        val resistance = getResistance(map.type, map.penetration)
+        return damage / resistance
     }
 
     private fun getResistance(type: DamageType, penetration: Float): Float {
@@ -140,3 +143,4 @@ fun beforeResists(vararg filterSource: DamageSource = DamageSource.values(), int
         if (!filterSource.contains(request.source)) return@intercept
         intercept(tower, request)
     }
+fun onKill(intercept: (Tower, OnKill) -> Unit) = intercept(ON_KILL, intercept)

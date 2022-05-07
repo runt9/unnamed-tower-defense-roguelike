@@ -50,4 +50,6 @@ class Burn(source: Tower, duration: Float, damage: Float) : DamagingStatusEffect
 
 class Poison(source: Tower, duration: Float, damage: Float) : DamagingStatusEffect<Poison>(source, duration, damage, DamageType.NATURE, DamageSource.POISON, stacks())
 
+class Bleed(source: Tower, duration: Float, damage: Float) : DamagingStatusEffect<Bleed>(source, duration, damage, DamageType.PHYSICAL, DamageSource.BLEED, stacks())
+
 class Slow(source: Tower, duration: Float, val slowPct: Float) : StatusEffect<Slow>(source, duration, keepsBetter(Comparator.comparing(Slow::slowPct)))

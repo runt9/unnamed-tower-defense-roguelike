@@ -27,6 +27,7 @@ class TowerService(eventBus: EventBus, registry: RunServiceRegistry) : RunServic
     private val towers = mutableListOf<Tower>()
     private val towerChangeCbs = mutableMapOf<Int, MutableList<suspend (Tower) -> Unit>>()
     private val globalXpModifiers = mutableListOf<Float>()
+    private val globalAttrGrowthModifiers = mutableListOf<Float>()
 
     fun add(tower: Tower) = launchOnServiceThread {
         towers += tower
@@ -47,6 +48,10 @@ class TowerService(eventBus: EventBus, registry: RunServiceRegistry) : RunServic
         globalXpModifiers += amt
     }
 
+    fun addGlobalAttrGrowthModifier(amt: Float) = launchOnServiceThread {
+        globalAttrGrowthModifiers += amt
+    }
+
     fun onTowerChange(id: Int, cb: suspend (Tower) -> Unit) {
         towerChangeCbs.computeIfAbsent(id) { mutableListOf() } += cb
     }
@@ -55,7 +60,11 @@ class TowerService(eventBus: EventBus, registry: RunServiceRegistry) : RunServic
         towerChangeCbs[id]?.remove(cb)
     }
 
-    fun forEachTower(fn: (Tower) -> Unit) = towers.toList().forEach(fn)
+    fun forEachTower(fn: suspend (Tower) -> Unit) = launchOnServiceThread {
+        towers.toList().forEach {
+            fn(it)
+        }
+    }
 
     override fun tick(delta: Float) {
         launchOnServiceThread {
@@ -133,7 +142,7 @@ class TowerService(eventBus: EventBus, registry: RunServiceRegistry) : RunServic
                 val baseValue = attrBase[type] ?: 0f
 
                 val growthPair = attrGrowth[type] ?: Pair(FLAT, 0f)
-                val growthAmount = growthPair.second * (tower.level - 1)
+                val growthAmount = growthPair.second * (tower.level - 1) * (1 + globalAttrGrowthModifiers.sum())
                 val levelGrownBaseValue = if (growthPair.first == FLAT) baseValue + growthAmount else baseValue * (1 + (growthAmount / 100))
 
                 var totalFlat = 0f
