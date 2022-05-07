@@ -8,6 +8,7 @@ import com.runt9.untdrl.model.tower.definition.flamethrower
 import com.runt9.untdrl.model.tower.definition.mineThrower
 import com.runt9.untdrl.model.tower.definition.propagandaTower
 import com.runt9.untdrl.model.tower.definition.pulseCannon
+import com.runt9.untdrl.model.tower.definition.rifleTower
 import com.runt9.untdrl.model.tower.definition.rocketTower
 import com.runt9.untdrl.service.factionPassiveEffect.RndBudgetEffect
 import com.runt9.untdrl.service.factionPassiveEffect.StockMarketEffect
@@ -35,8 +36,7 @@ import com.runt9.untdrl.service.researchEffect.ScienceFirstApproachEffect
 import com.runt9.untdrl.service.researchEffect.SpreadTheWealthEffect
 
 val baseFaction = faction(1, "StarMerCorp", 25) {
-//    startingTower(rifleTower)
-    startingTower(pulseCannon)
+    startingTower(rifleTower)
 
     goldPassive("Stock Market", StockMarketEffect::class) {
         +"""
@@ -61,6 +61,7 @@ val baseFaction = faction(1, "StarMerCorp", 25) {
     unlockTower(propagandaTower, 25)
     unlockTower(flamethrower, 35)
     unlockTower(mineThrower, 45)
+    unlockTower(pulseCannon, 50)
 
     val carefulInvestments = research("Careful Investments", TextureDefinition.PROJECTILE, 10) {
         +"All Stock Market risk levels have their negative minimum returns halved (e.g. -25% to -12.5%)."
