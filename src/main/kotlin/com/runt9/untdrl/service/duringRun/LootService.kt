@@ -3,6 +3,7 @@ package com.runt9.untdrl.service.duringRun
 import com.runt9.untdrl.model.attribute.AttributeModifier
 import com.runt9.untdrl.model.attribute.AttributeType
 import com.runt9.untdrl.model.event.EnemyRemovedEvent
+import com.runt9.untdrl.model.event.WaveCompleteEvent
 import com.runt9.untdrl.model.loot.Consumable
 import com.runt9.untdrl.model.loot.LootItem
 import com.runt9.untdrl.model.loot.LootPool
@@ -17,7 +18,10 @@ import com.runt9.untdrl.model.loot.definition.RelicEffectDefinition
 import com.runt9.untdrl.model.loot.definition.availableConsumables
 import com.runt9.untdrl.model.loot.definition.availableLegendaryPassives
 import com.runt9.untdrl.model.loot.definition.availableRelics
+import com.runt9.untdrl.model.loot.definition.initConsumables
+import com.runt9.untdrl.model.loot.definition.initRelics
 import com.runt9.untdrl.service.RandomizerService
+import com.runt9.untdrl.service.consumableAction.ConsumableAction
 import com.runt9.untdrl.util.ext.dynamicInject
 import com.runt9.untdrl.util.ext.dynamicInjectCheckIsSubclassOf
 import com.runt9.untdrl.util.ext.generateWeightedList
@@ -37,7 +41,7 @@ class LootService(
 
     val lootWeights = mutableMapOf(
         LootType.GOLD to 90,
-        LootType.CONSUMABLE to 5,
+        LootType.CONSUMABLE to 500,
         LootType.CORE to 4,
         LootType.RELIC to 1
     )
@@ -58,6 +62,7 @@ class LootService(
     var luckyCoreAttributes = false
     private val goldDropMultipliers = mutableListOf<() -> Float>()
     private val lootedGoldMultipliers = mutableListOf<() -> Float>()
+    private val currentlyAppliedConsumables = mutableListOf<ConsumableAction>()
 
     fun addGoldDropMultiplier(multiplier: () -> Float) {
         goldDropMultipliers += multiplier
@@ -68,6 +73,8 @@ class LootService(
     }
 
     override fun startInternal() {
+        initConsumables()
+        initRelics()
         runStateService.update {
             currentShop = generateShop()
         }
@@ -99,6 +106,12 @@ class LootService(
         if (!event.wasKilled) return@launchOnServiceThread
 
         generateLoot()
+    }
+
+    @HandlesEvent(WaveCompleteEvent::class)
+    fun waveComplete() {
+        currentlyAppliedConsumables.forEach(ConsumableAction::remove)
+        currentlyAppliedConsumables.clear()
     }
 
     private fun generateLoot() = launchOnServiceThread {
@@ -196,6 +209,19 @@ class LootService(
         }
 
         clearRemainingLootPool()
+    }
+
+    fun useConsumable(consumable: Consumable): Boolean {
+        if (!consumable.action.canApply()) return false
+
+        consumable.action.apply()
+        currentlyAppliedConsumables += consumable.action
+
+        runStateService.update {
+            consumables -= consumable
+        }
+
+        return true
     }
 
     private val Rarity.numCoreAttrs: Int get() = when (this) {

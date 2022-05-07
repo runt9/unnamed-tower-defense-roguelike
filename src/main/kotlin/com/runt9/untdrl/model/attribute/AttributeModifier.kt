@@ -7,7 +7,7 @@ import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
 
 @Serializable
-data class AttributeModifier(val type: AttributeType, val flatModifier: Float = 0f, val percentModifier: Float = 0f) {
+data class AttributeModifier(val type: AttributeType, val flatModifier: Float = 0f, val percentModifier: Float = 0f, val isTemporary: Boolean = false) {
     val name by lazy { generateDisplayName() }
 
     private fun generateDisplayName(): String {

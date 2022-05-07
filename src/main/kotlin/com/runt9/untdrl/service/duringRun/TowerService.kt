@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Vector2
 import com.runt9.untdrl.model.attribute.AttributeModificationType.FLAT
 import com.runt9.untdrl.model.attribute.AttributeType
 import com.runt9.untdrl.model.event.TowerPlacedEvent
+import com.runt9.untdrl.model.event.WaveCompleteEvent
 import com.runt9.untdrl.model.loot.TowerCore
 import com.runt9.untdrl.model.loot.definition.LegendaryPassiveEffectDefinition
 import com.runt9.untdrl.model.tower.Tower
@@ -44,6 +45,14 @@ class TowerService(eventBus: EventBus, registry: RunServiceRegistry) : RunServic
         towers -= tower
     }
 
+    @HandlesEvent(WaveCompleteEvent::class)
+    fun waveComplete() {
+        forEachTower { tower ->
+            tower.attrMods.removeIf { it.isTemporary }
+            recalculateAttrsSync(tower)
+        }
+    }
+
     fun addGlobalXpModifier(amt: Float) = launchOnServiceThread {
         globalXpModifiers += amt
     }
@@ -60,7 +69,7 @@ class TowerService(eventBus: EventBus, registry: RunServiceRegistry) : RunServic
         towerChangeCbs[id]?.remove(cb)
     }
 
-    fun forEachTower(fn: suspend (Tower) -> Unit) = launchOnServiceThread {
+    fun forEachTower(fn: (Tower) -> Unit) {
         towers.toList().forEach {
             fn(it)
         }
@@ -94,6 +103,7 @@ class TowerService(eventBus: EventBus, registry: RunServiceRegistry) : RunServic
 
     // TODO: This may not work in the long run. Faster attacking towers get to hit more enemies meaning they get more XP than slower attacking towers
     //  that might do more damage. But some sort of "percent damage share" may not work since something like a "slow tower" does no damage.
+    fun gainXpSync(tower: Tower, xp: Int) = launchOnServiceThread { gainXp(tower, xp) }
     suspend fun gainXp(tower: Tower, xp: Int) {
         tower.apply {
             if (level == MAX_TOWER_LEVEL) {
@@ -108,7 +118,9 @@ class TowerService(eventBus: EventBus, registry: RunServiceRegistry) : RunServic
                 return
             }
 
-            levelUp(tower)
+            while (tower.xp >= tower.xpToLevel) {
+                levelUp(tower)
+            }
         }
     }
 

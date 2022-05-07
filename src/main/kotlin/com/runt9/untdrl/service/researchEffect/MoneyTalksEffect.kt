@@ -31,7 +31,7 @@ class MoneyTalksEffect(
                 t.attrMods -= attrMod
                 attrMod = AttributeModifier(AttributeType.DAMAGE, percentModifier = pctIncrease)
                 t.attrMods += attrMod
-                towerService.recalculateAttrs(t)
+                towerService.recalculateAttrsSync(t)
             }
         }
     }

@@ -63,15 +63,13 @@ class MoraleBoostEffect(
         fun addStack() {
             if (stacks.size >= definition.maxStacks) return
 
-            val stack = AttributeModifier(AttributeType.ATTACK_SPEED, percentModifier = definition.attackSpeedIncrease)
+            val stack = AttributeModifier(AttributeType.ATTACK_SPEED, percentModifier = definition.attackSpeedIncrease, isTemporary = true)
             tower.attrMods += stack
             towerService.recalculateAttrsSync(tower)
             timer.reset(false)
         }
 
         fun reset() {
-            tower.attrMods -= stacks.toSet()
-            towerService.recalculateAttrsSync(tower)
             stacks.clear()
             timer.reset(false)
         }

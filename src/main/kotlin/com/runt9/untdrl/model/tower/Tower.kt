@@ -95,6 +95,12 @@ class Tower(val definition: TowerDefinition) : BaseSteerable(Vector2.Zero.cpy(),
     }
 
     fun inRangeOf(pos: Vector2) = position.dst(pos) <= range
+
+    fun modifyAllAttributes(flatModifier: Float = 0f, percentModifier: Float = 0f, isTemporary: Boolean = false) {
+        attrs.keys.forEach { type ->
+            attrMods += AttributeModifier(type, flatModifier, percentModifier, isTemporary)
+        }
+    }
 }
 
 fun Map<AttributeType, Attribute>.mapToFloats() = mapValues { (_, v) -> v() }

@@ -95,6 +95,7 @@ class EnemyService(
         }
     }
 
+    // TODO: NPE
     fun enemiesInRange(position: Vector2, range: Float) = enemies.toList().filter { it.isAlive && position.dst(it.position) <= range }
 
     fun getTowerTarget(position: Vector2, range: Float, targetingMode: TargetingMode) =

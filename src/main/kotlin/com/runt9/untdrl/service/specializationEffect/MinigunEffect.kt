@@ -57,7 +57,7 @@ class MinigunEffect(
             if (currentAttackSpeedBoost == maxAttackSpeedBoost) return@onAttack
 
             currentAttackSpeedBoost += attackSpeedBoostPerShot
-            val newModifier = AttributeModifier(ATTACK_SPEED, percentModifier = attackSpeedBoostPerShot)
+            val newModifier = AttributeModifier(ATTACK_SPEED, percentModifier = attackSpeedBoostPerShot, isTemporary = true)
             modifierStacks += newModifier
             tower.attrMods += newModifier
             towerService.recalculateAttrsSync(tower)
@@ -72,7 +72,6 @@ class MinigunEffect(
     @HandlesEvent(WaveCompleteEvent::class)
     fun waveComplete() {
         decayTimer.reset(false)
-        modifierStacks.forEach { tower.attrMods.remove(it) }
         towerService.recalculateAttrsSync(tower)
         currentAttackSpeedBoost = 0f
     }
