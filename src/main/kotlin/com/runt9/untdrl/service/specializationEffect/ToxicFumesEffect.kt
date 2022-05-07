@@ -16,7 +16,7 @@ class ToxicFumesEffect(
     override fun apply() {
         tower.modifyBaseAndLevelGrowth(DAMAGE, percentModifier = -definition.damageReduction)
 
-        tower.procs += poisonProc(definition.poisonChance, definition.poisonDuration, pctOfBaseDamage = definition.poisonPctOfBase)
+        tower.addProc(poisonProc(definition.poisonChance, definition.poisonDuration, pctOfBaseDamage = definition.poisonPctOfBase))
         tower.damageTypes.find { it.type == DamageType.HEAT }?.apply { pctOfBase -= definition.natureDamageConversion }
         tower.damageTypes += DamageMap(DamageType.NATURE, definition.natureDamageConversion)
     }

@@ -36,7 +36,7 @@ class FaceTargetSubAction(private val tower: Tower, private val enemyService: En
     }
 
     fun canAttackTarget(): Boolean {
-        return target?.let { t -> tower.angleToWithin(t, angleToTargetLimit) && tower.inRangeOf(t.position) } ?: false
+        return target?.let { t -> tower.angleToWithin(t, angleToTargetLimit) && tower.inRangeOf(t.position) && t.isAlive } ?: false
     }
 }
 

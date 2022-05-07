@@ -5,6 +5,7 @@ import com.badlogic.gdx.ai.steer.behaviors.FollowPath
 import com.badlogic.gdx.ai.steer.behaviors.LookWhereYouAreGoing
 import com.badlogic.gdx.ai.steer.utils.paths.LinePath
 import com.badlogic.gdx.ai.steer.utils.paths.LinePath.LinePathParam
+import com.badlogic.gdx.math.Polygon
 import com.badlogic.gdx.math.Vector2
 import com.runt9.untdrl.model.enemy.definition.EnemyDefinition
 import com.runt9.untdrl.model.enemy.status.Slow
@@ -12,6 +13,7 @@ import com.runt9.untdrl.model.enemy.status.StatusEffect
 import com.runt9.untdrl.model.enemy.status.Stun
 import com.runt9.untdrl.model.tower.Tower
 import com.runt9.untdrl.util.ext.BaseSteerable
+import com.runt9.untdrl.util.ext.clamp
 import com.runt9.untdrl.util.ext.degRad
 import ktx.collections.GdxArray
 
@@ -38,6 +40,13 @@ class Enemy(val definition: EnemyDefinition, wave: Int, initialPosition: Vector2
     val xpOnDeath = wave
     var isAlive = true
 
+    private val polygon: Polygon = generatePolygonBounds()
+    val bounds: Polygon get() {
+        polygon.setPosition(position.x, position.y)
+        polygon.rotation = rotation
+        return polygon
+    }
+
     val affectedByTowers = mutableSetOf<Tower>()
 
     val fullPath = LinePath(path, true)
@@ -47,7 +56,8 @@ class Enemy(val definition: EnemyDefinition, wave: Int, initialPosition: Vector2
         alignTolerance = 0f.degRad
         decelerationRadius = 45f.degRad
     }
-    val resistances = definition.resistances.toMap()
+    var resistances = definition.resistances.toMap()
+        private set
 
     val behavior = BlendedSteering(this).apply {
         add(BlendedSteering.BehaviorAndWeight(followPathBehavior, 1f))
@@ -64,5 +74,27 @@ class Enemy(val definition: EnemyDefinition, wave: Int, initialPosition: Vector2
 
     fun <T : StatusEffect<T>> addStatusEffect(effect: T) {
         effect.applyStrategy.apply(statusEffects, effect)
+    }
+
+    fun reduceAllResistances(reduction: Float) {
+        resistances = resistances.mapValues { (it.value - reduction).clamp(0.1f, 1.9f) }
+    }
+
+    private fun generatePolygonBounds(): Polygon {
+        val top = Vector2(0f, 0.25f)
+        val bottomRight = Vector2(0.25f, -0.25f)
+        val bottomCenter = Vector2(0f, -0.125f)
+        val bottomLeft = Vector2(-0.25f, -0.25f)
+
+        return Polygon(FloatArray(8).apply {
+            this[0] = top.x
+            this[1] = top.y
+            this[2] = bottomRight.x
+            this[3] = bottomRight.y
+            this[4] = bottomCenter.x
+            this[5] = bottomCenter.y
+            this[6] = bottomLeft.x
+            this[7] = bottomLeft.y
+        })
     }
 }

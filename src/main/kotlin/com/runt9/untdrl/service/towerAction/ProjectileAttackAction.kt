@@ -38,7 +38,6 @@ class ProjectileAttackAction(
         attack.timer.tick(delta)
         faceTarget.act(delta)
         // TODO: Couple wonky things happening here. Looks like attack timer isn't getting reset, target isn't getting reset, and it's attacking a target that's out of range or dead?
-        //  also won't fire horizontally to the right
         attack.act(delta)
     }
 

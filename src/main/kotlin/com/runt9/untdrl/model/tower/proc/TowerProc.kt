@@ -4,6 +4,7 @@ import com.runt9.untdrl.model.enemy.Enemy
 import com.runt9.untdrl.model.enemy.status.Burn
 import com.runt9.untdrl.model.enemy.status.DamagingStatusEffect
 import com.runt9.untdrl.model.enemy.status.Poison
+import com.runt9.untdrl.model.enemy.status.Slow
 import com.runt9.untdrl.model.enemy.status.Stun
 import com.runt9.untdrl.model.tower.Tower
 import com.runt9.untdrl.model.tower.damage
@@ -17,6 +18,12 @@ interface TowerProc {
 data class StunProc(override val chance: Float, val duration: Float) : TowerProc {
     override fun applyToEnemy(tower: Tower, enemy: Enemy, finalDamage: Float) {
         enemy.addStatusEffect(Stun(tower, duration))
+    }
+}
+
+data class SlowProc(override val chance: Float, val duration: Float, val slowPct: Float) : TowerProc {
+    override fun applyToEnemy(tower: Tower, enemy: Enemy, finalDamage: Float) {
+        enemy.addStatusEffect(Slow(tower, duration, slowPct))
     }
 }
 

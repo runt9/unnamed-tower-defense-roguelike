@@ -16,6 +16,6 @@ class NapalmEffect(
         tower.modifyBaseAndLevelGrowth(DAMAGE, percentModifier = -definition.damageReduction)
 
         tower.procs.remove((tower.action as FlamethrowerAction).burnProc)
-        tower.procs += burnProc(1f, definition.burnDuration, pctOfBaseDamage = definition.burnPctOfBase)
+        tower.addProc(burnProc(1f, definition.burnDuration, pctOfBaseDamage = definition.burnPctOfBase))
     }
 }

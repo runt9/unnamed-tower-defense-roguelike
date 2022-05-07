@@ -190,6 +190,8 @@ class SideBarTowerView(
                 bindUpdatable(vm.canChangeTargetingMode) {
                     clear()
 
+                    if (!vm.canChangeTargetingMode.get()) return@bindUpdatable
+
                     visLabel("Targeting Mode:").cell(growX = true, row = true, padBottom = 2f)
 
                     val selectBox = visSelectBoxOf(TargetingMode.values().toGdxArray())

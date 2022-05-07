@@ -5,7 +5,9 @@ enum class TextureDefinition(textureFile: String) {
     PROTOTYPE_TOWER("bossArrow-tp.png"),
     GOLD_MINE("goldArrow-tp.png"),
     RESEARCH_LAB("blueArrow-tp.png"),
-    ENEMY("redArrow-tp.png");
+    ENEMY("redArrow-tp.png"),
+    PULSE_CANNON_PROJECTILE("pulse-cannon-sound-wave.png"),
+    ;
 
     val assetFile = "texture/$textureFile"
 }

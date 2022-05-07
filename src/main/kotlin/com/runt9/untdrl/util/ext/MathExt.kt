@@ -28,3 +28,5 @@ fun Float.clamp(min: Float? = null, max: Float? = null) = when {
     max != null && max < this -> max
     else -> this
 }
+
+data class Size(val width: Float, val height: Float)

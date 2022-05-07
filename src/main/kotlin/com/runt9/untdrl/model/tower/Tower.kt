@@ -62,6 +62,10 @@ class Tower(val definition: TowerDefinition) : BaseSteerable(Vector2.Zero.cpy(),
         this.onChangeCb = onChangeCb
     }
 
+    fun addProc(proc: TowerProc) {
+        procs += proc
+    }
+
     @Suppress("UNCHECKED_CAST")
     fun addInterceptor(interceptor: TowerInterceptor<out TowerInteraction>) {
         interceptors.computeIfAbsent(interceptor.hook) { mutableListOf() } += interceptor as TowerInterceptor<TowerInteraction>

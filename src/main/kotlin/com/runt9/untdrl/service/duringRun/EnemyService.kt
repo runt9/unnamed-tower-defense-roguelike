@@ -1,6 +1,8 @@
 package com.runt9.untdrl.service.duringRun
 
 import com.badlogic.gdx.ai.steer.SteeringAcceleration
+import com.badlogic.gdx.math.Intersector
+import com.badlogic.gdx.math.Polygon
 import com.badlogic.gdx.math.Vector2
 import com.runt9.untdrl.model.attribute.AttributeType
 import com.runt9.untdrl.model.damage.DamageMap
@@ -26,6 +28,7 @@ import com.runt9.untdrl.service.RandomizerService
 import com.runt9.untdrl.util.ext.unTdRlLogger
 import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.util.framework.event.HandlesEvent
+import ktx.collections.toGdxArray
 import kotlin.math.roundToInt
 
 class EnemyService(
@@ -103,6 +106,8 @@ class EnemyService(
     }
 
     fun collidesWithEnemy(position: Vector2, maxDistance: Float) = enemies.toList().firstOrNull { it.position.dst(position) <= maxDistance }
+    fun collidesWithEnemy(polygon: Polygon) =
+        enemies.toList().firstOrNull { Intersector.intersectPolygons(it.bounds.transformedVertices.toGdxArray(), polygon.transformedVertices.toGdxArray()) }
 
     private fun List<Enemy>.sortByTargetingMode(targetingMode: TargetingMode) = when(targetingMode) {
         TargetingMode.FRONT -> sortedBy { it.numNodesToHome() }

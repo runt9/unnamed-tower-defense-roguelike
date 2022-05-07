@@ -29,7 +29,7 @@ class FlamethrowerAction(
 
     override fun init() {
         super.init()
-        tower.procs += burnProc
+        tower.addProc(burnProc)
     }
 
     override suspend fun act(delta: Float) {

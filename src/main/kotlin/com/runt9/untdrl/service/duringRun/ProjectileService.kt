@@ -30,7 +30,7 @@ class ProjectileService(
     override fun tick(delta: Float) {
         launchOnServiceThread {
             projectiles.toList().forEach { projectile ->
-                val collidedEnemy = enemyService.collidesWithEnemy(projectile.position, 0.25f)
+                val collidedEnemy = enemyService.collidesWithEnemy(projectile.bounds)
 
                 if (collidedEnemy != null && !projectile.collidedWith.contains(collidedEnemy)) {
                     projectile.collidedWith += collidedEnemy

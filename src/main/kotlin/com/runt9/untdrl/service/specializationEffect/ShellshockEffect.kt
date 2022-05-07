@@ -18,6 +18,6 @@ class ShellshockEffect(
     override fun apply() {
         tower.modifyBaseAndLevelGrowth(DAMAGE, percentModifier = -definition.damageReduction)
         towerService.removeAttributes(tower, CRIT_CHANCE, CRIT_MULTI)
-        tower.procs += StunProc(definition.stunChance, definition.stunDuration)
+        tower.addProc(StunProc(definition.stunChance, definition.stunDuration))
     }
 }

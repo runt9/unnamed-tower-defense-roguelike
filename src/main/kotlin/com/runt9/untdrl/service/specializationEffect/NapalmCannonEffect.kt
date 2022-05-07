@@ -19,6 +19,6 @@ class NapalmCannonEffect(
 
         tower.damageTypes.removeIf { it.type == DamageType.PHYSICAL }
         tower.damageTypes.find { it.type == DamageType.HEAT }?.pctOfBase = 1f
-        tower.procs += burnProc(1f, 2f, 0.5f)
+        tower.addProc(burnProc(1f, 2f, 0.5f))
     }
 }

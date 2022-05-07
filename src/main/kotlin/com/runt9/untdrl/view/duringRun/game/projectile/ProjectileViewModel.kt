@@ -7,4 +7,5 @@ class ProjectileViewModel(val projectile: Projectile) : ViewModel() {
     val texture = Binding(projectile.texture)
     val position = Binding(projectile.position.cpy())
     val rotation = Binding(projectile.rotation)
+    val size = Binding(projectile.size)
 }

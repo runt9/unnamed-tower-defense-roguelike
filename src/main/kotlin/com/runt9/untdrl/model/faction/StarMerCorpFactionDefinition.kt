@@ -7,7 +7,7 @@ import com.runt9.untdrl.model.research.unlockTower
 import com.runt9.untdrl.model.tower.definition.flamethrower
 import com.runt9.untdrl.model.tower.definition.mineThrower
 import com.runt9.untdrl.model.tower.definition.propagandaTower
-import com.runt9.untdrl.model.tower.definition.rifleTower
+import com.runt9.untdrl.model.tower.definition.pulseCannon
 import com.runt9.untdrl.model.tower.definition.rocketTower
 import com.runt9.untdrl.service.factionPassiveEffect.RndBudgetEffect
 import com.runt9.untdrl.service.factionPassiveEffect.StockMarketEffect
@@ -35,7 +35,8 @@ import com.runt9.untdrl.service.researchEffect.ScienceFirstApproachEffect
 import com.runt9.untdrl.service.researchEffect.SpreadTheWealthEffect
 
 val baseFaction = faction(1, "StarMerCorp", 25) {
-    startingTower(rifleTower)
+//    startingTower(rifleTower)
+    startingTower(pulseCannon)
 
     goldPassive("Stock Market", StockMarketEffect::class) {
         +"""

@@ -24,7 +24,7 @@ class KineticBallisticsEffect(
         if (tower.action !is ProjectileAttackAction) return
 
         tower.damageTypes += DamageMap(DamageType.ENERGY, definition.lightningDamage)
-        tower.procs += StunProc(definition.stunChance, definition.stunDuration)
+        tower.addProc(StunProc(definition.stunChance, definition.stunDuration))
     }
 
     @HandlesEvent

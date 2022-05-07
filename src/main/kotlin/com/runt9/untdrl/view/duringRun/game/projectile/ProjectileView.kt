@@ -15,13 +15,21 @@ class ProjectileView(
     override fun init() {
         val vm = vm
 
-        setSize(0.25f, 0.25f)
-        setBounds(0f, 0f, 0.25f, 0.25f)
+        bindUpdatable(vm.size) {
+            val projSize = vm.size.get()
+            setSize(projSize.width, projSize.height)
+            setBounds(0f, 0f, projSize.width, projSize.height)
+        }
+
         setOrigin(Align.center)
         bindUpdatable(vm.position) { vm.position.get().apply { setPosition(x, y, Align.center) } }
 
         visImage(assets.loadTexture(vm.texture.get())) {
-            setSize(0.25f, 0.25f)
+            bindUpdatable(vm.size) {
+                val projSize = vm.size.get()
+                setSize(projSize.width, projSize.height)
+            }
+
             setOrigin(Align.center)
             bindUpdatable(vm.rotation) { vm.rotation.get().apply { rotation = this } }
         }
