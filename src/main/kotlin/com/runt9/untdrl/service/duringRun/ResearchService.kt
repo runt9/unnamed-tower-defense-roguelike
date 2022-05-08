@@ -1,6 +1,7 @@
 package com.runt9.untdrl.service.duringRun
 
 import com.runt9.untdrl.model.RunState
+import com.runt9.untdrl.model.event.TowerSpecializationSelected
 import com.runt9.untdrl.model.research.ResearchEffectDefinition
 import com.runt9.untdrl.model.research.ResearchItem
 import com.runt9.untdrl.service.RandomizerService
@@ -8,13 +9,15 @@ import com.runt9.untdrl.util.ext.dynamicInject
 import com.runt9.untdrl.util.ext.dynamicInjectCheckIsSubclassOf
 import com.runt9.untdrl.util.ext.unTdRlLogger
 import com.runt9.untdrl.util.framework.event.EventBus
+import com.runt9.untdrl.util.framework.event.HandlesEvent
 import com.runt9.untdrl.view.duringRun.REROLL_COST
 
 class ResearchService(
     eventBus: EventBus,
     registry: RunServiceRegistry,
     private val runStateService: RunStateService,
-    private val randomizer: RandomizerService
+    private val randomizer: RandomizerService,
+    private val towerService: TowerService
 ) : RunService(eventBus, registry) {
     private val logger = unTdRlLogger()
     lateinit var research: List<ResearchItem>
@@ -62,6 +65,13 @@ class ResearchService(
         }
     }
 
+    @HandlesEvent
+    fun towerSpecialized(event: TowerSpecializationSelected) {
+        runStateService.update {
+            addResearch()
+        }
+    }
+
     private fun RunState.addResearch() {
         val newResearches = research.filter { up ->
             // Exclude research already made available or already applied
@@ -69,7 +79,20 @@ class ResearchService(
             if (appliedResearch.contains(up)) return@filter false
 
             // Only include researches with no dependencies or satisfied dependencies
-            return@filter appliedResearch.map { it.definition }.containsAll(up.dependsOn)
+            if (up.dependsOn.isNotEmpty() && !appliedResearch.map { it.definition }.containsAll(up.dependsOn)) return@filter false
+
+            // Only include researches that have the applicable tower specialization available
+            if (up.dependsOnSpecialization.isNotEmpty()) {
+                val allSpecializationClasses = towerService.allTowers
+                    .mapNotNull { it.appliedSpecialization }
+                    .map { it.effect::class }
+
+                if (!allSpecializationClasses.containsAll(up.dependsOnSpecialization)) {
+                    return@filter false
+                }
+            }
+
+            return@filter true
         }
 
         availableResearch += newResearches

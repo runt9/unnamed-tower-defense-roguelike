@@ -47,17 +47,19 @@ data class OnAttack(val tower: Tower) : TowerInteraction
 data class OnCrit(val tower: Tower, val enemy: Enemy) : TowerInteraction
 data class OnKill(val enemy: Enemy) : TowerInteraction
 
-data class CritRequest(private val tower: Tower) : TowerInteraction {
+data class CritRequest(private val tower: Tower, val enemy: Enemy) : TowerInteraction {
     private val baseCrit = tower.critChance
     private val baseCritMulti = tower.critMulti
 
     private var additionalCritChance = 0f
+    private var critChanceIncreases = mutableListOf<Float>()
     private var additionalCritMulti = 0f
 
-    val totalCritChance get() = baseCrit + additionalCritChance
+    val totalCritChance get() = (baseCrit + additionalCritChance) * (1 + critChanceIncreases.sum())
     val totalCritMulti get() = baseCritMulti + additionalCritMulti
 
     fun addCritChance(chance: Float) { additionalCritChance += chance }
+    fun addCritChanceIncrease(increase: Float) { critChanceIncreases += increase }
     fun addCritMulti(multi: Float) { additionalCritMulti += multi }
 
     override fun toString() = "[Total Crit: ${totalCritChance.displayPercent(1)} | Total Crit Multi: ${totalCritMulti.displayMultiplier()}]"
@@ -67,7 +69,13 @@ enum class DamageSource {
     TOWER, PROJECTILE, MINE, BURN, BLEED, POISON
 }
 
-data class DamageRequest(val source: DamageSource, private val baseDamage: Float, val damageMultiplier: Float = 1f) : TowerInteraction {
+data class DamageRequest(
+    val source: DamageSource,
+    private val baseDamage: Float,
+    val wasCrit: Boolean = false,
+    val damageMultiplier: Float = 1f,
+    val distanceFromImpact: Float = 0f
+) : TowerInteraction {
     private var additionalBaseDamage = 0f
     private var additionalDamageMultiplier = 1f
 
@@ -109,13 +117,16 @@ data class ResistanceRequest(
     private fun damageFromMap(map: DamageMap): Float {
         val damage = damageResult.totalDamage * map.pctOfBase
         val resistance = getResistance(map.type, map.penetration)
-        return damage / resistance
+        // 2f - resistance works out such that a resist of 0.1f is 90% increased damage taken and 1.9f is 90% reduced damage taken
+        // TODO: Confirm if this is actually the logic we want. It might need to be 0.5f is 2x increased taken and 1.5f is 2x reduced taken and somehow scale further from there
+        return damage * (2f - resistance)
     }
 
     private fun getResistance(type: DamageType, penetration: Float): Float {
         val resist = resistances.getOrDefault(type, 1f)
         // Resists are capped from -90% to +90%
-        return (resist - penetration - globalPenetration).clamp(0.1f, 1.9f)
+        val specificPen = specificPenetration[type] ?: 0f
+        return (resist - penetration - globalPenetration - specificPen).clamp(0.1f, 1.9f)
     }
 
     fun addDamageType(type: DamageType, pctOfBase: Float = 1f, penetration: Float = 0f) {

@@ -4,42 +4,44 @@ import com.runt9.untdrl.model.attribute.AttributeModifier
 import com.runt9.untdrl.model.attribute.AttributeType
 import com.runt9.untdrl.model.event.TowerPlacedEvent
 import com.runt9.untdrl.model.event.WaveCompleteEvent
-import com.runt9.untdrl.model.faction.MoraleBoostDefinition
+import com.runt9.untdrl.model.faction.SpottersDefinition
 import com.runt9.untdrl.model.tower.Tower
-import com.runt9.untdrl.model.tower.intercept.onKill
+import com.runt9.untdrl.model.tower.definition.rocketTower
+import com.runt9.untdrl.model.tower.intercept.onAttack
 import com.runt9.untdrl.service.duringRun.TickerRegistry
 import com.runt9.untdrl.service.duringRun.TowerService
 import com.runt9.untdrl.util.ext.Timer
 import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.util.framework.event.HandlesEvent
 
-class MoraleBoostEffect(
+class SpottersEffect(
     override val eventBus: EventBus,
-    private val definition: MoraleBoostDefinition,
+    private val definition: SpottersDefinition,
     private val towerService: TowerService,
     private val tickerRegistry: TickerRegistry
 ) : ResearchEffect {
-    private val trackers = mutableMapOf<Tower, MoraleBoostTracker>()
-    private val interceptor = onKill { tower, _ ->
-        trackers[tower]?.addStack()
-    }
+    private val trackers = mutableMapOf<Tower, SpottersTracker>()
 
     override fun apply() {
-        towerService.forEachTower { tower ->
-            trackers[tower] = MoraleBoostTracker(tower)
-            tower.addInterceptor(interceptor)
-        }
+        towerService.forEachTower(::applyToTower)
 
         tickerRegistry.registerTicker { delta ->
             trackers.forEach { it.value.tick(delta) }
         }
     }
 
+    private fun applyToTower(tower: Tower) {
+        if (tower.definition != rocketTower) return
+
+        trackers[tower] = SpottersTracker(tower)
+        tower.addInterceptor(onAttack { _, _ ->
+            trackers[tower]?.removeStacks()
+        })
+    }
+
     @HandlesEvent
     fun towerPlaced(event: TowerPlacedEvent) {
-        val tower = event.tower
-        trackers[tower] = MoraleBoostTracker(tower)
-        tower.addInterceptor(interceptor)
+        applyToTower(event.tower)
     }
 
     @HandlesEvent(WaveCompleteEvent::class)
@@ -47,28 +49,29 @@ class MoraleBoostEffect(
         trackers.forEach { it.value.reset() }
     }
 
-    inner class MoraleBoostTracker(val tower: Tower) {
-        val timer = Timer(definition.duration)
+    inner class SpottersTracker(val tower: Tower) {
+        val timer = Timer(1f)
         private val stacks = mutableListOf<AttributeModifier>()
 
         fun tick(delta: Float) {
             timer.tick(delta)
-            if (timer.isReady && stacks.isNotEmpty()) {
-                val mod = stacks.removeFirst()
-                tower.attrMods -= mod
-                towerService.recalculateAttrsSync(tower)
+            if (timer.isReady) {
+                addStack()
                 timer.reset(false)
             }
         }
 
-        fun addStack() {
-            if (stacks.size >= definition.maxStacks) return
-
-            val stack = AttributeModifier(AttributeType.ATTACK_SPEED, percentModifier = definition.attackSpeedIncrease, isTemporary = true)
+        private fun addStack() {
+            val stack = AttributeModifier(AttributeType.RANGE, percentModifier = definition.rangeIncrease, isTemporary = true)
             tower.attrMods += stack
             stacks += stack
             towerService.recalculateAttrsSync(tower)
-            timer.reset(false)
+        }
+
+        fun removeStacks() {
+            tower.attrMods -= stacks.toSet()
+            towerService.recalculateAttrsSync(tower)
+            reset()
         }
 
         fun reset() {

@@ -108,6 +108,7 @@ class EnemyService(
     }
 
     fun collidesWithEnemy(position: Vector2, maxDistance: Float) = enemies.toList().firstOrNull { it.position.dst(position) <= maxDistance }
+    // TODO: NPE
     fun collidesWithEnemy(polygon: Polygon) =
         enemies.toList().firstOrNull { Intersector.intersectPolygons(it.bounds.transformedVertices.toGdxArray(), polygon.transformedVertices.toGdxArray()) }
 
@@ -152,24 +153,26 @@ class EnemyService(
         enemies.forEach { enemy ->
             if (!enemy.isAlive) return
 
-            performFullAttack(source, tower, enemy)
+            performFullAttack(source, tower, enemy, enemy.position.dst(pointOfImpact))
         }
     }
 
-    private suspend fun performFullAttack(source: DamageSource, tower: Tower, enemy: Enemy) {
+    private suspend fun performFullAttack(source: DamageSource, tower: Tower, enemy: Enemy, distanceFromImpact: Float) {
         var damageMultiplier = 1f
+        var wasCrit = false
 
         if (tower.hasAttribute(AttributeType.CRIT_CHANCE)) {
-            val critCheck = CritRequest(tower)
+            val critCheck = CritRequest(tower, enemy)
             tower.intercept(InterceptorHook.CRIT_CHECK, critCheck)
             val isCrit = randomizer.percentChance(critCheck.totalCritChance)
             if (isCrit) {
+                wasCrit = true
                 damageMultiplier = critCheck.totalCritMulti
                 tower.intercept(InterceptorHook.ON_CRIT, OnCrit(tower, enemy))
             }
         }
 
-        val damageRequest = damageRequest(tower, source, tower.damage, damageMultiplier)
+        val damageRequest = damageRequest(tower, source, tower.damage, wasCrit, damageMultiplier, distanceFromImpact)
         logger.debug { "Final Damage Request: $damageRequest" }
         val damageResult = damageResult(tower, damageRequest, true)
         logger.debug { "Final Damage Result: $damageResult" }
@@ -179,6 +182,10 @@ class EnemyService(
         takeDamage(enemy, tower, resistanceRequest.finalDamage)
 
         processProcs(tower, enemy, resistanceRequest)
+    }
+
+    fun performTickDamageSync(source: DamageSource, tower: Tower, enemy: Enemy, damageTick: Float, damageTypes: List<DamageMap>, processProcs: Boolean) = launchOnServiceThread {
+        performTickDamage(source, tower, enemy, damageTick, damageTypes, processProcs)
     }
 
     suspend fun performTickDamage(source: DamageSource, tower: Tower, enemy: Enemy, damageTick: Float, damageTypes: List<DamageMap>, processProcs: Boolean) {
@@ -194,8 +201,15 @@ class EnemyService(
             proc.applyToEnemy(tower, enemy, resistanceRequest)
         }
 
-    private fun damageRequest(tower: Tower, source: DamageSource, damage: Float, damageMultiplier: Float = 1f): DamageRequest {
-        val damageRequest = DamageRequest(source, damage, damageMultiplier)
+    private fun damageRequest(
+        tower: Tower,
+        source: DamageSource,
+        damage: Float,
+        wasCrit: Boolean = false,
+        damageMultiplier: Float = 1f,
+        distanceFromImpact: Float = 0f
+    ): DamageRequest {
+        val damageRequest = DamageRequest(source, damage, wasCrit, damageMultiplier, distanceFromImpact)
         tower.intercept(InterceptorHook.BEFORE_DAMAGE_CALC, damageRequest)
         return damageRequest
     }

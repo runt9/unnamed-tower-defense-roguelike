@@ -41,7 +41,7 @@ class LootService(
 
     val lootWeights = mutableMapOf(
         LootType.GOLD to 90,
-        LootType.CONSUMABLE to 500,
+        LootType.CONSUMABLE to 5,
         LootType.CORE to 4,
         LootType.RELIC to 1
     )

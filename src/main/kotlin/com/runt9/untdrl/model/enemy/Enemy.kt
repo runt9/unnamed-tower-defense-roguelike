@@ -64,6 +64,7 @@ class Enemy(val definition: EnemyDefinition, wave: Int, initialPosition: Vector2
         add(BlendedSteering.BehaviorAndWeight(lookBehavior, 1f))
     }
 
+    // TODO: Not initialized
     lateinit var onHpChangeCb: Enemy.() -> Unit
 
     fun onHpChange(onHpChangeCb: Enemy.() -> Unit) {

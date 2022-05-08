@@ -33,7 +33,7 @@ data class RunState(
     var selectableResearch: List<ResearchItem> = listOf(),
     var selectableResearchOptionCount: Int = 5,
     // TODO:
-    var researchAmount: Int = 1000,
+    var researchAmount: Int = 10000,
     var wave: Int = 1,
     var availableTowers: List<TowerDefinition> = listOf(faction.startingTower),
     var relics: List<Relic> = listOf(),

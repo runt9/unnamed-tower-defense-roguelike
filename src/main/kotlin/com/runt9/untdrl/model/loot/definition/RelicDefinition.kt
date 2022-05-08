@@ -6,6 +6,7 @@ import com.runt9.untdrl.model.loot.Rarity.LEGENDARY
 import com.runt9.untdrl.model.loot.Rarity.RARE
 import com.runt9.untdrl.model.loot.Rarity.UNCOMMON
 import com.runt9.untdrl.service.relicEffect.PouchPocketEffect
+import com.runt9.untdrl.service.relicEffect.ToolbeltEffect
 
 interface RelicDefinition {
     val name: String
@@ -41,4 +42,5 @@ fun initRelics() {
     relic("Targeting Reticle", COMMON, "Enemies take 10% increased damage from all sources", TargetingReticleDefinition(0.1f))
     relic("Savings Token", COMMON, "Gain 10 gold per wave at the end of a wave where a tower was not built", SavingsTokenDefinition(10))
     relic("Pouch Pocket", COMMON, "Adds an additional slot for collecting loot", emptyDefinition(PouchPocketEffect::class))
+    relic("Toolbelt", COMMON, "Gain 2 additional Consumable slots", emptyDefinition(ToolbeltEffect::class))
 }

@@ -1,19 +1,19 @@
 package com.runt9.untdrl.service.researchEffect
 
-import com.runt9.untdrl.model.damage.DamageMap
+import com.runt9.untdrl.model.attribute.AttributeModifier
+import com.runt9.untdrl.model.attribute.AttributeType
 import com.runt9.untdrl.model.damage.DamageType
 import com.runt9.untdrl.model.event.TowerPlacedEvent
-import com.runt9.untdrl.model.faction.KineticBallisticsEffectDefinition
+import com.runt9.untdrl.model.faction.HeatRoundsDefinition
 import com.runt9.untdrl.model.tower.Tower
-import com.runt9.untdrl.model.tower.definition.rifleTower
-import com.runt9.untdrl.model.tower.proc.StunProc
+import com.runt9.untdrl.model.tower.definition.rocketTower
 import com.runt9.untdrl.service.duringRun.TowerService
 import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.util.framework.event.HandlesEvent
 
-class KineticBallisticsEffect(
+class HeatRoundsEffect(
     override val eventBus: EventBus,
-    private val definition: KineticBallisticsEffectDefinition,
+    private val definition: HeatRoundsDefinition,
     private val towerService: TowerService
 ) : ResearchEffect {
     override fun apply() {
@@ -21,10 +21,11 @@ class KineticBallisticsEffect(
     }
 
     private fun applyToTower(tower: Tower) {
-        if (tower.definition != rifleTower) return
+        if (tower.definition != rocketTower) return
 
-        tower.damageTypes += DamageMap(DamageType.ENERGY, definition.lightningDamage)
-        tower.addProc(StunProc(definition.stunChance, definition.stunDuration))
+        tower.attrMods += AttributeModifier(AttributeType.DAMAGE, percentModifier = definition.damageIncrease)
+        tower.damageTypes.filter { it.type == DamageType.PHYSICAL || it.type == DamageType.HEAT }.forEach { it.penetration += definition.penetration }
+        towerService.recalculateAttrsSync(tower)
     }
 
     @HandlesEvent

@@ -27,7 +27,7 @@ class ProjectileAttackAction(
     var homing = definition.homing
     var speed = definition.speed
     var delayedHoming = definition.delayedHoming
-    var anglePerProjectile = definition.anglePerProjectile
+    var totalArc = definition.totalArc
 
     override suspend fun act(delta: Float) {
         // Easy way to avoid another callback, just check this every tick, it's not expensive
@@ -42,10 +42,12 @@ class ProjectileAttackAction(
     }
 
     private fun spawnProjectiles() {
-        val projCount = tower.attrs[AttributeType.PROJECTILE_COUNT]?.invoke() ?: 1
-        // TODO: This calculation is wrong, a projectile should shoot from center _only_ if there is an odd number of total projectiles
-        repeat(projCount.toInt()) { i ->
-            var degreesFromCenter = ((i + 1) / 2) * anglePerProjectile
+        val projCount = tower.attrs[AttributeType.PROJECTILE_COUNT]?.invoke()?.toInt() ?: 1
+        val anglePerProjectile = totalArc / projCount.toFloat()
+        val firstOffset = if (projCount % 2 == 0) anglePerProjectile else 0f
+
+        repeat(projCount) { i ->
+            var degreesFromCenter = ((i + 1) / 2) * anglePerProjectile + firstOffset
             if (i % 2 == 0) degreesFromCenter *= -1
             val projectile = Projectile(tower, definition.projectileTexture, faceTarget.target!!, pierce, homing, degreesFromCenter, speed, delayedHoming)
             eventBus.enqueueEventSync(ProjectileSpawnedEvent(projectile))

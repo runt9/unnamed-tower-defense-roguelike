@@ -26,7 +26,6 @@ class MissileSwarmEffect(
         (tower.action as ProjectileAttackAction).apply {
             delayedHoming = 0.5f
             homing = false
-            anglePerProjectile = 40f
         }
     }
 }

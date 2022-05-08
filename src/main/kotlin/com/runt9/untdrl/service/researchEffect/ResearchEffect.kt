@@ -15,4 +15,5 @@ interface ResearchEffect : Disposable {
     override fun dispose() {
         eventBus.unregisterHandlers(this)
     }
+
 }

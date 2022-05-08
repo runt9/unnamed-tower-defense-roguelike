@@ -4,6 +4,11 @@ import com.runt9.untdrl.model.TextureDefinition
 import com.runt9.untdrl.model.research.ResearchEffectDefinition
 import com.runt9.untdrl.model.research.research
 import com.runt9.untdrl.model.research.unlockTower
+import com.runt9.untdrl.model.tower.definition.MinigunSpecialization
+import com.runt9.untdrl.model.tower.definition.MissileSwarmSpecialization
+import com.runt9.untdrl.model.tower.definition.NapalmCannonSpecialization
+import com.runt9.untdrl.model.tower.definition.ShotgunSpecialization
+import com.runt9.untdrl.model.tower.definition.SniperSpecialization
 import com.runt9.untdrl.model.tower.definition.flamethrower
 import com.runt9.untdrl.model.tower.definition.mineThrower
 import com.runt9.untdrl.model.tower.definition.propagandaTower
@@ -14,8 +19,10 @@ import com.runt9.untdrl.service.factionPassiveEffect.RndBudgetEffect
 import com.runt9.untdrl.service.factionPassiveEffect.StockMarketEffect
 import com.runt9.untdrl.service.researchEffect.AdvancedBallisticsEffect
 import com.runt9.untdrl.service.researchEffect.AiTradingEffect
+import com.runt9.untdrl.service.researchEffect.AssassinationEffect
 import com.runt9.untdrl.service.researchEffect.BrainstormingEffect
 import com.runt9.untdrl.service.researchEffect.CarefulInvestmentsEffect
+import com.runt9.untdrl.service.researchEffect.ChainExplosionsEffect
 import com.runt9.untdrl.service.researchEffect.CoreSlotEffect
 import com.runt9.untdrl.service.researchEffect.DividendsEffect
 import com.runt9.untdrl.service.researchEffect.DontRepeatYourselfEffect
@@ -24,23 +31,35 @@ import com.runt9.untdrl.service.researchEffect.EfficientScientistsEffect
 import com.runt9.untdrl.service.researchEffect.EtfsEffect
 import com.runt9.untdrl.service.researchEffect.ExpandingShrapnelEffect
 import com.runt9.untdrl.service.researchEffect.FastLearningEffect
+import com.runt9.untdrl.service.researchEffect.FireSpreadsEffect
 import com.runt9.untdrl.service.researchEffect.GoForBrokeEffect
 import com.runt9.untdrl.service.researchEffect.GoldPurseIncreaseEffect
+import com.runt9.untdrl.service.researchEffect.HeRoundsEffect
+import com.runt9.untdrl.service.researchEffect.HeatRoundsEffect
 import com.runt9.untdrl.service.researchEffect.HighYieldDividendsEffect
+import com.runt9.untdrl.service.researchEffect.HollowPointEffect
 import com.runt9.untdrl.service.researchEffect.KineticBallisticsEffect
 import com.runt9.untdrl.service.researchEffect.LootSlotIncreaseEffect
 import com.runt9.untdrl.service.researchEffect.LuckyCoreValuesEffect
 import com.runt9.untdrl.service.researchEffect.LuckyRarityEffect
 import com.runt9.untdrl.service.researchEffect.MaterialisticEffect
+import com.runt9.untdrl.service.researchEffect.MlrsEffect
 import com.runt9.untdrl.service.researchEffect.MoneyTalksEffect
 import com.runt9.untdrl.service.researchEffect.MoraleBoostEffect
 import com.runt9.untdrl.service.researchEffect.NeuralNetworkEffect
 import com.runt9.untdrl.service.researchEffect.PerformanceBonusEffect
+import com.runt9.untdrl.service.researchEffect.PointOfImpactEffect
+import com.runt9.untdrl.service.researchEffect.PrecisionEffect
+import com.runt9.untdrl.service.researchEffect.RailgunsEffect
 import com.runt9.untdrl.service.researchEffect.RevenueSharingEffect
 import com.runt9.untdrl.service.researchEffect.RichGetRicherEffect
+import com.runt9.untdrl.service.researchEffect.SaltInTheWoundEffect
 import com.runt9.untdrl.service.researchEffect.ScienceFirstApproachEffect
 import com.runt9.untdrl.service.researchEffect.ShrapnelEffect
+import com.runt9.untdrl.service.researchEffect.SpottersEffect
 import com.runt9.untdrl.service.researchEffect.SpreadTheWealthEffect
+import com.runt9.untdrl.service.researchEffect.TwelveGaugeEffect
+import com.runt9.untdrl.service.researchEffect.VulcanCannonsEffect
 
 val baseFaction = faction(1, "StarMerCorp", 25) {
     startingTower(rifleTower)
@@ -64,11 +83,11 @@ val baseFaction = faction(1, "StarMerCorp", 25) {
         """.trimIndent()
     }
 
-    unlockTower(rocketTower, 15)
-    unlockTower(propagandaTower, 25)
-    unlockTower(flamethrower, 35)
-    unlockTower(mineThrower, 45)
-    unlockTower(pulseCannon, 50)
+    val rocketUnlock = unlockTower(rocketTower, 15)
+    val propagandaUnlock = unlockTower(propagandaTower, 25)
+    val flamethrowerUnlock = unlockTower(flamethrower, 35)
+    val mineThrowerUnlock = unlockTower(mineThrower, 45)
+    val pulseCannonUnlock = unlockTower(pulseCannon, 50)
 
     val carefulInvestments = research("Careful Investments", TextureDefinition.PROJECTILE, 10) {
         +"All Stock Market risk levels have their negative minimum returns halved (e.g. -25% to -12.5%)."
@@ -245,21 +264,106 @@ val baseFaction = faction(1, "StarMerCorp", 25) {
         dependsOn(coreSlots1)
     }
 
+    val hollowPoint = research("Hollow Point", TextureDefinition.ENEMY, 30) {
+        +"Rifle Towers do an additional 1.5x damage with Bleed"
+        +HollowPointDefinition(0.5f)
+        dependsOn(shrapnel)
+    }
+
     val advBallistics = research("Advanced Ballistics", TextureDefinition.ENEMY, 10) {
         +"All projectiles do 25% more damage, penetrate 10% of enemy resistances, and pierce an additional enemy."
         +AdvancedBallisticsEffectDefinition(0.25f, 0.1f)
     }
 
-    val kineticBallistics = research("Kinetic Ballistics", TextureDefinition.ENEMY, 50) {
+    val precision = research("Precision", TextureDefinition.PROJECTILE, 45) {
+        +"Rifle Towers gain a stacking +1% crit chance bonus on non-crit. Bonus resets on crit."
+        +PrecisionDefinition(0.01f)
         dependsOn(advBallistics)
+    }
+
+    val saltInTheWound = research("Salt in the Wound", TextureDefinition.ENEMY, 50) {
+        +"When a Rifle Tower crits an enemy affected by a bleed, the bleed with the highest remaining damage is removed and the remaining damage is dealt instantly and increased by 25%"
+        +SaltInTheWoundDefinition(0.25f)
+        dependsOn(hollowPoint, precision)
+    }
+
+    val kineticBallistics = research("Kinetic Ballistics", TextureDefinition.ENEMY, 50) {
         +"All projectiles do an additional 25% of base damage as Energy damage and have a 5% chance to stun all enemies hit for 0.75s."
         +KineticBallisticsEffectDefinition(0.25f, 0.05f, 0.75f)
+        dependsOn(advBallistics)
+    }
+
+    val railguns = research("Railguns", TextureDefinition.PROJECTILE, 40) {
+        +"Sniper towers deal 50% increased damage and their bullets pierce all enemies"
+        +RailgunsDefinition(50f)
+        dependsOn(kineticBallistics)
+        dependsOn(SniperSpecialization::class)
+    }
+
+    val assassination = research("Assassination", TextureDefinition.ENEMY, 30) {
+        +"Sniper towers gain 2% increased crit chance per 1% enemy missing HP"
+        +AssassinationDefinition(0.02f)
+        dependsOn(SniperSpecialization::class)
+    }
+
+    val vulcanCannons = research("Vulcan Cannons", TextureDefinition.PROTOTYPE_TOWER, 50) {
+        +"Minigun towers penetrate 5% of enemy Physical resistance per stack of the Minigun's attack speed buff"
+        +VulcanCannonsDefinition(0.05f)
+        dependsOn(advBallistics)
+        dependsOn(MinigunSpecialization::class)
+    }
+
+    val twelveGauge = research("12 Gauge", TextureDefinition.PROTOTYPE_TOWER, 20) {
+        +"Shotgun towers have 20% reduced firing arc, fire 2 additional projectiles, and deal 25% increased damage"
+        +TwelveGaugeDefinition(0.2f, 2, 25f)
+        dependsOn(ShotgunSpecialization::class)
+    }
+
+    val mlrs = research("MLRS", TextureDefinition.PROTOTYPE_TOWER, 35) {
+        +"Missile Swarm towers lose homing but have 200% increased projectile count"
+        +MlrsDefinition(200f)
+        dependsOn(rocketUnlock)
+        dependsOn(MissileSwarmSpecialization::class)
+    }
+
+    val fireSpreads = research("Fire Spreads", TextureDefinition.ENEMY, 50) {
+        +"When an enemy dies while affected by a burn from a Napalm Cannon, that burn spreads to nearby enemies."
+        emptyDefinition(FireSpreadsEffect::class)
+        dependsOn(rocketUnlock)
+        dependsOn(NapalmCannonSpecialization::class)
+    }
+
+    val spotters = research("Spotters", TextureDefinition.PROJECTILE, 20) {
+        +"Rocket towers gain 10% increased range each second not firing. Bonus is lost after firing a shot"
+        +SpottersDefinition(10f)
+        dependsOn(rocketUnlock)
+    }
+
+    val heRounds = research("HE Rounds", TextureDefinition.ENEMY, 15) {
+        +"Rocket Towers gain 25% increased AoE and Damage"
+        +HeRoundsDefinition(25f)
+        dependsOn(rocketUnlock)
+    }
+
+    val heatRounds = research("HEAT Rounds", TextureDefinition.ENEMY, 35) {
+        +"Rocket Towers gain 25% increased Damage and penetrate 20% of enemy Physical and Heat resistances"
+        +HeatRoundsDefinition(25f, 0.2f)
+        dependsOn(rocketUnlock, heRounds)
+    }
+
+    val pointOfImpact = research("Point of Impact", TextureDefinition.PROTOTYPE_TOWER, 40) {
+        +"Damage dealt to enemies by Rocket Towers is increased by 50% at the point of impact, decreasing to 0% at the edge of the explosion"
+        +PointOfImpactDefinition(0.5f)
+        dependsOn(rocketUnlock, heRounds)
+    }
+
+    val chainExplosions = research("Chain Explosions", TextureDefinition.ENEMY, 50) {
+        +"Enemies killed by Rocket towers explode, dealing 25% of their maximum HP as Physical and Heat damage to nearby enemies"
+        +ChainExplosionsDefinition(0.25f)
+        dependsOn(rocketUnlock, heatRounds)
     }
 }
 
-class AdvancedBallisticsEffectDefinition(val damagePct: Float, val penetration: Float) : ResearchEffectDefinition(AdvancedBallisticsEffect::class)
-class KineticBallisticsEffectDefinition(val lightningDamage: Float, val stunChance: Float, val stunDuration: Float) :
-    ResearchEffectDefinition(KineticBallisticsEffect::class)
 class CarefulInvestmentsEffectDefinition : ResearchEffectDefinition(CarefulInvestmentsEffect::class)
 class RichGetRicherEffectDefinition(val goldPerPct: Int) : ResearchEffectDefinition(RichGetRicherEffect::class)
 class NeuralNetworkEffectDefinition(val profitPctPerWave: Float) : ResearchEffectDefinition(NeuralNetworkEffect::class)
@@ -277,3 +381,18 @@ class MoneyTalksDefinition(val goldPerDmg: Int) : ResearchEffectDefinition(Money
 class MoraleBoostDefinition(val attackSpeedIncrease: Float, val duration: Float, val maxStacks: Int) : ResearchEffectDefinition(MoraleBoostEffect::class)
 class ShrapnelDefinition(val bleedChance: Float, val duration: Float, val pctOfPhysicalDamage: Float) : ResearchEffectDefinition(ShrapnelEffect::class)
 class ExpandingShrapnelDefinition(val durationMod: Float) : ResearchEffectDefinition(ExpandingShrapnelEffect::class)
+class HollowPointDefinition(val bleedDmgMulti: Float) : ResearchEffectDefinition(HollowPointEffect::class)
+class AdvancedBallisticsEffectDefinition(val damagePct: Float, val penetration: Float) : ResearchEffectDefinition(AdvancedBallisticsEffect::class)
+class PrecisionDefinition(val critBonus: Float) : ResearchEffectDefinition(PrecisionEffect::class)
+class SaltInTheWoundDefinition(val damageMultiplier: Float) : ResearchEffectDefinition(SaltInTheWoundEffect::class)
+class KineticBallisticsEffectDefinition(val lightningDamage: Float, val stunChance: Float, val stunDuration: Float) : ResearchEffectDefinition(KineticBallisticsEffect::class)
+class RailgunsDefinition(val damageIncrease: Float) : ResearchEffectDefinition(RailgunsEffect::class)
+class AssassinationDefinition(val critPerMissingHp: Float) : ResearchEffectDefinition(AssassinationEffect::class)
+class VulcanCannonsDefinition(val penPerStack: Float) : ResearchEffectDefinition(VulcanCannonsEffect::class)
+class TwelveGaugeDefinition(val arcReduction: Float, val bonusProj: Int, val damageIncrease: Float) : ResearchEffectDefinition(TwelveGaugeEffect::class)
+class MlrsDefinition(val projIncrease: Float) : ResearchEffectDefinition(MlrsEffect::class)
+class SpottersDefinition(val rangeIncrease: Float) : ResearchEffectDefinition(SpottersEffect::class)
+class HeRoundsDefinition(val attrIncrease: Float) : ResearchEffectDefinition(HeRoundsEffect::class)
+class HeatRoundsDefinition(val damageIncrease: Float, val penetration: Float) : ResearchEffectDefinition(HeatRoundsEffect::class)
+class PointOfImpactDefinition(val damageIncrease: Float) : ResearchEffectDefinition(PointOfImpactEffect::class)
+class ChainExplosionsDefinition(val lifePct: Float) : ResearchEffectDefinition(ChainExplosionsEffect::class)

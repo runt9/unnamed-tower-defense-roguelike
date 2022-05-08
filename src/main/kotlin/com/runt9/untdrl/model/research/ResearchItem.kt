@@ -13,4 +13,5 @@ class ResearchItem(val definition: ResearchDefinition, var discount: Float = 0f)
     val description = definition.description
     val effect = definition.effect
     val dependsOn = definition.dependsOn
+    val dependsOnSpecialization = definition.dependsOnSpecialization
 }

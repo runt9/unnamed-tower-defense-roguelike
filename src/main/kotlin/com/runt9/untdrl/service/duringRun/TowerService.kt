@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Vector2
 import com.runt9.untdrl.model.attribute.AttributeModificationType.FLAT
 import com.runt9.untdrl.model.attribute.AttributeType
 import com.runt9.untdrl.model.event.TowerPlacedEvent
+import com.runt9.untdrl.model.event.TowerSpecializationSelected
 import com.runt9.untdrl.model.event.WaveCompleteEvent
 import com.runt9.untdrl.model.loot.TowerCore
 import com.runt9.untdrl.model.loot.definition.LegendaryPassiveEffectDefinition
@@ -23,9 +24,10 @@ import com.runt9.untdrl.view.duringRun.MAX_TOWER_LEVEL
 import com.runt9.untdrl.view.duringRun.TOWER_SPECIALIZATION_LEVEL
 import kotlin.math.roundToInt
 
-class TowerService(eventBus: EventBus, registry: RunServiceRegistry) : RunService(eventBus, registry) {
+class TowerService(private val eventBus: EventBus, registry: RunServiceRegistry) : RunService(eventBus, registry) {
     private val logger = unTdRlLogger()
     private val towers = mutableListOf<Tower>()
+    val allTowers get() = towers.toList()
     private val towerChangeCbs = mutableMapOf<Int, MutableList<suspend (Tower) -> Unit>>()
     private val globalXpModifiers = mutableListOf<Float>()
     private val globalAttrGrowthModifiers = mutableListOf<Float>()
@@ -70,14 +72,14 @@ class TowerService(eventBus: EventBus, registry: RunServiceRegistry) : RunServic
     }
 
     fun forEachTower(fn: (Tower) -> Unit) {
-        towers.toList().forEach {
+        allTowers.forEach {
             fn(it)
         }
     }
 
     override fun tick(delta: Float) {
         launchOnServiceThread {
-            towers.toList().forEach { tower ->
+            allTowers.forEach { tower ->
                 tower.action.act(delta)
             }
         }
@@ -205,8 +207,10 @@ class TowerService(eventBus: EventBus, registry: RunServiceRegistry) : RunServic
             specializationEffect.apply()
 
             appliedSpecialization = specialization
+            appliedSpecializationEffect = specializationEffect
 
             recalculateAttrs(this)
+            eventBus.enqueueEvent(TowerSpecializationSelected(this, specialization))
         }
     }
 

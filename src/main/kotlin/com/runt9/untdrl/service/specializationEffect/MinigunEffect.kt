@@ -25,6 +25,7 @@ class MinigunEffect(
     private val attackSpeedBoostPerShot = definition.attackSpeedBoostPerShot
     private var currentAttackSpeedBoost = 0f
     private val modifierStacks = mutableListOf<AttributeModifier>()
+    val stackCount get() = modifierStacks.size
     private val decayTimer = Timer(2f)
 
     val tick: Ticker = { delta ->
@@ -74,5 +75,6 @@ class MinigunEffect(
         decayTimer.reset(false)
         towerService.recalculateAttrsSync(tower)
         currentAttackSpeedBoost = 0f
+        modifierStacks.clear()
     }
 }

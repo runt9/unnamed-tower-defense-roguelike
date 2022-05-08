@@ -1,19 +1,18 @@
 package com.runt9.untdrl.service.researchEffect
 
-import com.runt9.untdrl.model.damage.DamageMap
-import com.runt9.untdrl.model.damage.DamageType
 import com.runt9.untdrl.model.event.TowerPlacedEvent
-import com.runt9.untdrl.model.faction.KineticBallisticsEffectDefinition
+import com.runt9.untdrl.model.faction.HollowPointDefinition
 import com.runt9.untdrl.model.tower.Tower
 import com.runt9.untdrl.model.tower.definition.rifleTower
-import com.runt9.untdrl.model.tower.proc.StunProc
+import com.runt9.untdrl.model.tower.intercept.DamageSource
+import com.runt9.untdrl.model.tower.intercept.beforeDamage
 import com.runt9.untdrl.service.duringRun.TowerService
 import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.util.framework.event.HandlesEvent
 
-class KineticBallisticsEffect(
+class HollowPointEffect(
     override val eventBus: EventBus,
-    private val definition: KineticBallisticsEffectDefinition,
+    private val definition: HollowPointDefinition,
     private val towerService: TowerService
 ) : ResearchEffect {
     override fun apply() {
@@ -23,8 +22,9 @@ class KineticBallisticsEffect(
     private fun applyToTower(tower: Tower) {
         if (tower.definition != rifleTower) return
 
-        tower.damageTypes += DamageMap(DamageType.ENERGY, definition.lightningDamage)
-        tower.addProc(StunProc(definition.stunChance, definition.stunDuration))
+        tower.addInterceptor(beforeDamage(DamageSource.BLEED) { _, dr ->
+            dr.addDamageMultiplier(definition.bleedDmgMulti)
+        })
     }
 
     @HandlesEvent

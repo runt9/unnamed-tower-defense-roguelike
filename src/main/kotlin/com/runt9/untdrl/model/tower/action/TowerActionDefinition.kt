@@ -17,5 +17,5 @@ class ProjectileAttackActionDefinition(
     val speed: Float = 10f,
     val homing: Boolean = true,
     val delayedHoming: Float = 0f,
-    val anglePerProjectile: Float = 20f
+    val totalArc: Float = 90f
 ) : TowerActionDefinition(ProjectileAttackAction::class)

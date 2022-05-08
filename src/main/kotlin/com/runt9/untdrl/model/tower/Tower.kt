@@ -13,6 +13,8 @@ import com.runt9.untdrl.model.tower.intercept.TowerInteraction
 import com.runt9.untdrl.model.tower.intercept.TowerInterceptor
 import com.runt9.untdrl.model.tower.proc.TowerProc
 import com.runt9.untdrl.model.tower.specialization.TowerSpecializationDefinition
+import com.runt9.untdrl.model.tower.specialization.TowerSpecializationEffectDefinition
+import com.runt9.untdrl.service.specializationEffect.TowerSpecializationEffect
 import com.runt9.untdrl.service.towerAction.TowerAction
 import com.runt9.untdrl.util.ext.BaseSteerable
 import kotlin.math.max
@@ -49,6 +51,7 @@ class Tower(val definition: TowerDefinition) : BaseSteerable(Vector2.Zero.cpy(),
     var canSpecialize = true
     val specializations = definition.specializations
     var appliedSpecialization: TowerSpecializationDefinition? = null
+    var appliedSpecializationEffect: TowerSpecializationEffect? = null
 
     val localXpModifiers = mutableListOf<Float>()
     val affectedByTowers = mutableSetOf<Tower>()
@@ -101,6 +104,8 @@ class Tower(val definition: TowerDefinition) : BaseSteerable(Vector2.Zero.cpy(),
             attrMods += AttributeModifier(type, flatModifier, percentModifier, isTemporary)
         }
     }
+
+    inline fun <reified T : TowerSpecializationEffectDefinition> isSpecialization() = appliedSpecialization?.effect is T
 }
 
 fun Map<AttributeType, Attribute>.mapToFloats() = mapValues { (_, v) -> v() }
