@@ -16,6 +16,10 @@ abstract class StatusEffect<S : StatusEffect<S>>(val source: Tower, val duration
     open fun tick(delta: Float) {
         timer.tick(delta)
     }
+
+    open fun reset() {
+        timer.reset(false)
+    }
 }
 
 abstract class DamagingStatusEffect<S : StatusEffect<S>>(
@@ -33,7 +37,7 @@ abstract class DamagingStatusEffect<S : StatusEffect<S>>(
     override fun tick(delta: Float) {
         super.tick(delta)
 
-        // RemainingDamage is a way to handle odd rounding errors so we don't accidentally do more damage than we're supposed to
+        // RemainingDamage is a way to handle odd rounding errors, so we don't accidentally do more damage than we're supposed to
         if (remainingDamage <= 0) {
             damageThisTick = 0f
             return
@@ -41,6 +45,12 @@ abstract class DamagingStatusEffect<S : StatusEffect<S>>(
 
         damageThisTick = damagePerSecond * delta
         remainingDamage -= damageThisTick
+    }
+
+    override fun reset() {
+        super.reset()
+        remainingDamage = totalDamage
+        damageThisTick = 0f
     }
 }
 

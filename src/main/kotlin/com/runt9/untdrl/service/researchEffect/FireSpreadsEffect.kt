@@ -25,9 +25,11 @@ class FireSpreadsEffect(
 
         if (burns.isEmpty()) return
 
-        burns.forEach { it.timer.reset(false) }
+        burns.forEach { it.reset() }
 
         enemyService.enemiesInRange(event.enemy.position, NEARBY).forEach { enemy ->
+            // TODO: This is wrong, adding the same instance of the same status effect to multiple enemies will cause it to tick multiple times
+            //  per tick and do less damage and go away sooner
             burns.forEach { enemy.addStatusEffect(it) }
         }
     }

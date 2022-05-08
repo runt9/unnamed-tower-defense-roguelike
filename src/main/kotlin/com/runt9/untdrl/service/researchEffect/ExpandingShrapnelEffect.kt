@@ -16,7 +16,7 @@ class ExpandingShrapnelEffect(
 ) : ResearchEffect {
     private val critInterceptor = onCrit { _, onCrit ->
         onCrit.enemy.statusEffects.filterIsInstance<Bleed>().forEach { bleed ->
-            bleed.timer.reset(false)
+            bleed.reset()
         }
     }
 

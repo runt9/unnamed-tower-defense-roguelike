@@ -15,7 +15,9 @@ class NapalmEffect(
     override fun apply() {
         tower.modifyBaseAndLevelGrowth(DAMAGE, percentModifier = -definition.damageReduction)
 
-        tower.procs.remove((tower.action as FlamethrowerAction).burnProc)
+        val action = tower.action as FlamethrowerAction
+        action.angle *= 0.75f
+        tower.procs.remove(action.burnProc)
         tower.addProc(burnProc(1f, definition.burnDuration, pctOfBaseDamage = definition.burnPctOfBase))
     }
 }

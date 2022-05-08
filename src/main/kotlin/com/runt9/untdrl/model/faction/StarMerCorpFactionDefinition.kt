@@ -45,6 +45,8 @@ import com.runt9.untdrl.service.researchEffect.HeRoundsEffect
 import com.runt9.untdrl.service.researchEffect.HeatRoundsEffect
 import com.runt9.untdrl.service.researchEffect.HighYieldDividendsEffect
 import com.runt9.untdrl.service.researchEffect.HollowPointEffect
+import com.runt9.untdrl.service.researchEffect.HotterThanTheSunEffect
+import com.runt9.untdrl.service.researchEffect.ImprovedPropulsionEffect
 import com.runt9.untdrl.service.researchEffect.KineticBallisticsEffect
 import com.runt9.untdrl.service.researchEffect.LootSlotIncreaseEffect
 import com.runt9.untdrl.service.researchEffect.LuckyCoreValuesEffect
@@ -417,6 +419,24 @@ val baseFaction = faction(1, "StarMerCorp", 25) {
         +PowerInNumbersDefinition(5f)
         dependsOn(propagandaUnlock)
     }
+
+//    val everlastingFire = research("Everlasting Fire", TextureDefinition.ENEMY, 20) {
+//        +"Burn applied by a Napalm Flamethrower tower no longer expires"
+//        emptyDefinition(EverlastingFireEffect::class)
+//        dependsOn(flamethrowerUnlock)
+//    }
+
+    val improvedPropulsion = research("Improved Propulsion", TextureDefinition.ENEMY, 15) {
+        +"Flamethrowers gain 25% increased range and 25% decreased firing arc"
+        +ImprovedPropulsionDefinition(25f, 0.25f)
+        dependsOn(flamethrowerUnlock)
+    }
+
+    val hotterThanTheSun = research("Hotter Than the Sun", TextureDefinition.ENEMY, 40) {
+        +"Flamethrowers deal 2.5% increased damage for each second in combat. Bonus decays each second not in combat"
+        +HotterThanTheSunDefinition(0.025f)
+        dependsOn(flamethrowerUnlock)
+    }
 }
 
 class CarefulInvestmentsEffectDefinition : ResearchEffectDefinition(CarefulInvestmentsEffect::class)
@@ -457,3 +477,5 @@ class UndyingFervorDefinition(val remainingBonus: Float) : ResearchEffectDefinit
 class EntertainmentNewsDefinition(val hitDamagePct: Float, val duration: Float) : ResearchEffectDefinition(EntertainmentNewsEffect::class)
 class GrowTheCultDefinition(val researchPerTower: Float) : ResearchEffectDefinition(GrowTheCultEffect::class)
 class PowerInNumbersDefinition(val buffEffectPerTower: Float) : ResearchEffectDefinition(PowerInNumbersEffect::class)
+class ImprovedPropulsionDefinition(val rangeIncrease: Float, val angleDecrease: Float) : ResearchEffectDefinition(ImprovedPropulsionEffect::class)
+class HotterThanTheSunDefinition(val damagePerStack: Float) : ResearchEffectDefinition(HotterThanTheSunEffect::class)

@@ -74,6 +74,7 @@ class StockMarketEffect(
         }
     }
 
+    // TODO: Can fire twice somehow...?
     @HandlesEvent(WaveCompleteEvent::class)
     fun waveEnd() {
         val riskOutput = rollProfitCheck()

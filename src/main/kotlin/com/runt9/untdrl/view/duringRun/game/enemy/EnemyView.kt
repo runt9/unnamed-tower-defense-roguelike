@@ -37,7 +37,7 @@ class EnemyView(
 
                 bindUpdatable(vm.hpPercent) {
                     if (!vm.enemy.isAlive) return@bindUpdatable
-                    // TODO: NPE
+                    // TODO: NPE/array is empty
                     value = vm.hpPercent.get()
                 }
 
