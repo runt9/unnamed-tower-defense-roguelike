@@ -42,7 +42,7 @@ class ShrapnelEffect(
 
     override fun dispose() {
         super.dispose()
-        Injector.removeProvider(ShrapnelEffect::class.java)
+        Injector.remove<ShrapnelEffect>()
     }
 
     @HandlesEvent

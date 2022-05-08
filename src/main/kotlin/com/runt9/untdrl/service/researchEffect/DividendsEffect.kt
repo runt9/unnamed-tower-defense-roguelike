@@ -6,7 +6,6 @@ import com.runt9.untdrl.service.duringRun.RunStateService
 import com.runt9.untdrl.service.duringRun.Ticker
 import com.runt9.untdrl.service.duringRun.TickerRegistry
 import com.runt9.untdrl.service.factionPassiveEffect.StockMarketEffect
-import com.runt9.untdrl.util.ext.lazyInject
 import com.runt9.untdrl.util.framework.event.EventBus
 import kotlin.math.roundToInt
 
@@ -37,6 +36,6 @@ class DividendsEffect(
     override fun dispose() {
         super.dispose()
         tickerRegistry.unregisterTicker(ticker)
-        Injector.removeProvider(DividendsEffect::class.java)
+        Injector.remove<DividendsEffect>()
     }
 }

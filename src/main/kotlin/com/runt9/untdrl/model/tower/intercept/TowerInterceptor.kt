@@ -66,7 +66,7 @@ data class CritRequest(private val tower: Tower, val enemy: Enemy) : TowerIntera
 }
 
 enum class DamageSource {
-    TOWER, PROJECTILE, MINE, BURN, BLEED, POISON
+    TOWER, PROJECTILE, MINE, BURN, BLEED, POISON, OTHER_DOT
 }
 
 data class DamageRequest(

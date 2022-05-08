@@ -27,19 +27,23 @@ class MoneyTalksEffect(
         val pctIncrease = (runStateService.load().gold.toFloat() / definition.goldPerDmg).roundToInt().toFloat()
 
         if (pctIncrease != attrMod.percentModifier) {
+            val newAttrMod = AttributeModifier(AttributeType.DAMAGE, percentModifier = pctIncrease)
+
             towerService.forEachTower { t ->
-                t.attrMods -= attrMod
-                attrMod = AttributeModifier(AttributeType.DAMAGE, percentModifier = pctIncrease)
-                t.attrMods += attrMod
+                // TODO: Don't mess with modifiers for towers without damage attr
+                t.removeAttributeModifier(attrMod)
+                t.addAttributeModifier(newAttrMod)
                 towerService.recalculateAttrsSync(t)
             }
+
+            attrMod = newAttrMod
         }
     }
 
     @HandlesEvent
     suspend fun towerPlaced(event: TowerPlacedEvent) {
         val tower = event.tower
-        tower.attrMods += attrMod
+        tower.addAttributeModifier(attrMod)
         towerService.recalculateAttrs(tower)
     }
 

@@ -33,11 +33,11 @@ class PrecisionEffect(
             val myStacks = stacks[tower]!!
 
             if (dr.wasCrit) {
-                tower.attrMods -= myStacks.toSet()
+                tower.removeAttributeModifiers(myStacks)
                 myStacks.clear()
             } else {
                 val stack = AttributeModifier(AttributeType.CRIT_CHANCE, flatModifier = definition.critBonus, isTemporary = true)
-                tower.attrMods += stack
+                tower.addAttributeModifier(stack)
                 myStacks += stack
             }
 

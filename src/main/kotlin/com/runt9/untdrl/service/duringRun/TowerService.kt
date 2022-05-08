@@ -11,6 +11,7 @@ import com.runt9.untdrl.model.loot.definition.LegendaryPassiveEffectDefinition
 import com.runt9.untdrl.model.tower.Tower
 import com.runt9.untdrl.model.tower.action.TowerActionDefinition
 import com.runt9.untdrl.model.tower.definition.TowerDefinition
+import com.runt9.untdrl.model.tower.range
 import com.runt9.untdrl.model.tower.specialization.TowerSpecializationDefinition
 import com.runt9.untdrl.model.tower.specialization.TowerSpecializationEffectDefinition
 import com.runt9.untdrl.service.towerAction.TowerAction
@@ -150,6 +151,7 @@ class TowerService(private val eventBus: EventBus, registry: RunServiceRegistry)
     }
 
     suspend fun recalculateAttrs(tower: Tower) {
+        var anyChanged = false
         tower.apply {
             val mods = attrMods.toList()
             attrs.forEach { (type, attr) ->
@@ -170,17 +172,20 @@ class TowerService(private val eventBus: EventBus, registry: RunServiceRegistry)
                 val newValue = ((levelGrownBaseValue + totalFlat) * (1 + (totalPercent / 100)))
                 if (newValue != attr()) {
                     attr(newValue)
+                    anyChanged = true
                 }
             }
         }
 
-        tower.changed()
+        if (anyChanged) {
+            tower.changed()
+        }
     }
 
     suspend fun addCore(id: Int, core: TowerCore) = launchOnServiceThread {
         withTower(id) {
             cores += core
-            attrMods += core.modifiers
+            addAttributeModifiers(core.modifiers)
             if (core.passive != null) {
                 val passiveEffect = dynamicInject(
                     core.passive.effect.effectClass,
@@ -227,6 +232,7 @@ class TowerService(private val eventBus: EventBus, registry: RunServiceRegistry)
         changed()
     }
 
+    fun towersInRange(tower: Tower) = towersInRange(tower.position, tower.range).filter { it != tower }
     fun towersInRange(position: Vector2, range: Float) = towers.filter { it.position.dst(position) <= range }
 
     fun removeAttributes(tower: Tower, vararg attrsToRemove: AttributeType) = launchOnServiceThread {

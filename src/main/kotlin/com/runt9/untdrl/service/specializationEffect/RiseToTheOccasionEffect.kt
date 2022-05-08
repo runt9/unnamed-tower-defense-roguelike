@@ -7,12 +7,12 @@ import com.runt9.untdrl.model.attribute.AttributeType.DAMAGE
 import com.runt9.untdrl.model.event.WaveCompleteEvent
 import com.runt9.untdrl.model.tower.Tower
 import com.runt9.untdrl.model.tower.definition.RiseToTheOccasionDefinition
-import com.runt9.untdrl.service.duringRun.Ticker
 import com.runt9.untdrl.service.duringRun.TickerRegistry
 import com.runt9.untdrl.service.duringRun.TowerService
-import com.runt9.untdrl.service.towerAction.AttributeBuffAction
+import com.runt9.untdrl.service.towerAction.PropagandaTowerAction
 import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.util.framework.event.HandlesEvent
+import kotlin.math.roundToInt
 
 class RiseToTheOccasionEffect(
     override val eventBus: EventBus,
@@ -22,39 +22,35 @@ class RiseToTheOccasionEffect(
     private val towerService: TowerService
 ) : TowerSpecializationEffect {
     private var stacks = 0
-
-    private lateinit var ticker: Ticker
+    var retainStacksPct = 0f
 
     override fun apply() {
-        ticker = tickerRegistry.registerTimer(1f, action = ::addStack)
+        tickerRegistry.registerTimer(1f, action = ::addStack)
         towerService.removeAttributes(tower, BUFF_DEBUFF_EFFECT)
-        removeAllStacks()
-    }
-
-    override fun dispose() {
-        tickerRegistry.unregisterTicker(ticker)
-        super.dispose()
+        stacks = 0
+        applyModifiers()
     }
 
     @HandlesEvent(WaveCompleteEvent::class)
     fun removeAllStacks() {
-        stacks = 0
-        (tower.action as AttributeBuffAction).apply {
-            attrModification.baseModifiers = emptySet()
-            recalculateModifiers()
-        }
+        stacks = (stacks.toFloat() * retainStacksPct).roundToInt()
+        applyModifiers()
     }
 
     private fun addStack() {
         stacks++
+        applyModifiers()
+    }
 
-        (tower.action as AttributeBuffAction).apply {
-            attrModification.baseModifiers = setOf(
-                AttributeModifier(DAMAGE, percentModifier = stacks * definition.stackPerSecond),
-                AttributeModifier(ATTACK_SPEED, percentModifier = stacks * definition.stackPerSecond)
-            )
-
+    private fun applyModifiers() {
+        (tower.action as PropagandaTowerAction).apply {
+            attrModification.baseModifiers = getModifiers()
             recalculateModifiers()
         }
     }
+
+    private fun getModifiers() = if (stacks == 0) emptySet() else setOf(
+        AttributeModifier(DAMAGE, percentModifier = stacks * definition.stackPerSecond),
+        AttributeModifier(ATTACK_SPEED, percentModifier = stacks * definition.stackPerSecond)
+    )
 }

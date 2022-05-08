@@ -4,15 +4,14 @@ import com.runt9.untdrl.model.attribute.AttributeModifier
 import com.runt9.untdrl.model.attribute.AttributeType
 import com.runt9.untdrl.model.event.TowerPlacedEvent
 import com.runt9.untdrl.model.tower.Tower
-import com.runt9.untdrl.model.tower.action.AttributeBuffActionDefinition
-import com.runt9.untdrl.model.tower.range
+import com.runt9.untdrl.model.tower.definition.PropagandaTowerDefinition
 import com.runt9.untdrl.service.duringRun.TowerService
 import com.runt9.untdrl.util.framework.event.EventBus
 import com.runt9.untdrl.util.framework.event.HandlesEvent
 
-class AttributeBuffAction(
+class PropagandaTowerAction(
     override val eventBus: EventBus,
-    definition: AttributeBuffActionDefinition,
+    definition: PropagandaTowerDefinition,
     private val tower: Tower,
     private val towerService: TowerService
 ) : TowerAction {
@@ -29,7 +28,7 @@ class AttributeBuffAction(
 
     override fun init() {
         recalculateModifiers()
-        tower.onChange(towerChangeCb)
+        towerService.onTowerChange(tower.id, towerChangeCb)
         super.init()
     }
 
@@ -63,7 +62,7 @@ class AttributeBuffAction(
 
         affectedTowers.clear()
 
-        towerService.towersInRange(tower.position, tower.range).filter { it != tower }.forEach { t ->
+        towerService.towersInRange(tower).forEach { t ->
             allAffectedTowers += t
             affectedTowers += t
             modifications.forEach { it.applyToTower(t) }
@@ -86,11 +85,11 @@ class AttributeBuffAction(
         }
 
         override fun applyToTower(tower: Tower) {
-            tower.attrMods += newModifiers
+            tower.addAttributeModifiers(newModifiers)
         }
 
         override fun removeFromTower(tower: Tower) {
-            tower.attrMods -= modifiers
+            tower.removeAttributeModifiers(modifiers)
         }
 
         override fun finish(affectedTowers: Collection<Tower>) {

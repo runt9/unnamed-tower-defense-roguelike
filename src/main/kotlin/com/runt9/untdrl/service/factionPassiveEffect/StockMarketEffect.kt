@@ -53,8 +53,8 @@ class StockMarketEffect(
     }
 
     override fun dispose() {
-        Injector.removeProvider(StockMarketEffect::class.java)
         super.dispose()
+        Injector.remove<StockMarketEffect>()
     }
 
     fun addProfitCheck(check: ProfitCheck) {

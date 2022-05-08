@@ -4,9 +4,12 @@ import com.runt9.untdrl.model.TextureDefinition
 import com.runt9.untdrl.model.research.ResearchEffectDefinition
 import com.runt9.untdrl.model.research.research
 import com.runt9.untdrl.model.research.unlockTower
+import com.runt9.untdrl.model.tower.definition.MentalDisruptionDefinition
 import com.runt9.untdrl.model.tower.definition.MinigunSpecialization
 import com.runt9.untdrl.model.tower.definition.MissileSwarmSpecialization
 import com.runt9.untdrl.model.tower.definition.NapalmCannonSpecialization
+import com.runt9.untdrl.model.tower.definition.RiseToTheOccasionDefinition
+import com.runt9.untdrl.model.tower.definition.SayItLouderDefinition
 import com.runt9.untdrl.model.tower.definition.ShotgunSpecialization
 import com.runt9.untdrl.model.tower.definition.SniperSpecialization
 import com.runt9.untdrl.model.tower.definition.flamethrower
@@ -24,16 +27,20 @@ import com.runt9.untdrl.service.researchEffect.BrainstormingEffect
 import com.runt9.untdrl.service.researchEffect.CarefulInvestmentsEffect
 import com.runt9.untdrl.service.researchEffect.ChainExplosionsEffect
 import com.runt9.untdrl.service.researchEffect.CoreSlotEffect
+import com.runt9.untdrl.service.researchEffect.DefectorsEffect
 import com.runt9.untdrl.service.researchEffect.DividendsEffect
 import com.runt9.untdrl.service.researchEffect.DontRepeatYourselfEffect
 import com.runt9.untdrl.service.researchEffect.EfficientGrowthEffect
 import com.runt9.untdrl.service.researchEffect.EfficientScientistsEffect
+import com.runt9.untdrl.service.researchEffect.EntertainmentNewsEffect
 import com.runt9.untdrl.service.researchEffect.EtfsEffect
 import com.runt9.untdrl.service.researchEffect.ExpandingShrapnelEffect
 import com.runt9.untdrl.service.researchEffect.FastLearningEffect
 import com.runt9.untdrl.service.researchEffect.FireSpreadsEffect
 import com.runt9.untdrl.service.researchEffect.GoForBrokeEffect
 import com.runt9.untdrl.service.researchEffect.GoldPurseIncreaseEffect
+import com.runt9.untdrl.service.researchEffect.GrowTheCultEffect
+import com.runt9.untdrl.service.researchEffect.HappyShareholdersEffect
 import com.runt9.untdrl.service.researchEffect.HeRoundsEffect
 import com.runt9.untdrl.service.researchEffect.HeatRoundsEffect
 import com.runt9.untdrl.service.researchEffect.HighYieldDividendsEffect
@@ -44,11 +51,13 @@ import com.runt9.untdrl.service.researchEffect.LuckyCoreValuesEffect
 import com.runt9.untdrl.service.researchEffect.LuckyRarityEffect
 import com.runt9.untdrl.service.researchEffect.MaterialisticEffect
 import com.runt9.untdrl.service.researchEffect.MlrsEffect
+import com.runt9.untdrl.service.researchEffect.MoneyIsEverythingEffect
 import com.runt9.untdrl.service.researchEffect.MoneyTalksEffect
 import com.runt9.untdrl.service.researchEffect.MoraleBoostEffect
 import com.runt9.untdrl.service.researchEffect.NeuralNetworkEffect
 import com.runt9.untdrl.service.researchEffect.PerformanceBonusEffect
 import com.runt9.untdrl.service.researchEffect.PointOfImpactEffect
+import com.runt9.untdrl.service.researchEffect.PowerInNumbersEffect
 import com.runt9.untdrl.service.researchEffect.PrecisionEffect
 import com.runt9.untdrl.service.researchEffect.RailgunsEffect
 import com.runt9.untdrl.service.researchEffect.RevenueSharingEffect
@@ -59,6 +68,7 @@ import com.runt9.untdrl.service.researchEffect.ShrapnelEffect
 import com.runt9.untdrl.service.researchEffect.SpottersEffect
 import com.runt9.untdrl.service.researchEffect.SpreadTheWealthEffect
 import com.runt9.untdrl.service.researchEffect.TwelveGaugeEffect
+import com.runt9.untdrl.service.researchEffect.UndyingFervorEffect
 import com.runt9.untdrl.service.researchEffect.VulcanCannonsEffect
 
 val baseFaction = faction(1, "StarMerCorp", 25) {
@@ -362,6 +372,51 @@ val baseFaction = faction(1, "StarMerCorp", 25) {
         +ChainExplosionsDefinition(0.25f)
         dependsOn(rocketUnlock, heatRounds)
     }
+
+    val happyShareholders = research("Happy Shareholders", TextureDefinition.GOLD_MINE, 25) {
+        +"Whenever the Stock Market returns a profit, Propaganda Towers gain an increase to Buff/Debuff effect equal to the profit percentage for the next wave"
+        emptyDefinition(HappyShareholdersEffect::class)
+        dependsOn(propagandaUnlock)
+    }
+
+    val moneyIsEverything = research("Money is Everything", TextureDefinition.GOLD_MINE, 50) {
+        +"Propaganda towers permanently gain +2% Buff/Debuff Effect whenever the Stock Market returns a profit"
+        +MoneyIsEverythingDefinition(0.02f)
+        dependsOn(propagandaUnlock, happyShareholders)
+    }
+
+    val defectors = research("Defectors", TextureDefinition.ENEMY, 40) {
+        +"Enemies get stunned for 0.5s the first time they are affected by any Say it Louder effect"
+        +DefectorsDefinition(0.5f)
+        dependsOn(propagandaUnlock)
+        dependsOn(SayItLouderDefinition::class)
+    }
+
+    val undyingFervor = research("Undying Fervor", TextureDefinition.ENEMY, 50) {
+        +"Rise to the Occasion’s bonus doesn't completely reset at the end of a wave, instead dropping down to 10% of its current bonus"
+        +UndyingFervorDefinition(0.1f)
+        dependsOn(propagandaUnlock)
+        dependsOn(RiseToTheOccasionDefinition::class)
+    }
+
+    val entertainmentNews = research("Entertainment News", TextureDefinition.RESEARCH_LAB, 35) {
+        +"Towers affected by Mental Disruption’s bonus also apply a non-stacking DoT effect to enemies hit, dealing 50% of the total damage of the hit as Mystic damage over 2s"
+        +EntertainmentNewsDefinition(0.5f, 2f)
+        dependsOn(propagandaUnlock)
+        dependsOn(MentalDisruptionDefinition::class)
+    }
+
+    val growTheCult = research("Grow the Cult", TextureDefinition.ENEMY, 45) {
+        +"Research gained from Stock Market Profit is increased by 10% per Propaganda Tower"
+        +GrowTheCultDefinition(0.1f)
+        dependsOn(propagandaUnlock, efficientScientists2)
+    }
+
+    val powerInNumbers = research("Power in Numbers", TextureDefinition.PROTOTYPE_TOWER, 30) {
+        +"Propaganda Towers gain 5% increased Buff/Debuff Effect for each tower in range"
+        +PowerInNumbersDefinition(5f)
+        dependsOn(propagandaUnlock)
+    }
 }
 
 class CarefulInvestmentsEffectDefinition : ResearchEffectDefinition(CarefulInvestmentsEffect::class)
@@ -396,3 +451,9 @@ class HeRoundsDefinition(val attrIncrease: Float) : ResearchEffectDefinition(HeR
 class HeatRoundsDefinition(val damageIncrease: Float, val penetration: Float) : ResearchEffectDefinition(HeatRoundsEffect::class)
 class PointOfImpactDefinition(val damageIncrease: Float) : ResearchEffectDefinition(PointOfImpactEffect::class)
 class ChainExplosionsDefinition(val lifePct: Float) : ResearchEffectDefinition(ChainExplosionsEffect::class)
+class MoneyIsEverythingDefinition(val buffEffectAmt: Float) : ResearchEffectDefinition(MoneyIsEverythingEffect::class)
+class DefectorsDefinition(val stunDuration: Float) : ResearchEffectDefinition(DefectorsEffect::class)
+class UndyingFervorDefinition(val remainingBonus: Float) : ResearchEffectDefinition(UndyingFervorEffect::class)
+class EntertainmentNewsDefinition(val hitDamagePct: Float, val duration: Float) : ResearchEffectDefinition(EntertainmentNewsEffect::class)
+class GrowTheCultDefinition(val researchPerTower: Float) : ResearchEffectDefinition(GrowTheCultEffect::class)
+class PowerInNumbersDefinition(val buffEffectPerTower: Float) : ResearchEffectDefinition(PowerInNumbersEffect::class)

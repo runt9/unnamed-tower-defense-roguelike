@@ -24,15 +24,13 @@ class RailgunsEffect(
     private fun applyToTower(tower: Tower) {
         if (tower.definition != rifleTower || !tower.isSpecialization<SniperSpecialization>()) return
 
-        tower.attrMods += AttributeModifier(AttributeType.DAMAGE, percentModifier = definition.damageIncrease)
+        tower.addAttributeModifier(AttributeModifier(AttributeType.DAMAGE, percentModifier = definition.damageIncrease))
         (tower.action as ProjectileAttackAction).pierce = Int.MAX_VALUE
         towerService.recalculateAttrsSync(tower)
     }
 
     @HandlesEvent
     fun towerSpecialized(event: TowerSpecializationSelected) {
-        if (event.specialization.effect is SniperSpecialization) {
-            applyToTower(event.tower)
-        }
+        applyToTower(event.tower)
     }
 }

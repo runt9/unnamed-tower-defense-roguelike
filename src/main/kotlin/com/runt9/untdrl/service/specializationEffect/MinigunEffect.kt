@@ -60,7 +60,7 @@ class MinigunEffect(
             currentAttackSpeedBoost += attackSpeedBoostPerShot
             val newModifier = AttributeModifier(ATTACK_SPEED, percentModifier = attackSpeedBoostPerShot, isTemporary = true)
             modifierStacks += newModifier
-            tower.attrMods += newModifier
+            tower.addAttributeModifier(newModifier)
             towerService.recalculateAttrsSync(tower)
         })
     }

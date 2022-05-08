@@ -9,16 +9,17 @@ import com.runt9.untdrl.model.attribute.AttributeType.ATTACK_SPEED
 import com.runt9.untdrl.model.attribute.AttributeType.BUFF_DEBUFF_EFFECT
 import com.runt9.untdrl.model.attribute.AttributeType.DAMAGE
 import com.runt9.untdrl.model.attribute.AttributeType.RANGE
-import com.runt9.untdrl.model.tower.action.AttributeBuffActionDefinition
+import com.runt9.untdrl.model.tower.action.TowerActionDefinition
 import com.runt9.untdrl.model.tower.specialization.TowerSpecializationEffectDefinition
 import com.runt9.untdrl.service.specializationEffect.MentalDisruptionEffect
 import com.runt9.untdrl.service.specializationEffect.RiseToTheOccasionEffect
 import com.runt9.untdrl.service.specializationEffect.SayItLouderEffect
+import com.runt9.untdrl.service.towerAction.PropagandaTowerAction
 
 val propagandaTower = tower("Propaganda Tower", RESEARCH_LAB, 100) {
     +"Buffs nearby towers, granting them 25% increased Damage and Attack Speed."
 
-    actionDefinition = AttributeBuffActionDefinition(
+    actionDefinition = PropagandaTowerDefinition(
         AttributeModifier(DAMAGE, percentModifier = 25f),
         AttributeModifier(ATTACK_SPEED, percentModifier = 25f),
     )
@@ -41,6 +42,8 @@ val propagandaTower = tower("Propaganda Tower", RESEARCH_LAB, 100) {
         +MentalDisruptionDefinition(15f, 0.1f)
     }
 }
+
+class PropagandaTowerDefinition(vararg val modifiers: AttributeModifier) : TowerActionDefinition(PropagandaTowerAction::class)
 
 class SayItLouderDefinition(val buffReduction: Float, val slowPercentage: Float) : TowerSpecializationEffectDefinition(SayItLouderEffect::class)
 class RiseToTheOccasionDefinition(val stackPerSecond: Float) : TowerSpecializationEffectDefinition(RiseToTheOccasionEffect::class)

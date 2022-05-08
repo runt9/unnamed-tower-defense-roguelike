@@ -57,6 +57,7 @@ class ShopDialogController(
     fun <T : LootItem> buyItem(item: T, cost: Int): Boolean {
         if (cost > vm.gold.get()) return false
 
+        // TODO: Not properly updating shop
         var didUpdate = false
         runStateService.update {
             when (item) {

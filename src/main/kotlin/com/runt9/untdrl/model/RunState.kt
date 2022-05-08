@@ -11,7 +11,6 @@ import com.runt9.untdrl.util.ext.randomString
 import com.runt9.untdrl.view.duringRun.INITIAL_GOLD_PURSE_MAX
 import com.runt9.untdrl.view.duringRun.INITIAL_LOOT_ITEM_MAX
 import com.runt9.untdrl.view.duringRun.REROLL_COST
-import com.runt9.untdrl.view.duringRun.STARTING_GOLD
 import kotlinx.serialization.Serializable
 import kotlin.random.Random
 
@@ -22,7 +21,8 @@ data class RunState(
     var maxHp: Int = faction.maxHp,
     var hp: Int = faction.maxHp,
     var armor: Int = 0,
-    var gold: Int = STARTING_GOLD,
+    // TODO: temporary
+    var gold: Int = 10000,//STARTING_GOLD,
     var goldPurseMax: Int = INITIAL_GOLD_PURSE_MAX,
     var lootItemMax: Int = INITIAL_LOOT_ITEM_MAX,
     var shopRerollCost: Int = REROLL_COST,

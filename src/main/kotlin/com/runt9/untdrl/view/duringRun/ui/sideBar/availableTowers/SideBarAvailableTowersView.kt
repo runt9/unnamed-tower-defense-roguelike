@@ -65,6 +65,7 @@ class SideBarAvailableTowersView(
 
 fun KStack.towerTooltip(tower: TowerDefinition) = tooltip {
     background(VisUI.getSkin().getDrawable("panel1"))
+    it.manager.instant()
 
     visLabel(tower.name).cell(growX = true, row = true, pad = 4f)
 

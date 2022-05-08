@@ -46,7 +46,7 @@ abstract class DamagingStatusEffect<S : StatusEffect<S>>(
 
 class Stun(source: Tower, duration: Float) : StatusEffect<Stun>(source, duration, applyIfEmpty())
 
-class Burn(source: Tower, duration: Float, damage: Float) : DamagingStatusEffect<Burn>(source, duration, damage, DamageType.HEAT, DamageSource.BURN, keepsBetter(Comparator.comparing(Burn::totalDamage)))
+class Burn(source: Tower, duration: Float, damage: Float) : DamagingStatusEffect<Burn>(source, duration, damage, DamageType.HEAT, DamageSource.BURN, keepsBetter())
 
 class Poison(source: Tower, duration: Float, damage: Float) : DamagingStatusEffect<Poison>(source, duration, damage, DamageType.NATURE, DamageSource.POISON, stacks())
 

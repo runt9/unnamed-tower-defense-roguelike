@@ -25,10 +25,7 @@ class MoraleBoostEffect(
     }
 
     override fun apply() {
-        towerService.forEachTower { tower ->
-            trackers[tower] = MoraleBoostTracker(tower)
-            tower.addInterceptor(interceptor)
-        }
+        towerService.forEachTower(::applyToTower)
 
         tickerRegistry.registerTicker { delta ->
             trackers.forEach { it.value.tick(delta) }
@@ -37,7 +34,10 @@ class MoraleBoostEffect(
 
     @HandlesEvent
     fun towerPlaced(event: TowerPlacedEvent) {
-        val tower = event.tower
+        applyToTower(event.tower)
+    }
+
+    private fun applyToTower(tower: Tower) {
         trackers[tower] = MoraleBoostTracker(tower)
         tower.addInterceptor(interceptor)
     }
@@ -55,7 +55,7 @@ class MoraleBoostEffect(
             timer.tick(delta)
             if (timer.isReady && stacks.isNotEmpty()) {
                 val mod = stacks.removeFirst()
-                tower.attrMods -= mod
+                tower.removeAttributeModifier(mod)
                 towerService.recalculateAttrsSync(tower)
                 timer.reset(false)
             }
@@ -65,7 +65,7 @@ class MoraleBoostEffect(
             if (stacks.size >= definition.maxStacks) return
 
             val stack = AttributeModifier(AttributeType.ATTACK_SPEED, percentModifier = definition.attackSpeedIncrease, isTemporary = true)
-            tower.attrMods += stack
+            tower.addAttributeModifier(stack)
             stacks += stack
             towerService.recalculateAttrsSync(tower)
             timer.reset(false)

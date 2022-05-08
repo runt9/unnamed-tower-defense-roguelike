@@ -23,7 +23,7 @@ class HeatRoundsEffect(
     private fun applyToTower(tower: Tower) {
         if (tower.definition != rocketTower) return
 
-        tower.attrMods += AttributeModifier(AttributeType.DAMAGE, percentModifier = definition.damageIncrease)
+        tower.addAttributeModifier(AttributeModifier(AttributeType.DAMAGE, percentModifier = definition.damageIncrease))
         tower.damageTypes.filter { it.type == DamageType.PHYSICAL || it.type == DamageType.HEAT }.forEach { it.penetration += definition.penetration }
         towerService.recalculateAttrsSync(tower)
     }

@@ -30,8 +30,6 @@ class Tower(val definition: TowerDefinition) : BaseSteerable(Vector2.Zero.cpy(),
     override val angularAccelerationLimit = angularSpeedLimit * 50f
     override val boundingBoxRadius = 0.5f
 
-    private var onChangeCb: (suspend Tower.() -> Unit)? = null
-
     lateinit var action: TowerAction
 
     var xp = 0
@@ -61,12 +59,12 @@ class Tower(val definition: TowerDefinition) : BaseSteerable(Vector2.Zero.cpy(),
 
     private fun copyDefinitionDamageTypes() = definition.damageTypes.map { DamageMap(it.type, it.pctOfBase, it.penetration) }
 
-    fun onChange(onChangeCb: suspend Tower.() -> Unit) {
-        this.onChangeCb = onChangeCb
-    }
-
     fun addProc(proc: TowerProc) {
         procs += proc
+    }
+
+    fun removeProc(proc: TowerProc) {
+        procs -= proc
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -101,8 +99,24 @@ class Tower(val definition: TowerDefinition) : BaseSteerable(Vector2.Zero.cpy(),
 
     fun modifyAllAttributes(flatModifier: Float = 0f, percentModifier: Float = 0f, isTemporary: Boolean = false) {
         attrs.keys.forEach { type ->
-            attrMods += AttributeModifier(type, flatModifier, percentModifier, isTemporary)
+            addAttributeModifier(AttributeModifier(type, flatModifier, percentModifier, isTemporary))
         }
+    }
+    
+    fun addAttributeModifier(attrMod: AttributeModifier) {
+        attrMods += attrMod
+    }
+
+    fun addAttributeModifiers(attrMods: Collection<AttributeModifier>) {
+        this.attrMods += attrMods
+    }
+    
+    fun removeAttributeModifier(attrMod: AttributeModifier) {
+        attrMods -= attrMod
+    }
+
+    fun removeAttributeModifiers(attrMods: Collection<AttributeModifier>) {
+        this.attrMods -= attrMods.toSet()
     }
 
     inline fun <reified T : TowerSpecializationEffectDefinition> isSpecialization() = appliedSpecialization?.effect is T

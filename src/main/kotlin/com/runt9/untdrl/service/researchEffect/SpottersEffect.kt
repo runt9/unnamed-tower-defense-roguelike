@@ -63,13 +63,13 @@ class SpottersEffect(
 
         private fun addStack() {
             val stack = AttributeModifier(AttributeType.RANGE, percentModifier = definition.rangeIncrease, isTemporary = true)
-            tower.attrMods += stack
+            tower.addAttributeModifier(stack)
             stacks += stack
             towerService.recalculateAttrsSync(tower)
         }
 
         fun removeStacks() {
-            tower.attrMods -= stacks.toSet()
+            tower.removeAttributeModifiers(stacks)
             towerService.recalculateAttrsSync(tower)
             reset()
         }

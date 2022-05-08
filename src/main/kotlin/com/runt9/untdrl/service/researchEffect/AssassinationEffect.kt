@@ -32,8 +32,6 @@ class AssassinationEffect(
 
     @HandlesEvent
     fun towerSpecialized(event: TowerSpecializationSelected) {
-        if (event.specialization.effect is SniperSpecialization) {
-            applyToTower(event.tower)
-        }
+        applyToTower(event.tower)
     }
 }

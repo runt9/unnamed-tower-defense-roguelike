@@ -20,8 +20,8 @@ class RndBudgetEffect(override val eventBus: EventBus) : FactionPassiveEffect {
     }
 
     override fun dispose() {
-        Injector.removeProvider(RndBudgetEffect::class.java)
         super.dispose()
+        Injector.remove<RndBudgetEffect>()
     }
 
     fun addResearchModifier(check: ResearchMultiplier) {

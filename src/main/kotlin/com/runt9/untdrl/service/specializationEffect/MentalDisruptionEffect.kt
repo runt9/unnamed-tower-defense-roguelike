@@ -5,7 +5,7 @@ import com.runt9.untdrl.model.damage.DamageMap
 import com.runt9.untdrl.model.damage.DamageType
 import com.runt9.untdrl.model.tower.Tower
 import com.runt9.untdrl.model.tower.definition.MentalDisruptionDefinition
-import com.runt9.untdrl.service.towerAction.AttributeBuffAction
+import com.runt9.untdrl.service.towerAction.PropagandaTowerAction
 import com.runt9.untdrl.service.towerAction.TowerModification
 import com.runt9.untdrl.util.framework.event.EventBus
 
@@ -15,7 +15,7 @@ class MentalDisruptionEffect(
     private val definition: MentalDisruptionDefinition
 ) : TowerSpecializationEffect {
     override fun apply() {
-        (tower.action as AttributeBuffAction).apply {
+        (tower.action as PropagandaTowerAction).apply {
             attrModification.baseModifiers = attrModification.baseModifiers.map { AttributeModifier(it.type, it.flatModifier, it.percentModifier - definition.buffReduction) }.toSet()
             modifications += AdditionalDamageTypesModifier(listOf(DamageMap(DamageType.MYSTIC, definition.damagePct)))
             recalculateModifiers()

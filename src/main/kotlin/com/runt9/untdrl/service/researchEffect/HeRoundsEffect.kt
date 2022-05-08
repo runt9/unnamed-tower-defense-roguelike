@@ -22,8 +22,8 @@ class HeRoundsEffect(
     private fun applyToTower(tower: Tower) {
         if (tower.definition != rocketTower) return
 
-        tower.attrMods += AttributeModifier(AttributeType.DAMAGE, percentModifier = definition.attrIncrease)
-        tower.attrMods += AttributeModifier(AttributeType.AREA_OF_EFFECT, percentModifier = definition.attrIncrease)
+        tower.addAttributeModifier(AttributeModifier(AttributeType.DAMAGE, percentModifier = definition.attrIncrease))
+        tower.addAttributeModifier(AttributeModifier(AttributeType.AREA_OF_EFFECT, percentModifier = definition.attrIncrease))
         towerService.recalculateAttrsSync(tower)
     }
 

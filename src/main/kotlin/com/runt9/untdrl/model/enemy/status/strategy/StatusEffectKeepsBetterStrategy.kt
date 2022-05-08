@@ -1,5 +1,6 @@
 package com.runt9.untdrl.model.enemy.status.strategy
 
+import com.runt9.untdrl.model.enemy.status.DamagingStatusEffect
 import com.runt9.untdrl.model.enemy.status.StatusEffect
 import com.runt9.untdrl.util.ext.unTdRlLogger
 
@@ -23,3 +24,4 @@ class StatusEffectKeepsBetterStrategy<S : StatusEffect<S>>(private val comparato
 }
 
 fun <S : StatusEffect<S>> keepsBetter(comparator: Comparator<S>) = StatusEffectKeepsBetterStrategy(comparator)
+fun <S : DamagingStatusEffect<S>> keepsBetter() = StatusEffectKeepsBetterStrategy(Comparator.comparing<S, Float> { e -> e.remainingDamage })

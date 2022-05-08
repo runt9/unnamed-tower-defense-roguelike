@@ -75,6 +75,7 @@ class Enemy(val definition: EnemyDefinition, wave: Int, initialPosition: Vector2
 
     fun <T : StatusEffect<T>> addStatusEffect(effect: T) {
         effect.applyStrategy.apply(statusEffects, effect)
+        affectedByTowers += effect.source
     }
 
     fun reduceAllResistances(reduction: Float) {

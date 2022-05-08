@@ -34,7 +34,8 @@ class RunStateService(private val eventBus: EventBus, registry: RunServiceRegist
             armor = 0
         }
 
-        // TODO: Maybe not the right way to handle this, will figure out later
+        // TODO: Not the right way to handle this, this needs to be called after all Wave Complete events are handled.
+        //  We might get away with it because of the way the queuing works, though
         eventBus.enqueueEvent(PrepareNextWaveEvent())
     }
 

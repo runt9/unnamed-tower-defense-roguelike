@@ -24,16 +24,14 @@ class TwelveGaugeEffect(
     private fun applyToTower(tower: Tower) {
         if (tower.definition != rifleTower || !tower.isSpecialization<ShotgunSpecialization>()) return
 
-        tower.attrMods += AttributeModifier(AttributeType.DAMAGE, percentModifier = definition.damageIncrease)
-        tower.attrMods += AttributeModifier(AttributeType.PROJECTILE_COUNT, flatModifier = definition.bonusProj.toFloat())
+        tower.addAttributeModifier(AttributeModifier(AttributeType.DAMAGE, percentModifier = definition.damageIncrease))
+        tower.addAttributeModifier(AttributeModifier(AttributeType.PROJECTILE_COUNT, flatModifier = definition.bonusProj.toFloat()))
         (tower.action as ProjectileAttackAction).totalArc * (1 - definition.arcReduction)
         towerService.recalculateAttrsSync(tower)
     }
 
     @HandlesEvent
     fun towerSpecialized(event: TowerSpecializationSelected) {
-        if (event.specialization.effect is ShotgunSpecialization) {
-            applyToTower(event.tower)
-        }
+        applyToTower(event.tower)
     }
 }

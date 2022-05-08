@@ -33,8 +33,6 @@ class VulcanCannonsEffect(
 
     @HandlesEvent
     fun towerSpecialized(event: TowerSpecializationSelected) {
-        if (event.specialization.effect is MinigunSpecialization) {
-            applyToTower(event.tower)
-        }
+        applyToTower(event.tower)
     }
 }
